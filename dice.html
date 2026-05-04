@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Кубики</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .back-link {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .back-link:hover { color: #58a6ff; }
+        h1 { font-size: 26px; color: #f0f6fc; margin-bottom: 6px; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+
+        .dice-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin: 20px 0;
+            min-height: 100px;
+        }
+
+        .die {
+            width: 90px;
+            height: 90px;
+            background: #fff;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            font-weight: 900;
+            color: #0d1117;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            transition: transform 0.15s;
+            user-select: none;
+        }
+        .die.rolling {
+            animation: shake 0.6s ease-in-out;
+        }
+        @keyframes shake {
+            0% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(15deg) scale(1.1); }
+            40% { transform: rotate(-15deg) scale(1.1); }
+            60% { transform: rotate(10deg) scale(1.05); }
+            80% { transform: rotate(-5deg) scale(1.02); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        .result {
+            font-size: 22px;
+            font-weight: 700;
+            color: #58a6ff;
+            min-height: 36px;
+            margin: 10px 0;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-roll {
+            background: linear-gradient(135deg, #f0883e, #db6d28);
+            color: #fff;
+            font-size: 18px;
+            padding: 16px 50px;
+            box-shadow: 0 4px 15px rgba(240,136,62,0.4);
+        }
+        .btn-count {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+        .dice-count {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f0f6fc;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .history {
+            margin-top: 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: left;
+        }
+        .history h3 { font-size: 14px; color: #f0f6fc; margin-bottom: 8px; }
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .history-item {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+            color: #8b949e;
+        }
+        .btn-clear {
+            background: transparent;
+            border: 1px solid #484f58;
+            color: #8b949e;
+            font-size: 12px;
+            padding: 6px 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Назад к играм</a>
+        <h1>🎲 Кубики</h1>
+        <p class="subtitle">Выбери количество и бросай!</p>
+
+        <div class="controls">
+            <button class="btn btn-count" onclick="changeCount(-1)">−</button>
+            <span class="dice-count" id="countDisplay">2</span>
+            <button class="btn btn-count" onclick="changeCount(1)">+</button>
+        </div>
+
+        <div class="dice-container" id="diceContainer"></div>
+
+        <div class="result" id="result"></div>
+
+        <button class="btn btn-roll" id="rollBtn" onclick="rollDice()">🎯 Бросить!</button>
+
+        <div class="history">
+            <h3>📋 История бросков</h3>
+            <div class="history-list" id="historyList"></div>
+            <button class="btn-clear" onclick="clearHistory()">Очистить историю</button>
+        </div>
+    </div>
+
+    <script>
+        var diceCount = 2;
+        var rolling = false;
+        var history = JSON.parse(localStorage.getItem('diceHistory')) || [];
+
+        var diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+        var diceValues = [1, 2, 3, 4, 5, 6];
+
+        function changeCount(delta) {
+            diceCount = Math.max(1, Math.min(6, diceCount + delta));
+            document.getElementById('countDisplay').textContent = diceCount;
+            showDice(diceCount);
+        }
+
+        function showDice(count) {
+            var container = document.getElementById('diceContainer');
+            container.innerHTML = '';
+            for (var i = 0; i < count; i++) {
+                var die = document.createElement('div');
+                die.className = 'die';
+                die.textContent = diceFaces[0];
+                die.id = 'die' + i;
+                container.appendChild(die);
+            }
+        }
+
+        function rollDice() {
+            if (rolling) return;
+            rolling = true;
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('result').textContent = 'Бросаем...';
+
+            var results = [];
+            var rollSteps = 10;
+            var step = 0;
+
+            var interval = setInterval(function() {
+                for (var i = 0; i < diceCount; i++) {
+                    var randomFace = Math.floor(Math.random() * 6);
+                    var die = document.getElementById('die' + i);
+                    die.textContent = diceFaces[randomFace];
+                    die.classList.add('rolling');
+                    
+                    // Убираем анимацию после завершения
+                    setTimeout(function(el) {
+                        el.classList.remove('rolling');
+                    }, 600, die);
+                    
+                    if (step === rollSteps - 1) {
+                        results[i] = diceValues[randomFace];
+                    }
+                }
+                step++;
+
+                if (step >= rollSteps) {
+                    clearInterval(interval);
+                    var sum = results.reduce(function(a, b) { return a + b; }, 0);
+                    
+                    var resultText = '';
+                    if (diceCount === 1) {
+                        resultText = '🎉 Выпало: ' + sum;
+                    } else {
+                        resultText = '🎉 Выпало: ' + results.join(' + ') + ' = ' + sum;
+                    }
+                    
+                    document.getElementById('result').textContent = resultText;
+                    rolling = false;
+                    document.getElementById('rollBtn').disabled = false;
+
+                    // Сохраняем в историю
+                    history.unshift({
+                        count: diceCount,
+                        values: results.slice(),
+                        sum: sum,
+                        time: new Date().toLocaleTimeString()
+                    });
+                    if (history.length > 20) history.pop();
+                    localStorage.setItem('diceHistory', JSON.stringify(history));
+                    renderHistory();
+                }
+            }, 100);
+        }
+
+        function renderHistory() {
+            var list = document.getElementById('historyList');
+            list.innerHTML = '';
+            for (var i = 0; i < history.length; i++) {
+                var h = history[i];
+                var item = document.createElement('span');
+                item.className = 'history-item';
+                if (h.count === 1) {
+                    item.textContent = '🎲 ' + h.sum + ' (' + h.time + ')';
+                } else {
+                    item.textContent = '🎲 ' + h.values.join('+') + '=' + h.sum + ' (' + h.time + ')';
+                }
+                list.appendChild(item);
+            }
+        }
+
+        function clearHistory() {
+            history = [];
+            localStorage.removeItem('diceHistory');
+            renderHistory();
+        }
+
+        // Инициализация
+        showDice(diceCount);
+        renderHistory();
+    </script>
+</body>
+</html>
