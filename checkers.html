@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔴⚫ Шашки — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 24px 20px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 14px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #f0f6fc; }
+        h1 { font-size: 26px; margin-bottom: 4px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 16px; }
+
+        .status {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #f0f6fc;
+            min-height: 28px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            aspect-ratio: 1;
+            max-width: 380px;
+            margin: 0 auto 14px;
+            border: 2px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .cell {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.1s;
+        }
+        .cell.light { background: #d4a76a; }
+        .cell.dark { background: #6b4226; }
+        .cell.selected { box-shadow: inset 0 0 0 3px #f0f6fc; }
+        .cell.valid-move { box-shadow: inset 0 0 0 3px #238636; cursor: pointer; }
+
+        .piece {
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .piece.white { background: radial-gradient(circle at 35% 35%, #fff, #c9d1d9); }
+        .piece.black { background: radial-gradient(circle at 35% 35%, #555, #000); }
+
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 380px;
+            margin: 8px auto;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #484f58;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:hover { background: #383d47; }
+        .btn-sound {
+            background: transparent;
+            border: 1px solid #484f58;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+        .btn-sound.on { border-color: #238636; color: #238636; }
+
+        .captured {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .captured span { color: #8b949e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🔴⚫ Русские шашки</h1>
+        <p class="subtitle">Игра для двоих на одном экране</p>
+
+        <div class="status" id="status">Ход: ⚪ Белые</div>
+
+        <div class="board" id="board"></div>
+
+        <button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+        <button class="btn btn-sound on" id="soundBtn" onclick="toggleSound()">🔊 Звук хода: ВКЛ</button>
+
+        <div class="captured">
+            <span>⚪ Съедено белых: <b id="capWhite">0</b></span>
+            <span>⚫ Съедено чёрных: <b id="capBlack">0</b></span>
+        </div>
+    </div>
+
+    <script>
+        var board = [];
+        var currentPlayer = 'white';
+        var selectedCell = null;
+        var validMoves = [];
+        var capturedWhite = 0;
+        var capturedBlack = 0;
+        var soundEnabled = true;
+
+        // Web Audio API — генератор звука
+        var audioCtx = null;
+        function playClickSound() {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 800;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        function playCaptureSound() {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 1200;
+                osc.type = 'square';
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            var btn = document.getElementById('soundBtn');
+            if (soundEnabled) {
+                btn.textContent = '🔊 Звук хода: ВКЛ';
+                btn.classList.add('on');
+            } else {
+                btn.textContent = '🔇 Звук хода: ВЫКЛ';
+                btn.classList.remove('on');
+            }
+        }
+
+        // Инициализация доски
+        function initBoard() {
+            board = [];
+            for (var row = 0; row < 8; row++) {
+                board[row] = [];
+                for (var col = 0; col < 8; col++) {
+                    if ((row + col) % 2 === 1) {
+                        if (row < 3) board[row][col] = 'black';
+                        else if (row > 4) board[row][col] = 'white';
+                        else board[row][col] = null;
+                    } else {
+                        board[row][col] = null;
+                    }
+                }
+            }
+        }
+
+        function renderBoard() {
+            var boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+            for (var row = 0; row < 8; row++) {
+                for (var col = 0; col < 8; col++) {
+                    var cell = document.createElement('div');
+                    cell.className = 'cell ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+
+                    if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
+                        cell.classList.add('selected');
+                    }
+                    for (var m = 0; m < validMoves.length; m++) {
+                        if (validMoves[m].row === row && validMoves[m].col === col) {
+                            cell.classList.add('valid-move');
+                        }
+                    }
+
+                    if (board[row][col]) {
+                        var piece = document.createElement('div');
+                        piece.className = 'piece ' + board[row][col];
+                        if ((board[row][col] === 'white' && row === 0) || (board[row][col] === 'black' && row === 7)) {
+                            var crown = document.createElement('span');
+                            crown.textContent = '👑';
+                            crown.style.cssText = 'position:absolute;font-size:14px;top:-6px;left:50%;transform:translateX(-50%);pointer-events:none;';
+                            piece.appendChild(crown);
+                        }
+                        cell.appendChild(piece);
+                    }
+
+                    cell.addEventListener('click', function() {
+                        handleClick(parseInt(this.dataset.row), parseInt(this.dataset.col));
+                    });
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function handleClick(row, col) {
+            if (board[row][col] === currentPlayer) {
+                selectedCell = { row: row, col: col };
+                validMoves = getValidMoves(row, col);
+                renderBoard();
+                return;
+            }
+
+            if (selectedCell) {
+                for (var i = 0; i < validMoves.length; i++) {
+                    if (validMoves[i].row === row && validMoves[i].col === col) {
+                        makeMove(selectedCell.row, selectedCell.col, row, col);
+                        return;
+                    }
+                }
+            }
+        }
+
+        function getValidMoves(row, col) {
+            var moves = [];
+            var piece = board[row][col];
+            if (!piece) return moves;
+
+            var dir = piece === 'white' ? -1 : 1;
+            var directions = [[dir, -1], [dir, 1]];
+
+            for (var d = 0; d < directions.length; d++) {
+                var nr = row + directions[d][0];
+                var nc = col + directions[d][1];
+                if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && !board[nr][nc]) {
+                    moves.push({ row: nr, col: nc, capture: false });
+                }
+                var cr = row + 2 * directions[d][0];
+                var cc = col + 2 * directions[d][1];
+                if (cr >= 0 && cr < 8 && cc >= 0 && cc < 8 &&
+                    board[nr] && board[nr][nc] && board[nr][nc] !== piece && !board[cr][cc]) {
+                    moves.push({ row: cr, col: cc, capture: true, capRow: nr, capCol: nc });
+                }
+            }
+
+            return moves;
+        }
+
+        function makeMove(fromRow, fromCol, toRow, toCol) {
+            var move = null;
+            for (var i = 0; i < validMoves.length; i++) {
+                if (validMoves[i].row === toRow && validMoves[i].col === toCol) {
+                    move = validMoves[i];
+                    break;
+                }
+            }
+            if (!move) return;
+
+            board[toRow][toCol] = board[fromRow][fromCol];
+            board[fromRow][fromCol] = null;
+
+            if (move.capture) {
+                board[move.capRow][move.capCol] = null;
+                if (currentPlayer === 'white') capturedBlack++;
+                else capturedWhite++;
+                document.getElementById('capWhite').textContent = capturedWhite;
+                document.getElementById('capBlack').textContent = capturedBlack;
+                playCaptureSound();
+            } else {
+                playClickSound();
+            }
+
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            document.getElementById('status').textContent = 'Ход: ' + (currentPlayer === 'white' ? '⚪ Белые' : '⚫ Чёрные');
+
+            selectedCell = null;
+            validMoves = [];
+            renderBoard();
+        }
+
+        function resetGame() {
+            currentPlayer = 'white';
+            selectedCell = null;
+            validMoves = [];
+            capturedWhite = 0;
+            capturedBlack = 0;
+            document.getElementById('capWhite').textContent = '0';
+            document.getElementById('capBlack').textContent = '0';
+            document.getElementById('status').textContent = 'Ход: ⚪ Белые';
+            initBoard();
+            renderBoard();
+        }
+
+        initBoard();
+        renderBoard();
+    </script>
+</body>
+</html>
