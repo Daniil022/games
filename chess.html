@@ -2,359 +2,57 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>♟️ Шахматы — Игровой портал</title>
+    <title>Касатка</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 16px;
-            padding: 24px 20px;
-            max-width: 460px;
-            width: 100%;
-            text-align: center;
-        }
-        .back-btn {
-            display: inline-block;
-            color: #8b949e;
-            text-decoration: none;
-            font-size: 14px;
-            margin-bottom: 14px;
-            padding: 8px 16px;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-        }
-        .back-btn:hover { border-color: #58a6ff; color: #f0f6fc; }
-        h1 { font-size: 26px; margin-bottom: 4px; color: #f0f6fc; }
-        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 14px; }
-
-        .status {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #f0f6fc;
-            min-height: 28px;
-        }
-
-        .board {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            aspect-ratio: 1;
-            max-width: 380px;
-            margin: 0 auto 14px;
-            border: 2px solid #30363d;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .cell {
-            aspect-ratio: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 36px;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.1s;
-        }
-        .cell.light { background: #d4a76a; }
-        .cell.dark { background: #6b4226; }
-        .cell.selected { box-shadow: inset 0 0 0 3px #f0f6fc; }
-        .cell.valid-move {
-            box-shadow: inset 0 0 0 3px #238636;
-            cursor: pointer;
-        }
-        .cell.last-move { box-shadow: inset 0 0 0 2px #d29922; }
-
-        .btn {
-            display: block;
-            width: 100%;
-            max-width: 380px;
-            margin: 8px auto;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            background: #30363d;
-            color: #c9d1d9;
-            border: 1px solid #484f58;
-            transition: all 0.2s;
-        }
-        .btn:active { transform: scale(0.97); }
-        .btn:hover { background: #383d47; }
-        .btn-sound {
-            background: transparent;
-            border: 1px solid #484f58;
-            margin-top: 4px;
-            font-size: 13px;
-        }
-        .btn-sound.on { border-color: #238636; color: #238636; }
+        body { font-family: Arial; text-align: center; background: #0a3d0a; color: white; }
+        #messages { min-height: 60px; margin: 20px; font-size: 20px; }
+        button { padding: 15px 30px; font-size: 20px; margin: 10px; background: gold; border: none; border-radius: 10px; cursor: pointer; }
+        button:hover { background: orange; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-btn">← Назад к играм</a>
-        <h1>♟️ Шахматы</h1>
-        <p class="subtitle">Игра для двоих на одном экране</p>
-
-        <div class="status" id="status">Ход: ⚪ Белые</div>
-
-        <div class="board" id="board"></div>
-
-        <button class="btn" onclick="resetGame()">🔄 Новая игра</button>
-        <button class="btn btn-sound on" id="soundBtn" onclick="toggleSound()">🔊 Звук хода: ВКЛ</button>
-    </div>
+    <h1>🃏 Касатка</h1>
+    <div id="messages">Твоя ставка принята. Тяни карту!</div>
+    <div id="scores">Ты: 0 | Дилер: 0</div>
+    <button onclick="hit()">Ещё</button>
+    <button onclick="stand()">Хватит</button>
+    <button onclick="restart()">Новая игра</button>
 
     <script>
-        var board = [];
-        var currentPlayer = 'white';
-        var selectedCell = null;
-        var validMoves = [];
-        var soundEnabled = true;
-        var lastMoveFrom = null;
-        var lastMoveTo = null;
+        let playerHand = 0, dealerHand = 0, gameOver = false;
 
-        var pieces = {
-            white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
-            black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
-        };
+        function randomCard() { return Math.floor(Math.random() * 10) + 2; }
 
-        // Звук
-        var audioCtx = null;
-        function playSound(freq, type, duration) {
-            if (!soundEnabled) return;
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = freq;
-                osc.type = type;
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + duration);
-            } catch(e) {}
+        function updateUI(msg) {
+            document.getElementById('messages').innerText = msg;
+            document.getElementById('scores').innerText = `Ты: ${playerHand} | Дилер: ${dealerHand}`;
         }
 
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            var btn = document.getElementById('soundBtn');
-            btn.textContent = soundEnabled ? '🔊 Звук хода: ВКЛ' : '🔇 Звук хода: ВЫКЛ';
-            btn.classList.toggle('on', soundEnabled);
+        function hit() {
+            if (gameOver) return;
+            playerHand += randomCard();
+            if (playerHand > 21) { updateUI('Перебор! Ты проиграл.'); gameOver = true; }
+            else if (playerHand === 21) { updateUI('Касатка! Ты выиграл!'); gameOver = true; }
+            else { updateUI('Тянешь дальше или хватит?'); }
         }
 
-        // Инициализация доски
-        function initBoard() {
-            board = [
-                ['black-rook', 'black-knight', 'black-bishop', 'black-queen', 'black-king', 'black-bishop', 'black-knight', 'black-rook'],
-                ['black-pawn', 'black-pawn', 'black-pawn', 'black-pawn', 'black-pawn', 'black-pawn', 'black-pawn', 'black-pawn'],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                ['white-pawn', 'white-pawn', 'white-pawn', 'white-pawn', 'white-pawn', 'white-pawn', 'white-pawn', 'white-pawn'],
-                ['white-rook', 'white-knight', 'white-bishop', 'white-queen', 'white-king', 'white-bishop', 'white-knight', 'white-rook']
-            ];
+        function stand() {
+            if (gameOver) return;
+            while (dealerHand < 17) { dealerHand += randomCard(); }
+            if (dealerHand > 21 || playerHand > dealerHand) { updateUI('Ты выиграл!'); }
+            else if (playerHand < dealerHand) { updateUI('Дилер выиграл.'); }
+            else { updateUI('Ничья!'); }
+            gameOver = true;
         }
 
-        function getPieceSymbol(cell) {
-            if (!cell) return '';
-            var parts = cell.split('-');
-            var color = parts[0];
-            var type = parts[1];
-            return pieces[color][type];
+        function restart() {
+            playerHand = randomCard() + randomCard();
+            dealerHand = randomCard();
+            gameOver = false;
+            updateUI('Новая раздача. Тяни или хватит?');
         }
 
-        function renderBoard() {
-            var boardEl = document.getElementById('board');
-            boardEl.innerHTML = '';
-            for (var row = 0; row < 8; row++) {
-                for (var col = 0; col < 8; col++) {
-                    var cell = document.createElement('div');
-                    cell.className = 'cell ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
-                    cell.dataset.row = row;
-                    cell.dataset.col = col;
-
-                    if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
-                        cell.classList.add('selected');
-                    }
-                    for (var m = 0; m < validMoves.length; m++) {
-                        if (validMoves[m].row === row && validMoves[m].col === col) {
-                            cell.classList.add('valid-move');
-                        }
-                    }
-                    if (lastMoveFrom && lastMoveFrom.row === row && lastMoveFrom.col === col) {
-                        cell.classList.add('last-move');
-                    }
-                    if (lastMoveTo && lastMoveTo.row === row && lastMoveTo.col === col) {
-                        cell.classList.add('last-move');
-                    }
-
-                    if (board[row][col]) {
-                        cell.textContent = getPieceSymbol(board[row][col]);
-                    }
-
-                    cell.addEventListener('click', function() {
-                        handleClick(parseInt(this.dataset.row), parseInt(this.dataset.col));
-                    });
-                    boardEl.appendChild(cell);
-                }
-            }
-        }
-
-        function getPieceColor(row, col) {
-            if (!board[row][col]) return null;
-            return board[row][col].startsWith('white') ? 'white' : 'black';
-        }
-
-        function getValidMoves(row, col) {
-            var moves = [];
-            var piece = board[row][col];
-            if (!piece) return moves;
-
-            var parts = piece.split('-');
-            var color = parts[0];
-            var type = parts[1];
-
-            function addMove(r, c) {
-                if (r >= 0 && r < 8 && c >= 0 && c < 8) {
-                    if (!board[r][c] || getPieceColor(r, c) !== color) {
-                        moves.push({ row: r, col: c });
-                    }
-                }
-            }
-
-            function slide(dr, dc) {
-                for (var i = 1; i < 8; i++) {
-                    var r = row + dr * i;
-                    var c = col + dc * i;
-                    if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
-                    if (board[r][c]) {
-                        if (getPieceColor(r, c) !== color) moves.push({ row: r, col: c });
-                        break;
-                    }
-                    moves.push({ row: r, col: c });
-                }
-            }
-
-            switch(type) {
-                case 'pawn':
-                    var dir = color === 'white' ? -1 : 1;
-                    var startRow = color === 'white' ? 6 : 1;
-                    // Вперёд
-                    if (!board[row + dir] || !board[row + dir][col]) {
-                        addMove(row + dir, col);
-                        if (row === startRow && !board[row + 2*dir][col]) addMove(row + 2*dir, col);
-                    }
-                    // Взятие
-                    if (board[row + dir] && board[row + dir][col - 1] && getPieceColor(row + dir, col - 1) !== color) addMove(row + dir, col - 1);
-                    if (board[row + dir] && board[row + dir][col + 1] && getPieceColor(row + dir, col + 1) !== color) addMove(row + dir, col + 1);
-                    break;
-
-                case 'rook':
-                    slide(0, 1); slide(0, -1); slide(1, 0); slide(-1, 0);
-                    break;
-
-                case 'bishop':
-                    slide(1, 1); slide(1, -1); slide(-1, 1); slide(-1, -1);
-                    break;
-
-                case 'queen':
-                    slide(0, 1); slide(0, -1); slide(1, 0); slide(-1, 0);
-                    slide(1, 1); slide(1, -1); slide(-1, 1); slide(-1, -1);
-                    break;
-
-                case 'knight':
-                    addMove(row - 2, col - 1); addMove(row - 2, col + 1);
-                    addMove(row + 2, col - 1); addMove(row + 2, col + 1);
-                    addMove(row - 1, col - 2); addMove(row - 1, col + 2);
-                    addMove(row + 1, col - 2); addMove(row + 1, col + 2);
-                    break;
-
-                case 'king':
-                    for (var dr = -1; dr <= 1; dr++)
-                        for (var dc = -1; dc <= 1; dc++)
-                            if (dr !== 0 || dc !== 0) addMove(row + dr, col + dc);
-                    break;
-            }
-
-            return moves;
-        }
-
-        function handleClick(row, col) {
-            if (board[row][col] && getPieceColor(row, col) === currentPlayer) {
-                selectedCell = { row: row, col: col };
-                validMoves = getValidMoves(row, col);
-                renderBoard();
-                return;
-            }
-
-            if (selectedCell) {
-                for (var i = 0; i < validMoves.length; i++) {
-                    if (validMoves[i].row === row && validMoves[i].col === col) {
-                        makeMove(selectedCell.row, selectedCell.col, row, col);
-                        return;
-                    }
-                }
-            }
-        }
-
-        function makeMove(fromRow, fromCol, toRow, toCol) {
-            var target = board[toRow][toCol];
-            var isCapture = target !== null;
-
-            // Звук
-            if (isCapture) {
-                playSound(1000, 'square', 0.12);
-            } else {
-                playSound(600, 'sine', 0.08);
-            }
-
-            // Ход
-            board[toRow][toCol] = board[fromRow][fromCol];
-            board[fromRow][fromCol] = null;
-
-            lastMoveFrom = { row: fromRow, col: fromCol };
-            lastMoveTo = { row: toRow, col: toCol };
-
-            // Смена хода
-            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-            document.getElementById('status').textContent = 'Ход: ' + (currentPlayer === 'white' ? '⚪ Белые' : '⚫ Чёрные');
-
-            selectedCell = null;
-            validMoves = [];
-            renderBoard();
-        }
-
-        function resetGame() {
-            currentPlayer = 'white';
-            selectedCell = null;
-            validMoves = [];
-            lastMoveFrom = null;
-            lastMoveTo = null;
-            document.getElementById('status').textContent = 'Ход: ⚪ Белые';
-            initBoard();
-            renderBoard();
-        }
-
-        // Старт
-        initBoard();
-        renderBoard();
+        restart();
     </script>
 </body>
 </html>
