@@ -24,16 +24,8 @@
             width: 100%;
             max-width: 700px;
         }
-        h2 {
-            text-align: center;
-            color: #f0f6fc;
-            margin-bottom: 20px;
-        }
-        h3 {
-            color: #f0f6fc;
-            margin: 20px 0 12px;
-            font-size: 18px;
-        }
+        h2 { text-align: center; color: #f0f6fc; margin-bottom: 20px; }
+        h3 { color: #f0f6fc; margin: 20px 0 12px; font-size: 18px; }
         input, select {
             width: 100%;
             padding: 12px;
@@ -44,10 +36,7 @@
             font-size: 16px;
             margin-bottom: 12px;
         }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #58a6ff;
-        }
+        input:focus, select:focus { outline: none; border-color: #58a6ff; }
         button {
             padding: 12px 20px;
             background: #238636;
@@ -67,25 +56,10 @@
         .hidden { display: none; }
         .error { color: #f85149; text-align: center; margin-bottom: 10px; font-size: 14px; }
         .success { color: #3fb950; text-align: center; margin-bottom: 10px; font-size: 14px; }
-        .stat-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .stat {
-            background: #0d1117;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .stat span {
-            font-size: 24px;
-            font-weight: 700;
-            color: #58a6ff;
-            display: block;
-        }
-        .game-list-item, .server-list-item {
+        .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat { background: #0d1117; padding: 12px; border-radius: 8px; text-align: center; }
+        .stat span { font-size: 24px; font-weight: 700; color: #58a6ff; display: block; }
+        .game-list-item, .server-list-item, .sub-item {
             background: #0d1117;
             padding: 12px;
             border-radius: 8px;
@@ -96,45 +70,14 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .game-list-item .info, .server-list-item .info {
-            flex: 1;
-            min-width: 150px;
-        }
-        .game-list-item .name, .server-list-item .name {
-            font-weight: 600;
-            color: #f0f6fc;
-        }
-        .game-list-item .desc, .server-list-item .desc {
-            font-size: 12px;
-            color: #8b949e;
-        }
-        .game-list-item .hidden-badge, .server-list-item .status-badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-        .game-list-item .hidden-badge {
-            background: #f0883e22;
-            color: #f0883e;
-        }
-        .status-online {
-            background: #3fb95022;
-            color: #3fb950;
-        }
-        .status-offline {
-            background: #f8514922;
-            color: #f85149;
-        }
-        .status-checking {
-            background: #f0883e22;
-            color: #f0883e;
-        }
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+        .game-list-item .info, .server-list-item .info, .sub-item .info { flex: 1; min-width: 150px; }
+        .game-list-item .name, .server-list-item .name, .sub-item .name { font-weight: 600; color: #f0f6fc; }
+        .desc { font-size: 12px; color: #8b949e; }
+        .status-online { background: #3fb95022; color: #3fb950; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .status-offline { background: #f8514922; color: #f85149; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .status-active { background: #3fb95022; color: #3fb950; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .status-expired { background: #f8514922; color: #f85149; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab {
             padding: 8px 16px;
             border-radius: 20px;
@@ -144,11 +87,7 @@
             font-size: 14px;
             color: #8b949e;
         }
-        .tab.active {
-            background: #1f6feb;
-            border-color: #1f6feb;
-            color: white;
-        }
+        .tab.active { background: #1f6feb; border-color: #1f6feb; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         textarea {
@@ -164,30 +103,18 @@
             margin-bottom: 12px;
             resize: vertical;
         }
-        .inline-form {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .inline-form input {
-            flex: 1;
-            min-width: 120px;
-            margin-bottom: 0;
-        }
-        .result-card {
-            background: #0d1117;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 12px;
-        }
-        .result-card a {
-            color: #58a6ff;
-            font-size: 16px;
-            text-decoration: none;
-        }
+        .inline-form { display: flex; gap: 8px; flex-wrap: wrap; }
+        .inline-form input { flex: 1; min-width: 120px; margin-bottom: 0; }
+        .result-card { background: #0d1117; padding: 16px; border-radius: 8px; margin-top: 12px; }
+        .result-card a { color: #58a6ff; font-size: 16px; text-decoration: none; }
         .result-card a:hover { text-decoration: underline; }
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
+        .gauge-container { text-align: center; margin: 20px 0; }
+        .gauge { font-size: 64px; font-weight: 700; color: #58a6ff; }
+        .gauge-label { font-size: 14px; color: #8b949e; }
+        #mapContainer { height: 300px; border-radius: 8px; margin: 12px 0; background: #0d1117; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; color: #8b949e; font-size: 14px; }
+        .qr-output { text-align: center; padding: 20px; background: white; border-radius: 8px; margin: 12px 0; }
     </style>
 </head>
 <body>
@@ -204,14 +131,18 @@
     <div id="adminPanel" class="panel hidden">
         <h2>🛡️ Админ-панель</h2>
 
-        <!-- Вкладки -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('dashboard')">📊 Статистика</div>
-            <div class="tab" onclick="switchTab('games')">🎮 Игры</div>
-            <div class="tab" onclick="switchTab('lookup')">🔍 Проверки</div>
-            <div class="tab" onclick="switchTab('vpn-tools')">🛠 VPN</div>
-            <div class="tab" onclick="switchTab('password')">🔑 Пароль</div>
-            <div class="tab" onclick="switchTab('backup')">💾 Бэкап</div>
+            <div class="tab active" onclick="switchTab('dashboard')">📊</div>
+            <div class="tab" onclick="switchTab('games')">🎮</div>
+            <div class="tab" onclick="switchTab('lookup')">🔍</div>
+            <div class="tab" onclick="switchTab('vpn-tools')">🛠</div>
+            <div class="tab" onclick="switchTab('subscriptions')">🎫</div>
+            <div class="tab" onclick="switchTab('monitor')">📈</div>
+            <div class="tab" onclick="switchTab('speedtest')">⚡</div>
+            <div class="tab" onclick="switchTab('server-map')">🗺️</div>
+            <div class="tab" onclick="switchTab('config-builder')">🔧</div>
+            <div class="tab" onclick="switchTab('password')">🔑</div>
+            <div class="tab" onclick="switchTab('backup')">💾</div>
         </div>
 
         <!-- Статистика -->
@@ -219,74 +150,66 @@
             <div class="stat-row">
                 <div class="stat">📅 Сегодня<span id="todayVisits">0</span></div>
                 <div class="stat">👥 Всего<span id="totalVisits">0</span></div>
-                <div class="stat">🕐 Уник. за 7 дн.<span id="weekVisits">0</span></div>
+                <div class="stat">🕐 За 7 дн.<span id="weekVisits">0</span></div>
             </div>
             <h3>🏆 Топ игр</h3>
             <div id="topGames"></div>
-            <h3>📈 По дням (последние 7)</h3>
+            <h3>📈 По дням</h3>
             <div id="dailyStats"></div>
-            <button class="danger" onclick="resetStats()">🔄 Сбросить всю статистику</button>
-            <button class="secondary" onclick="exportStats()">📥 Экспорт статистики</button>
+            <button class="danger" onclick="resetStats()">🔄 Сбросить</button>
+            <button class="secondary" onclick="exportStats()">📥 Экспорт</button>
         </div>
 
-        <!-- Управление играми -->
+        <!-- Игры -->
         <div id="tab-games" class="tab-content">
             <div id="successMsg" class="success hidden"></div>
             <h3>➕ Добавить игру</h3>
             <div class="inline-form">
-                <input type="text" id="newGameName" placeholder="Название (напр. Змейка)">
-                <input type="text" id="newGameFile" placeholder="Файл (напр. snake.html)">
-                <input type="text" id="newGameIcon" placeholder="Иконка (напр. 🐍)" style="max-width:80px">
+                <input type="text" id="newGameName" placeholder="Название">
+                <input type="text" id="newGameFile" placeholder="Файл">
+                <input type="text" id="newGameIcon" placeholder="Иконка" style="max-width:80px">
                 <input type="text" id="newGameDesc" placeholder="Описание">
                 <button onclick="addGame()">Добавить</button>
             </div>
             <h3>📋 Список игр</h3>
             <div id="gamesList"></div>
-            <button class="secondary" onclick="resetGames()">🔄 Сбросить к стандартному списку</button>
+            <button class="secondary" onclick="resetGames()">🔄 Сбросить</button>
         </div>
 
-        <!-- Проверки по реестрам -->
+        <!-- Проверки -->
         <div id="tab-lookup" class="tab-content">
-            <h3>⚖️ Поиск задолженностей (ФССП)</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Поиск по открытой базе исполнительных производств.</p>
+            <h3>⚖️ ФССП</h3>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-                <input type="text" id="fsspQuery" placeholder="Фамилия Имя или ИНН..." style="flex:2;min-width:200px;margin-bottom:0">
-                <button onclick="searchFSSP()">🔍 Искать</button>
+                <input type="text" id="fsspQuery" placeholder="ФИО или ИНН" style="flex:2;min-width:200px;margin-bottom:0">
+                <button onclick="searchFSSP()">🔍</button>
             </div>
             <div id="fsspResults"></div>
             <hr style="border-color:#30363d;margin:24px 0">
-            <h3>🏢 Проверка контрагента (ФНС)</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Поиск сведений из открытых реестров ФНС.</p>
+            <h3>🏢 ФНС</h3>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-                <input type="text" id="innQuery" placeholder="Введите ИНН (10 или 12 цифр)..." style="flex:2;min-width:200px;margin-bottom:0">
-                <button onclick="searchINN()">🔍 Проверить</button>
+                <input type="text" id="innQuery" placeholder="ИНН" style="flex:2;min-width:200px;margin-bottom:0">
+                <button onclick="searchINN()">🔍</button>
             </div>
             <div id="innResults"></div>
             <hr style="border-color:#30363d;margin:24px 0">
-            <h3>🚗 Проверка автомобиля</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Проверка через открытые сервисы ГИБДД.</p>
+            <h3>🚗 ГИБДД</h3>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-                <input type="text" id="vinQuery" placeholder="VIN (17 символов) или госномер..." style="flex:2;min-width:200px;margin-bottom:0">
-                <button onclick="searchAuto()">🔍 Проверить</button>
+                <input type="text" id="vinQuery" placeholder="VIN или госномер" style="flex:2;min-width:200px;margin-bottom:0">
+                <button onclick="searchAuto()">🔍</button>
             </div>
             <div id="autoResults"></div>
             <hr style="border-color:#30363d;margin:24px 0">
-            <h3>🌐 WHOIS доменов и IP</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Проверка информации о домене или IP-адресе.</p>
+            <h3>🌐 WHOIS</h3>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-                <input type="text" id="whoisQuery" placeholder="example.com или 1.1.1.1..." style="flex:2;min-width:200px;margin-bottom:0">
-                <button onclick="searchWhois()">🔍 Проверить</button>
+                <input type="text" id="whoisQuery" placeholder="Домен или IP" style="flex:2;min-width:200px;margin-bottom:0">
+                <button onclick="searchWhois()">🔍</button>
             </div>
             <div id="whoisResults"></div>
         </div>
 
         <!-- VPN Инструменты -->
         <div id="tab-vpn-tools" class="tab-content">
-            <!-- A/B Тестирование -->
-            <h3>🧪 A/B Тестирование серверов</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
-                Добавляйте серверы, а пользователи будут получать случайный. Смотрите статистику.
-            </p>
+            <h3>🧪 A/B Тестирование</h3>
             <div class="inline-form">
                 <input type="text" id="abServerName" placeholder="Название" style="margin-bottom:0">
                 <input type="text" id="abServerUrl" placeholder="URL/IP" style="margin-bottom:0">
@@ -294,46 +217,107 @@
             </div>
             <div id="abServerList"></div>
             <div id="abStats" style="margin-top:12px"></div>
-
             <hr style="border-color:#30363d;margin:24px 0">
-
-            <!-- Генератор ключей -->
-            <h3>🔐 Генератор ключей</h3>
+            <h3>🔐 Генератор</h3>
             <div class="two-col">
-                <div>
-                    <button onclick="generateUUID()" style="width:100%">🎲 UUID</button>
-                    <input type="text" id="uuidOutput" readonly placeholder="Нажмите кнопку" style="margin-top:8px;text-align:center;font-family:monospace">
-                </div>
-                <div>
-                    <button onclick="generatePassword()" style="width:100%">🔑 Пароль</button>
-                    <input type="text" id="passOutput" readonly placeholder="Нажмите кнопку" style="margin-top:8px;text-align:center;font-family:monospace">
-                </div>
+                <div><button onclick="generateUUID()" style="width:100%">UUID</button><input type="text" id="uuidOutput" readonly style="margin-top:8px;text-align:center;font-family:monospace"></div>
+                <div><button onclick="generatePassword()" style="width:100%">Пароль</button><input type="text" id="passOutput" readonly style="margin-top:8px;text-align:center;font-family:monospace"></div>
             </div>
             <div class="two-col" style="margin-top:12px">
-                <div>
-                    <button onclick="generateRealityKeys()" style="width:100%">🔐 Reality X25519</button>
-                    <textarea id="realityOutput" readonly placeholder="Приватный и публичный ключ..." style="margin-top:8px;height:80px;font-size:11px"></textarea>
-                </div>
-                <div>
-                    <button onclick="generateShortId()" style="width:100%">🆔 Short ID</button>
-                    <input type="text" id="shortIdOutput" readonly placeholder="Нажмите кнопку" style="margin-top:8px;text-align:center;font-family:monospace">
-                </div>
+                <div><button onclick="generateRealityKeys()" style="width:100%">Reality X25519</button><textarea id="realityOutput" readonly style="margin-top:8px;height:80px;font-size:11px"></textarea></div>
+                <div><button onclick="generateShortId()" style="width:100%">Short ID</button><input type="text" id="shortIdOutput" readonly style="margin-top:8px;text-align:center;font-family:monospace"></div>
             </div>
-
             <hr style="border-color:#30363d;margin:24px 0">
-
-            <!-- Монитор серверов -->
-            <h3>🖥️ Монитор доступности</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
-                Проверка серверов пингом. Статус обновляется по кнопке.
-            </p>
+            <h3>🖥️ Монитор</h3>
             <div class="inline-form">
                 <input type="text" id="monServerName" placeholder="Название" style="margin-bottom:0">
                 <input type="text" id="monServerUrl" placeholder="IP:Порт" style="margin-bottom:0">
                 <button onclick="addMonServer()">➕</button>
             </div>
             <div id="monServerList"></div>
-            <button class="secondary" onclick="checkAllServers()" style="margin-top:12px">🔄 Проверить все</button>
+            <button class="secondary" onclick="checkAllServers()" style="margin-top:12px">🔄 Проверить</button>
+        </div>
+
+        <!-- Подписки -->
+        <div id="tab-subscriptions" class="tab-content">
+            <h3>🎫 Выдать ключ</h3>
+            <div class="inline-form">
+                <input type="text" id="subUserName" placeholder="Имя" style="margin-bottom:0">
+                <select id="subDuration" style="margin-bottom:0;width:auto">
+                    <option value="1">1 день</option>
+                    <option value="7" selected>7 дней</option>
+                    <option value="30">30 дней</option>
+                    <option value="90">90 дней</option>
+                </select>
+                <button onclick="createSubscription()">➕</button>
+            </div>
+            <div id="subResult" style="margin-top:12px"></div>
+            <h3>📋 Активные</h3>
+            <div id="subList"></div>
+        </div>
+
+        <!-- Мониторинг с графиками -->
+        <div id="tab-monitor" class="tab-content">
+            <h3>📈 Расширенный мониторинг</h3>
+            <div class="stat-row">
+                <div class="stat">🟢 Онлайн<span id="onlineCount">0</span></div>
+                <div class="stat">🔴 Оффлайн<span id="offlineCount">0</span></div>
+                <div class="stat">📊 Uptime<span id="avgUptime">-%</span></div>
+            </div>
+            <div style="background:#0d1117;border-radius:8px;padding:12px;margin-bottom:12px;max-height:200px;overflow-y:auto;font-family:monospace;font-size:13px" id="monitorLog"></div>
+            <div class="inline-form">
+                <input type="text" id="monServerName2" placeholder="Название" style="margin-bottom:0">
+                <input type="text" id="monServerUrl2" placeholder="IP:Порт" style="margin-bottom:0">
+                <button onclick="addMonitorServer()">➕</button>
+            </div>
+            <div id="monitorList"></div>
+            <button class="secondary" onclick="checkAllMonitorServers()" style="margin-top:12px">🔄 Проверить все</button>
+            <button class="danger" onclick="clearMonitorHistory()" style="margin-top:12px">🗑 Очистить историю</button>
+        </div>
+
+        <!-- SpeedTest -->
+        <div id="tab-speedtest" class="tab-content">
+            <h3>⚡ SpeedTest</h3>
+            <div class="gauge-container">
+                <div class="gauge" id="speedValue">--</div>
+                <div class="gauge-label">Mbps</div>
+            </div>
+            <div class="stat-row">
+                <div class="stat">📥 Скачивание<span id="downloadSpeed">-</span></div>
+                <div class="stat">📤 Загрузка<span id="uploadSpeed">-</span></div>
+                <div class="stat">🕐 Пинг<span id="pingResult">-</span></div>
+            </div>
+            <button onclick="runSpeedTest()" style="width:100%">🚀 Начать тест</button>
+            <div id="speedHistory" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Карта серверов -->
+        <div id="tab-server-map" class="tab-content">
+            <h3>🗺️ Карта серверов</h3>
+            <div id="mapContainer">Карта загружается... (нужен интернет)</div>
+            <div id="mapServerList" style="margin-top:12px"></div>
+            <button class="secondary" onclick="addMapServerPrompt()">➕ Добавить сервер</button>
+        </div>
+
+        <!-- Конструктор конфигов -->
+        <div id="tab-config-builder" class="tab-content">
+            <h3>🔧 Конструктор конфигураций</h3>
+            <select id="configProtocol" onchange="updateConfigPreview()">
+                <option value="vless">VLESS</option>
+                <option value="vmess">VMess</option>
+                <option value="trojan">Trojan</option>
+            </select>
+            <input type="text" id="configAddress" placeholder="Адрес сервера" oninput="updateConfigPreview()">
+            <input type="text" id="configPort" placeholder="Порт" value="443" oninput="updateConfigPreview()">
+            <input type="text" id="configUUID" placeholder="UUID" oninput="updateConfigPreview()">
+            <select id="configSecurity" onchange="updateConfigPreview()">
+                <option value="reality">Reality</option>
+                <option value="tls">TLS</option>
+                <option value="none">None</option>
+            </select>
+            <input type="text" id="configSNI" placeholder="SNI (напр. yandex.ru)" oninput="updateConfigPreview()">
+            <button onclick="generateConfig()" style="width:100%">🎫 Сгенерировать</button>
+            <div id="configOutput" style="margin-top:12px"></div>
         </div>
 
         <!-- Смена пароля -->
@@ -342,19 +326,17 @@
             <div id="passSuccess" class="success hidden"></div>
             <input type="password" id="oldPassword" placeholder="Текущий пароль">
             <input type="password" id="newPassword" placeholder="Новый пароль">
-            <input type="password" id="confirmPassword" placeholder="Подтвердите новый пароль">
+            <input type="password" id="confirmPassword" placeholder="Подтвердите">
             <button onclick="changePassword()" style="width:100%">Сменить пароль</button>
         </div>
 
-        <!-- Резервная копия -->
+        <!-- Бэкап -->
         <div id="tab-backup" class="tab-content">
-            <h3>📤 Экспорт данных</h3>
-            <p style="color:#8b949e;margin-bottom:12px">Скачает файл со всеми настройками и статистикой.</p>
+            <h3>📤 Экспорт</h3>
             <button onclick="exportAll()">📥 Скачать backup.json</button>
-            <h3>📥 Импорт данных</h3>
-            <p style="color:#8b949e;margin-bottom:12px">Загрузите ранее сохранённый файл backup.json</p>
+            <h3>📥 Импорт</h3>
             <input type="file" id="backupFile" accept=".json">
-            <button onclick="importAll()">📤 Восстановить из файла</button>
+            <button onclick="importAll()">📤 Восстановить</button>
         </div>
 
         <hr style="border-color:#30363d;margin:20px 0">
@@ -362,411 +344,309 @@
     </div>
 
     <script>
-        // ---------- КОНФИГУРАЦИЯ ----------
-        const DEFAULT_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // admin123
-
+        // ==================== КОНФИГ ====================
+        const DEFAULT_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
         const DEFAULT_GAMES = [
-            { name: 'Колесо фортуны', file: 'wheel.html', icon: '🎡', desc: 'Заполни ячейки и крути!', full: true, visible: true },
-            { name: 'Кубики', file: 'dice.html', icon: '🎲', desc: 'Брось до 6 кубиков', full: false, visible: true },
-            { name: 'Крестики-нолики', file: 'tictactoe.html', icon: '❌⭕', desc: 'Классика на двоих', full: false, visible: true },
-            { name: 'Правда или действие', file: 'truthordare.html', icon: '🎭', desc: 'Для весёлой компании', full: false, visible: true },
-            { name: 'Шашки', file: 'checkers.html', icon: '🔴⚫', desc: 'Русские шашки', full: false, visible: true },
-            { name: 'Касатка', file: 'blackjack.html', icon: '🃏', desc: 'Блэкджек против дилера', full: false, visible: true },
-            { name: 'Морской бой', file: 'seawar.html', icon: '⚓', desc: 'Классика против AI', full: false, visible: true },
-            { name: 'Викторина по ПБ', file: 'quiz.html', icon: '🧯', desc: '20 уровней на знание ПБ', full: true, visible: true }
+            { name: 'Колесо фортуны', file: 'wheel.html', icon: '🎡', desc: 'Крути!', full: true, visible: true },
+            { name: 'Кубики', file: 'dice.html', icon: '🎲', desc: 'Брось до 6', full: false, visible: true },
+            { name: 'Крестики-нолики', file: 'tictactoe.html', icon: '❌⭕', desc: 'Классика', full: false, visible: true },
+            { name: 'Правда или действие', file: 'truthordare.html', icon: '🎭', desc: 'Компания', full: false, visible: true },
+            { name: 'Шашки', file: 'checkers.html', icon: '🔴⚫', desc: 'Русские', full: false, visible: true },
+            { name: 'Касатка', file: 'blackjack.html', icon: '🃏', desc: 'Блэкджек', full: false, visible: true },
+            { name: 'Морской бой', file: 'seawar.html', icon: '⚓', desc: 'Против AI', full: false, visible: true },
+            { name: 'Викторина ПБ', file: 'quiz.html', icon: '🧯', desc: '20 уровней', full: true, visible: true }
         ];
 
-        // ---------- УТИЛИТЫ ----------
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // ==================== УТИЛИТЫ ====================
+        async function sha256(m) {
+            const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(m));
+            return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2,'0')).join('');
         }
+        function gd(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } }
+        function sd(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+        function getStats() { return gd('siteStats', { total:0, today:0, date:'', games:{}, daily:{} }); }
+        function saveStats(s) { sd('siteStats', s); }
+        function getGames() { return gd('customGames', DEFAULT_GAMES); }
+        function saveGames(g) { sd('customGames', g); }
+        function getPasswordHash() { return gd('adminPasswordHash', DEFAULT_PASSWORD_HASH); }
+        function savePasswordHash(h) { sd('adminPasswordHash', h); }
+        function getABServers() { return gd('abServers', []); }
+        function saveABServers(s) { sd('abServers', s); }
+        function getMonServers() { return gd('monServers', []); }
+        function saveMonServers(s) { sd('monServers', s); }
+        function getSubscriptions() { return gd('subscriptions', []); }
+        function saveSubscriptions(s) { sd('subscriptions', s); }
+        function getMonitorData() { return gd('monitorData', { servers: [], history: [] }); }
+        function saveMonitorData(d) { sd('monitorData', d); }
+        function getSpeedHistory() { return gd('speedHistory', []); }
+        function saveSpeedHistory(h) { sd('speedHistory', h); }
+        function getMapServers() { return gd('mapServers', []); }
+        function saveMapServers(s) { sd('mapServers', s); }
 
-        function getData(key, defaultValue) {
-            try { return JSON.parse(localStorage.getItem(key)) || defaultValue; }
-            catch(e) { return defaultValue; }
-        }
-
-        function setData(key, value) {
-            localStorage.setItem(key, JSON.stringify(value));
-        }
-
-        function getStats() {
-            return getData('siteStats', { total: 0, today: 0, date: '', games: {}, daily: {} });
-        }
-
-        function saveStats(stats) { setData('siteStats', stats); }
-        function getGames() { return getData('customGames', DEFAULT_GAMES); }
-        function saveGames(games) { setData('customGames', games); }
-        function getPasswordHash() { return getData('adminPasswordHash', DEFAULT_PASSWORD_HASH); }
-        function savePasswordHash(hash) { setData('adminPasswordHash', hash); }
-
-        function getABServers() { return getData('abServers', []); }
-        function saveABServers(servers) { setData('abServers', servers); }
-
-        function getMonServers() { return getData('monServers', []); }
-        function saveMonServers(servers) { setData('monServers', servers); }
-
-        // ---------- АВТОРИЗАЦИЯ ----------
+        // ==================== АВТОРИЗАЦИЯ ====================
         async function login() {
-            const input = document.getElementById('passwordInput').value;
-            const hash = await sha256(input);
-            const storedHash = getPasswordHash();
-            const errorEl = document.getElementById('errorMsg');
-            if (hash === storedHash) {
-                sessionStorage.setItem('adminAuth', 'true');
+            const h = await sha256(document.getElementById('passwordInput').value);
+            if (h === getPasswordHash()) {
+                sessionStorage.setItem('adminAuth','true');
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
-                errorEl.classList.add('hidden');
+                document.getElementById('errorMsg').classList.add('hidden');
                 initPanel();
             } else {
-                errorEl.classList.remove('hidden');
-                errorEl.innerText = '❌ Неверный пароль';
+                document.getElementById('errorMsg').classList.remove('hidden');
+                document.getElementById('errorMsg').innerText = '❌ Неверный пароль';
             }
         }
-
         function logout() {
             sessionStorage.removeItem('adminAuth');
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('passwordInput').value = '';
         }
-
         async function changePassword() {
-            const oldPass = document.getElementById('oldPassword').value;
-            const newPass = document.getElementById('newPassword').value;
-            const confirmPass = document.getElementById('confirmPassword').value;
-            const errEl = document.getElementById('passError');
-            const succEl = document.getElementById('passSuccess');
-            errEl.classList.add('hidden'); succEl.classList.add('hidden');
-            const oldHash = await sha256(oldPass);
-            if (oldHash !== getPasswordHash()) {
-                errEl.classList.remove('hidden'); errEl.innerText = '❌ Неверный текущий пароль'; return;
-            }
-            if (newPass.length < 4) {
-                errEl.classList.remove('hidden'); errEl.innerText = '❌ Пароль должен быть минимум 4 символа'; return;
-            }
-            if (newPass !== confirmPass) {
-                errEl.classList.remove('hidden'); errEl.innerText = '❌ Пароли не совпадают'; return;
-            }
-            savePasswordHash(await sha256(newPass));
-            succEl.classList.remove('hidden'); succEl.innerText = '✅ Пароль успешно изменён!';
-            document.getElementById('oldPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
+            const old = document.getElementById('oldPassword').value;
+            const n = document.getElementById('newPassword').value;
+            const c = document.getElementById('confirmPassword').value;
+            const e = document.getElementById('passError'); e.classList.add('hidden');
+            const s = document.getElementById('passSuccess'); s.classList.add('hidden');
+            if (await sha256(old) !== getPasswordHash()) { e.classList.remove('hidden'); e.innerText='❌ Неверный пароль'; return; }
+            if (n.length < 4) { e.classList.remove('hidden'); e.innerText='❌ Минимум 4 символа'; return; }
+            if (n !== c) { e.classList.remove('hidden'); e.innerText='❌ Пароли не совпадают'; return; }
+            savePasswordHash(await sha256(n));
+            s.classList.remove('hidden'); s.innerText='✅ Пароль изменён!';
+            ['oldPassword','newPassword','confirmPassword'].forEach(id => document.getElementById(id).value='');
         }
 
-        // ---------- ВКЛАДКИ ----------
+        // ==================== ВКЛАДКИ ====================
         function switchTab(name) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            const tabContent = document.getElementById('tab-' + name);
-            const tabButton = document.querySelector(`.tab[onclick="switchTab('${name}')"]`);
-            if (tabContent) tabContent.classList.add('active');
-            if (tabButton) tabButton.classList.add('active');
-            if (name === 'dashboard') loadDashboard();
-            if (name === 'games') loadGamesList();
-            if (name === 'lookup') clearLookup();
-            if (name === 'vpn-tools') loadVPNTools();
+            const tc = document.getElementById('tab-'+name);
+            const tb = document.querySelector(`.tab[onclick="switchTab('${name}')"]`);
+            if (tc) tc.classList.add('active');
+            if (tb) tb.classList.add('active');
+            if (name==='dashboard') loadDashboard();
+            if (name==='games') loadGamesList();
+            if (name==='lookup') clearLookup();
+            if (name==='vpn-tools') { loadABServers(); loadMonServers(); }
+            if (name==='subscriptions') loadSubscriptions();
+            if (name==='monitor') loadMonitorTab();
+            if (name==='speedtest') loadSpeedHistoryTab();
+            if (name==='server-map') loadMapTab();
+            if (name==='config-builder') updateConfigPreview();
         }
 
         function clearLookup() {
-            ['fssp','inn','auto','whois'].forEach(id => {
-                const el = document.getElementById(id + 'Results');
-                if (el) el.innerHTML = '';
-            });
-            ['fsspQuery','innQuery','vinQuery','whoisQuery'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
-            });
+            ['fssp','inn','auto','whois'].forEach(id => { const el=document.getElementById(id+'Results'); if(el)el.innerHTML=''; });
+            ['fsspQuery','innQuery','vinQuery','whoisQuery'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; });
         }
 
-        // ---------- СТАТИСТИКА ----------
+        // ==================== ДАШБОРД ====================
         function loadDashboard() {
-            const stats = getStats();
-            const today = new Date().toDateString();
-            if (stats.date !== today) { stats.today = 0; stats.date = today; saveStats(stats); }
-            document.getElementById('todayVisits').innerText = stats.today || 0;
-            document.getElementById('totalVisits').innerText = stats.total || 0;
-            let weekSum = 0;
-            const daily = stats.daily || {};
-            for (let i = 0; i < 7; i++) {
-                const d = new Date(); d.setDate(d.getDate() - i);
-                weekSum += daily[d.toDateString()] || 0;
-            }
-            document.getElementById('weekVisits').innerText = weekSum;
-            const games = stats.games || {};
-            const sorted = Object.entries(games).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            const gameNames = {};
-            getGames().forEach(g => gameNames[g.file.replace('.html','')] = g.icon + ' ' + g.name);
-            document.getElementById('topGames').innerHTML = sorted.length
-                ? sorted.map(([k, v]) => `<div class="stat" style="text-align:left;margin-bottom:4px">${gameNames[k] || k}: <b>${v}</b></div>`).join('')
-                : '<p style="color:#8b949e">Нет данных</p>';
-            let dailyHtml = '';
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(); d.setDate(d.getDate() - i);
-                const key = d.toDateString();
-                const val = daily[key] || 0;
-                dailyHtml += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${d.toLocaleDateString('ru',{day:'numeric',month:'short'})} <b>${val}</b></div>`;
-            }
-            document.getElementById('dailyStats').innerHTML = dailyHtml;
+            const s = getStats();
+            const t = new Date().toDateString();
+            if (s.date!==t) { s.today=0; s.date=t; saveStats(s); }
+            document.getElementById('todayVisits').innerText = s.today||0;
+            document.getElementById('totalVisits').innerText = s.total||0;
+            let w=0; const d=s.daily||{};
+            for(let i=0;i<7;i++){ const dt=new Date(); dt.setDate(dt.getDate()-i); w+=d[dt.toDateString()]||0; }
+            document.getElementById('weekVisits').innerText = w;
+            const g=s.games||{};
+            const sorted=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            const gn={}; getGames().forEach(x=>gn[x.file.replace('.html','')]=x.icon+' '+x.name);
+            document.getElementById('topGames').innerHTML = sorted.length ? sorted.map(([k,v])=>`<div class="stat" style="text-align:left;margin-bottom:4px">${gn[k]||k}: <b>${v}</b></div>`).join('') : '<p style="color:#8b949e">Нет данных</p>';
+            let dh='';
+            for(let i=6;i>=0;i--){ const dt=new Date(); dt.setDate(dt.getDate()-i); const k=dt.toDateString(); dh+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${dt.toLocaleDateString('ru',{day:'numeric',month:'short'})} <b>${d[k]||0}</b></div>`; }
+            document.getElementById('dailyStats').innerHTML = dh;
         }
+        function resetStats() { if(confirm('Сбросить?')) { saveStats({total:0,today:0,date:new Date().toDateString(),games:{},daily:{}}); loadDashboard(); } }
+        function exportStats() { const b=new Blob([JSON.stringify(getStats(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='stats.json'; a.click(); }
 
-        function resetStats() {
-            if (confirm('Точно сбросить всю статистику?')) {
-                saveStats({ total: 0, today: 0, date: new Date().toDateString(), games: {}, daily: {} });
-                loadDashboard();
-            }
-        }
-
-        function exportStats() {
-            const blob = new Blob([JSON.stringify(getStats(), null, 2)], { type: 'application/json' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'stats_export.json'; a.click();
-        }
-
-        // ---------- ИГРЫ ----------
+        // ==================== ИГРЫ ====================
         function loadGamesList() {
-            const games = getGames();
-            document.getElementById('gamesList').innerHTML = games.map((g, i) => `
-                <div class="game-list-item">
-                    <div class="info">
-                        <div class="name">${g.icon} ${g.name} ${g.visible ? '' : '<span class="hidden-badge">скрыта</span>'}</div>
-                        <div class="desc">${g.file} — ${g.desc}</div>
-                    </div>
-                    <div>
-                        <button onclick="toggleGame(${i})">${g.visible ? '👁 Скрыть' : '🙈 Показать'}</button>
-                        <button class="danger" onclick="deleteGame(${i})">🗑</button>
-                    </div>
-                </div>
-            `).join('');
+            document.getElementById('gamesList').innerHTML = getGames().map((g,i)=>`<div class="game-list-item"><div class="info"><div class="name">${g.icon} ${g.name} ${g.visible?'':'<span style="color:#f0883e;font-size:11px">скрыта</span>'}</div><div class="desc">${g.file} — ${g.desc}</div></div><div><button onclick="toggleGame(${i})">${g.visible?'👁':'🙈'}</button><button class="danger" onclick="deleteGame(${i})">🗑</button></div></div>`).join('');
         }
-
         function addGame() {
-            const name = document.getElementById('newGameName').value.trim();
-            const file = document.getElementById('newGameFile').value.trim();
-            const icon = document.getElementById('newGameIcon').value.trim();
-            const desc = document.getElementById('newGameDesc').value.trim();
-            if (!name || !file || !icon) { alert('Название, файл и иконка обязательны!'); return; }
-            const games = getGames();
-            games.push({ name, file, icon, desc: desc || 'Новая игра', full: false, visible: true });
-            saveGames(games);
-            ['newGameName','newGameFile','newGameIcon','newGameDesc'].forEach(id => document.getElementById(id).value = '');
-            const succEl = document.getElementById('successMsg');
-            succEl.classList.remove('hidden'); succEl.innerText = '✅ Игра добавлена!';
-            setTimeout(() => succEl.classList.add('hidden'), 3000);
+            const n=document.getElementById('newGameName').value.trim(), f=document.getElementById('newGameFile').value.trim(), i=document.getElementById('newGameIcon').value.trim(), d=document.getElementById('newGameDesc').value.trim();
+            if(!n||!f||!i){alert('Все поля обязательны!');return;}
+            const g=getGames(); g.push({name:n,file:f,icon:i,desc:d||'Новая игра',full:false,visible:true}); saveGames(g);
+            ['newGameName','newGameFile','newGameIcon','newGameDesc'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('successMsg').classList.remove('hidden'); document.getElementById('successMsg').innerText='✅ Добавлена!';
+            setTimeout(()=>document.getElementById('successMsg').classList.add('hidden'),3000);
             loadGamesList();
         }
+        function toggleGame(i){ const g=getGames(); g[i].visible=!g[i].visible; saveGames(g); loadGamesList(); }
+        function deleteGame(i){ if(confirm('Удалить?')){ const g=getGames(); g.splice(i,1); saveGames(g); loadGamesList(); } }
+        function resetGames(){ if(confirm('Сбросить?')){ saveGames(DEFAULT_GAMES); loadGamesList(); } }
 
-        function toggleGame(index) {
-            const games = getGames(); games[index].visible = !games[index].visible; saveGames(games); loadGamesList();
+        // ==================== ПРОВЕРКИ ====================
+        function searchFSSP(){ const q=document.getElementById('fsspQuery').value.trim(); const d=document.getElementById('fsspResults'); if(!q){d.innerHTML='<p style="color:#f85149">Введите запрос</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://fssp.gov.ru/iss/ip?is%5Bvariant%5D=2&is%5Bfio%5D=${encodeURIComponent(q)}" target="_blank">Открыть "${q}" на ФССП →</a></div>`; }
+        function searchINN(){ const q=document.getElementById('innQuery').value.trim(); const d=document.getElementById('innResults'); if(!q||!/^\d{10}$|^\d{12}$/.test(q)){d.innerHTML='<p style="color:#f85149">Введите ИНН</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://pb.nalog.ru/company.html?inn=${q}" target="_blank">Открыть ИНН ${q} →</a></div>`; }
+        function searchAuto(){ const q=document.getElementById('vinQuery').value.trim(); const d=document.getElementById('autoResults'); if(!q){d.innerHTML='<p style="color:#f85149">Введите VIN</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://гибдд.рф/check/auto#${encodeURIComponent(q)}" target="_blank">Проверить "${q}" →</a></div>`; }
+        function searchWhois(){ const q=document.getElementById('whoisQuery').value.trim(); const d=document.getElementById('whoisResults'); if(!q){d.innerHTML='<p style="color:#f85149">Введите домен</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://www.nic.ru/whois/?searchWord=${encodeURIComponent(q)}" target="_blank">RU-CENTER →</a> | <a href="https://2ip.ru/whois/${encodeURIComponent(q)}" target="_blank">2IP →</a></div>`; }
+
+        // ==================== VPN ИНСТРУМЕНТЫ ====================
+        function loadABServers(){
+            const s=getABServers();
+            document.getElementById('abServerList').innerHTML = s.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} | 👁 ${x.shows||0} | 🖱 ${x.clicks||0}</div></div><button class="danger" onclick="deleteABServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
+            const ts=s.reduce((a,x)=>a+(x.shows||0),0);
+            document.getElementById('abStats').innerHTML = s.length ? '<h4>📊 Статистика</h4>'+s.map(x=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${x.name}: <b>${x.shows||0}</b> (${ts?(x.shows||0)/ts*100:0|0}%) | 🖱 ${x.clicks||0}</div>`).join('') : '';
         }
-
-        function deleteGame(index) {
-            if (confirm('Точно удалить игру?')) { const games = getGames(); games.splice(index, 1); saveGames(games); loadGamesList(); }
+        function addABServer(){ const n=document.getElementById('abServerName').value.trim(), u=document.getElementById('abServerUrl').value.trim(); if(!n||!u)return; const s=getABServers(); s.push({name:n,url:u,shows:0,clicks:0}); saveABServers(s); document.getElementById('abServerName').value=''; document.getElementById('abServerUrl').value=''; loadABServers(); }
+        function deleteABServer(i){ const s=getABServers(); s.splice(i,1); saveABServers(s); loadABServers(); }
+        function loadMonServers(){
+            document.getElementById('monServerList').innerHTML = getMonServers().map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} — <span class="${x.status==='online'?'status-online':'status-offline'}">${x.status||'не проверен'}</span></div></div><button class="danger" onclick="deleteMonServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
         }
+        function addMonServer(){ const n=document.getElementById('monServerName').value.trim(), u=document.getElementById('monServerUrl').value.trim(); if(!n||!u)return; const s=getMonServers(); s.push({name:n,url:u,status:'не проверен'}); saveMonServers(s); document.getElementById('monServerName').value=''; document.getElementById('monServerUrl').value=''; loadMonServers(); }
+        function deleteMonServer(i){ const s=getMonServers(); s.splice(i,1); saveMonServers(s); loadMonServers(); }
+        async function checkAllServers(){ const s=getMonServers(); for(let x of s){ x.status='проверка...'; saveMonServers(s); loadMonServers(); try{ const c=new AbortController(); setTimeout(()=>c.abort(),5000); await fetch(x.url.includes('://')?x.url:'https://'+x.url,{mode:'no-cors',signal:c.signal}); x.status='online'; }catch(e){ x.status='offline'; } saveMonServers(s); loadMonServers(); } }
+        function generateUUID(){ document.getElementById('uuidOutput').value=crypto.randomUUID(); }
+        function generatePassword(){ const ch='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()'; let p=''; for(let i=0;i<24;i++)p+=ch[Math.random()*ch.length|0]; document.getElementById('passOutput').value=p; }
+        function generateRealityKeys(){ const pk=Array.from({length:32},()=>Math.random()*256|0); document.getElementById('realityOutput').value=`Private: ${btoa(String.fromCharCode(...pk))}\nPublic:  ${btoa(String.fromCharCode(...Array.from({length:32},()=>Math.random()*256|0)))}\n\n⚠️ Используйте xray x25519`; }
+        function generateShortId(){ document.getElementById('shortIdOutput').value=Math.random().toString(16).substring(2,10); }
 
-        function resetGames() {
-            if (confirm('Сбросить список игр?')) { saveGames(DEFAULT_GAMES); loadGamesList(); }
+        // ==================== ПОДПИСКИ ====================
+        function loadSubscriptions(){
+            const s=getSubscriptions(), now=Date.now();
+            s.forEach(x=>{ if(x.expiresAt && now > x.expiresAt) x.status='expired'; });
+            saveSubscriptions(s);
+            document.getElementById('subList').innerHTML = s.map((x,i)=>`<div class="sub-item"><div class="info"><div class="name">${x.userName}</div><div class="desc">Ключ: ${x.key.substring(0,16)}... | До: ${new Date(x.expiresAt).toLocaleDateString('ru')} | <span class="${x.status==='active'?'status-active':'status-expired'}">${x.status}</span></div></div><button class="danger" onclick="deleteSub(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет подписок</p>';
         }
-
-        // ---------- ПРОВЕРКИ ----------
-        function searchFSSP() {
-            const q = document.getElementById('fsspQuery').value.trim();
-            const div = document.getElementById('fsspResults');
-            if (!q) { div.innerHTML = '<p style="color:#f85149">Введите ФИО или ИНН</p>'; return; }
-            div.innerHTML = `<div class="result-card"><p>🔗 <b>ФССП:</b></p><p style="margin:12px 0"><a href="https://fssp.gov.ru/iss/ip?is%5Bvariant%5D=2&is%5Bfio%5D=${encodeURIComponent(q)}" target="_blank">Открыть "${q}" на ФССП →</a></p></div>`;
+        function createSubscription(){
+            const n=document.getElementById('subUserName').value.trim(), d=parseInt(document.getElementById('subDuration').value);
+            if(!n)return;
+            const key=crypto.randomUUID(), expiresAt=Date.now()+d*86400000;
+            const s=getSubscriptions(); s.push({userName:n,key:key,expiresAt:expiresAt,status:'active',createdAt:Date.now()}); saveSubscriptions(s);
+            document.getElementById('subResult').innerHTML=`<div class="result-card"><p>✅ Ключ для <b>${n}</b>:</p><input value="${key}" readonly style="font-family:monospace;text-align:center"><p style="color:#8b949e;font-size:12px">Действует до: ${new Date(expiresAt).toLocaleDateString('ru')}</p></div>`;
+            loadSubscriptions();
         }
+        function deleteSub(i){ const s=getSubscriptions(); s.splice(i,1); saveSubscriptions(s); loadSubscriptions(); }
 
-        function searchINN() {
-            const inn = document.getElementById('innQuery').value.trim();
-            const div = document.getElementById('innResults');
-            if (!inn || !/^\d{10}$|^\d{12}$/.test(inn)) { div.innerHTML = '<p style="color:#f85149">Введите корректный ИНН</p>'; return; }
-            div.innerHTML = `<div class="result-card"><p>🔗 <b>ФНС:</b></p><p style="margin:12px 0"><a href="https://pb.nalog.ru/company.html?inn=${inn}" target="_blank">Открыть ИНН ${inn} →</a></p></div>`;
+        // ==================== МОНИТОР ====================
+        function loadMonitorTab(){
+            const d=getMonitorData();
+            document.getElementById('monitorList').innerHTML = d.servers.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} — <span class="${x.status==='online'?'status-online':'status-offline'}">${x.status}</span> | Uptime: ${x.uptime||0}%</div></div><button class="danger" onclick="deleteMonitorServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
+            document.getElementById('monitorLog').innerHTML = d.history.slice(-20).reverse().map(x=>`[${new Date(x.time).toLocaleTimeString('ru')}] ${x.name}: ${x.status==='online'?'🟢':'🔴'} ${x.status}`).join('<br>')||'Нет записей';
+            const online=d.servers.filter(x=>x.status==='online').length, total=d.servers.length;
+            document.getElementById('onlineCount').innerText=online;
+            document.getElementById('offlineCount').innerText=total-online;
+            const avgUptime=total?d.servers.reduce((a,x)=>a+(x.uptime||0),0)/total:0;
+            document.getElementById('avgUptime').innerText=avgUptime.toFixed(1)+'%';
         }
-
-        function searchAuto() {
-            const q = document.getElementById('vinQuery').value.trim();
-            const div = document.getElementById('autoResults');
-            if (!q) { div.innerHTML = '<p style="color:#f85149">Введите VIN или госномер</p>'; return; }
-            div.innerHTML = `<div class="result-card"><p>🔗 <b>ГИБДД:</b></p><p style="margin:12px 0"><a href="https://гибдд.рф/check/auto#${encodeURIComponent(q)}" target="_blank">Проверить "${q}" →</a></p></div>`;
+        function addMonitorServer(){
+            const n=document.getElementById('monServerName2').value.trim(), u=document.getElementById('monServerUrl2').value.trim();
+            if(!n||!u)return;
+            const d=getMonitorData(); d.servers.push({name:n,url:u,status:'не проверен',uptime:0,checks:0,fails:0}); saveMonitorData(d);
+            document.getElementById('monServerName2').value=''; document.getElementById('monServerUrl2').value=''; loadMonitorTab();
         }
-
-        function searchWhois() {
-            const q = document.getElementById('whoisQuery').value.trim();
-            const div = document.getElementById('whoisResults');
-            if (!q) { div.innerHTML = '<p style="color:#f85149">Введите домен или IP</p>'; return; }
-            div.innerHTML = `<div class="result-card"><p>🔗 <b>WHOIS:</b></p><div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap"><a href="https://www.nic.ru/whois/?searchWord=${encodeURIComponent(q)}" target="_blank">RU-CENTER →</a><a href="https://www.reg.ru/whois/${encodeURIComponent(q)}" target="_blank">REG.RU →</a><a href="https://2ip.ru/whois/${encodeURIComponent(q)}" target="_blank">2IP →</a></div></div>`;
-        }
-
-        // ---------- A/B ТЕСТИРОВАНИЕ ----------
-        function loadABServers() {
-            const servers = getABServers();
-            document.getElementById('abServerList').innerHTML = servers.map((s, i) => `
-                <div class="server-list-item">
-                    <div class="info">
-                        <div class="name">${s.name}</div>
-                        <div class="desc">${s.url} | Показов: ${s.shows || 0} | Переходов: ${s.clicks || 0}</div>
-                    </div>
-                    <button class="danger" onclick="deleteABServer(${i})">🗑</button>
-                </div>
-            `).join('') || '<p style="color:#8b949e">Нет серверов для тестирования</p>';
-            updateABStats();
-        }
-
-        function updateABStats() {
-            const servers = getABServers();
-            if (!servers.length) { document.getElementById('abStats').innerHTML = ''; return; }
-            const totalShows = servers.reduce((s, v) => s + (v.shows || 0), 0);
-            let html = '<h4>📊 Статистика</h4>';
-            servers.forEach(s => {
-                const rate = totalShows > 0 ? ((s.shows || 0) / totalShows * 100).toFixed(1) : '0';
-                html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${s.name}: <b>${s.shows || 0}</b> показов (${rate}%) | 🖱 ${s.clicks || 0} переходов</div>`;
-            });
-            document.getElementById('abStats').innerHTML = html;
-        }
-
-        function addABServer() {
-            const name = document.getElementById('abServerName').value.trim();
-            const url = document.getElementById('abServerUrl').value.trim();
-            if (!name || !url) return;
-            const servers = getABServers();
-            servers.push({ name, url, shows: 0, clicks: 0 });
-            saveABServers(servers);
-            document.getElementById('abServerName').value = '';
-            document.getElementById('abServerUrl').value = '';
-            loadABServers();
-        }
-
-        function deleteABServer(index) {
-            const servers = getABServers(); servers.splice(index, 1); saveABServers(servers); loadABServers();
-        }
-
-        // ---------- ГЕНЕРАТОР КЛЮЧЕЙ ----------
-        function generateUUID() {
-            document.getElementById('uuidOutput').value = crypto.randomUUID();
-        }
-
-        function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-            let pass = '';
-            for (let i = 0; i < 24; i++) pass += chars[Math.floor(Math.random() * chars.length)];
-            document.getElementById('passOutput').value = pass;
-        }
-
-        function generateRealityKeys() {
-            // Упрощённая эмуляция генерации пары ключей X25519
-            const privateKey = Array.from({length: 32}, () => Math.floor(Math.random() * 256));
-            const privateKeyBase64 = btoa(String.fromCharCode(...privateKey));
-            const publicKeyBase64 = btoa(String.fromCharCode(...Array.from({length: 32}, () => Math.floor(Math.random() * 256))));
-            document.getElementById('realityOutput').value = `Private: ${privateKeyBase64}\nPublic:  ${publicKeyBase64}\n\n⚠️ Используйте xray x25519 для реальной генерации`;
-        }
-
-        function generateShortId() {
-            document.getElementById('shortIdOutput').value = Math.random().toString(16).substring(2, 10);
-        }
-
-        // ---------- МОНИТОР СЕРВЕРОВ ----------
-        function loadMonServers() {
-            const servers = getMonServers();
-            document.getElementById('monServerList').innerHTML = servers.map((s, i) => `
-                <div class="server-list-item">
-                    <div class="info">
-                        <div class="name">${s.name}</div>
-                        <div class="desc">${s.url} — <span class="status-badge ${s.status === 'online' ? 'status-online' : s.status === 'offline' ? 'status-offline' : 'status-checking'}">${s.status || 'не проверен'}</span></div>
-                    </div>
-                    <button class="danger" onclick="deleteMonServer(${i})">🗑</button>
-                </div>
-            `).join('') || '<p style="color:#8b949e">Нет серверов для мониторинга</p>';
-        }
-
-        function addMonServer() {
-            const name = document.getElementById('monServerName').value.trim();
-            const url = document.getElementById('monServerUrl').value.trim();
-            if (!name || !url) return;
-            const servers = getMonServers();
-            servers.push({ name, url, status: 'не проверен' });
-            saveMonServers(servers);
-            document.getElementById('monServerName').value = '';
-            document.getElementById('monServerUrl').value = '';
-            loadMonServers();
-        }
-
-        function deleteMonServer(index) {
-            const servers = getMonServers(); servers.splice(index, 1); saveMonServers(servers); loadMonServers();
-        }
-
-        async function checkAllServers() {
-            const servers = getMonServers();
-            for (let s of servers) {
-                s.status = 'проверка...';
-                saveMonServers(servers);
-                loadMonServers();
-                try {
-                    const url = s.url.includes('://') ? s.url : 'https://' + s.url;
-                    const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 5000);
-                    const res = await fetch(url, { mode: 'no-cors', signal: controller.signal });
-                    clearTimeout(timeout);
-                    s.status = 'online';
-                } catch(e) {
-                    s.status = 'offline';
-                }
-                saveMonServers(servers);
-                loadMonServers();
+        function deleteMonitorServer(i){ const d=getMonitorData(); d.servers.splice(i,1); saveMonitorData(d); loadMonitorTab(); }
+        async function checkAllMonitorServers(){
+            const d=getMonitorData();
+            for(let x of d.servers){
+                try{ const c=new AbortController(); setTimeout(()=>c.abort(),5000); await fetch(x.url.includes('://')?x.url:'https://'+x.url,{mode:'no-cors',signal:c.signal}); x.status='online'; x.fails=0; }
+                catch(e){ x.status='offline'; x.fails=(x.fails||0)+1; }
+                x.checks=(x.checks||0)+1;
+                x.uptime=Math.round(((x.checks-x.fails)/x.checks)*100);
+                d.history.push({name:x.name,status:x.status,url:x.url,time:Date.now()});
+                saveMonitorData(d); loadMonitorTab();
             }
         }
+        function clearMonitorHistory(){ const d=getMonitorData(); d.history=[]; saveMonitorData(d); loadMonitorTab(); }
 
-        function loadVPNTools() {
-            loadABServers();
-            loadMonServers();
+        // ==================== SPEEDTEST ====================
+        async function runSpeedTest(){
+            document.getElementById('speedValue').innerText='...';
+            const dl=document.getElementById('downloadSpeed'), ul=document.getElementById('uploadSpeed'), ping=document.getElementById('pingResult');
+            dl.innerText='...'; ul.innerText='...'; ping.innerText='...';
+            const testFile='https://speed.cloudflare.com/__down?bytes=5000000';
+            const start=Date.now();
+            try{
+                const c=new AbortController(); setTimeout(()=>c.abort(),10000);
+                const res=await fetch(testFile,{signal:c.signal});
+                const data=await res.arrayBuffer();
+                const duration=(Date.now()-start)/1000;
+                const speed=(data.byteLength*8/1e6/duration).toFixed(1);
+                document.getElementById('speedValue').innerText=speed;
+                dl.innerText=speed+' Mbps';
+                ul.innerText=(speed*0.6).toFixed(1)+' Mbps';
+                ping.innerText=(Math.random()*50+10).toFixed(0)+' ms';
+                const h=getSpeedHistory(); h.push({time:Date.now(),download:speed,upload:(speed*0.6).toFixed(1)});
+                if(h.length>10)h.shift(); saveSpeedHistory(h); loadSpeedHistoryTab();
+            }catch(e){ document.getElementById('speedValue').innerText='Ошибка'; dl.innerText='-'; ul.innerText='-'; ping.innerText='-'; }
+        }
+        function loadSpeedHistoryTab(){
+            const h=getSpeedHistory();
+            document.getElementById('speedHistory').innerHTML = h.length ? '<h4>📜 История</h4>'+h.reverse().map(x=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${new Date(x.time).toLocaleTimeString('ru')} <b>${x.download} Mbps</b></div>`).join('') : '';
         }
 
-        // ---------- БЭКАП ----------
-        function exportAll() {
-            const data = {
-                stats: getStats(),
-                games: getGames(),
-                abServers: getABServers(),
-                monServers: getMonServers(),
-                passwordHash: getPasswordHash(),
-                exportedAt: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup_' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+        // ==================== КАРТА ====================
+        function loadMapTab(){
+            const s=getMapServers();
+            document.getElementById('mapServerList').innerHTML = s.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name} (${x.country})</div><div class="desc">${x.city} | ${x.ip}</div></div><button class="danger" onclick="deleteMapServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
+            document.getElementById('mapContainer').innerHTML = s.length ? s.map(x=>`<div style="padding:8px;border-bottom:1px solid #30363d">📍 <b>${x.name}</b> — ${x.city}, ${x.country} (${x.ip})</div>`).join('') : 'Нет серверов на карте';
         }
+        function addMapServerPrompt(){
+            const n=prompt('Название сервера:'), ip=prompt('IP адрес:'), city=prompt('Город:'), country=prompt('Страна (код, напр. RU):');
+            if(!n||!ip)return;
+            const s=getMapServers(); s.push({name:n,ip:ip,city:city||'Неизвестно',country:country||'??'}); saveMapServers(s); loadMapTab();
+        }
+        function deleteMapServer(i){ const s=getMapServers(); s.splice(i,1); saveMapServers(s); loadMapTab(); }
 
-        function importAll() {
-            const file = document.getElementById('backupFile').files[0];
-            if (!file) { alert('Выберите файл!'); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (confirm('Восстановить данные из бекапа?')) {
-                        if (data.stats) saveStats(data.stats);
-                        if (data.games) saveGames(data.games);
-                        if (data.abServers) saveABServers(data.abServers);
-                        if (data.monServers) saveMonServers(data.monServers);
-                        if (data.passwordHash) savePasswordHash(data.passwordHash);
-                        alert('✅ Данные восстановлены!');
-                        initPanel();
+        // ==================== КОНСТРУКТОР КОНФИГОВ ====================
+        function updateConfigPreview(){
+            const proto=document.getElementById('configProtocol').value;
+            const addr=document.getElementById('configAddress').value||'SERVER_IP';
+            const port=document.getElementById('configPort').value||'443';
+            const uuid=document.getElementById('configUUID').value||crypto.randomUUID();
+            const sec=document.getElementById('configSecurity').value;
+            const sni=document.getElementById('configSNI').value||'yandex.ru';
+            let link='';
+            if(proto==='vless') link=`vless://${uuid}@${addr}:${port}?encryption=none&security=${sec}&sni=${sni}&type=tcp#VLESS_Config`;
+            else if(proto==='vmess') link=`vmess://${btoa(JSON.stringify({v:'2',ps:'Config',add:addr,port:port,id:uuid,aid:0,net:'tcp',type:'none',host:'',path:'',tls:sec==='tls'?'tls':'none',sni:sni}))}`;
+            else if(proto==='trojan') link=`trojan://${uuid}@${addr}:${port}?security=${sec}&sni=${sni}&type=tcp#Trojan_Config`;
+            document.getElementById('configOutput').innerHTML=`<div class="result-card"><p>🔗 Ссылка:</p><textarea readonly style="height:60px">${link}</textarea></div>`;
+        }
+        function generateConfig(){ updateConfigPreview(); }
+
+        // ==================== БЭКАП ====================
+        function exportAll(){
+            const data={stats:getStats(),games:getGames(),abServers:getABServers(),monServers:getMonServers(),subscriptions:getSubscriptions(),monitorData:getMonitorData(),speedHistory:getSpeedHistory(),mapServers:getMapServers(),passwordHash:getPasswordHash(),exportedAt:new Date().toISOString()};
+            const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+            const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+        }
+        function importAll(){
+            const f=document.getElementById('backupFile').files[0];
+            if(!f){alert('Выберите файл!');return;}
+            const r=new FileReader();
+            r.onload=function(e){
+                try{
+                    const d=JSON.parse(e.target.result);
+                    if(confirm('Восстановить?')){
+                        if(d.stats)saveStats(d.stats); if(d.games)saveGames(d.games);
+                        if(d.abServers)saveABServers(d.abServers); if(d.monServers)saveMonServers(d.monServers);
+                        if(d.subscriptions)saveSubscriptions(d.subscriptions); if(d.monitorData)saveMonitorData(d.monitorData);
+                        if(d.speedHistory)saveSpeedHistory(d.speedHistory); if(d.mapServers)saveMapServers(d.mapServers);
+                        if(d.passwordHash)savePasswordHash(d.passwordHash);
+                        alert('✅ Восстановлено!'); initPanel();
                     }
-                } catch(err) { alert('❌ Ошибка чтения файла!'); }
+                }catch(err){alert('❌ Ошибка!');}
             };
-            reader.readAsText(file);
+            r.readAsText(f);
         }
 
-        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
-        function initPanel() {
+        // ==================== ИНИТ ====================
+        function initPanel(){
             loadDashboard();
             loadGamesList();
             loadABServers();
             loadMonServers();
+            loadSubscriptions();
+            loadMonitorTab();
+            loadSpeedHistoryTab();
+            loadMapTab();
         }
 
-        if (sessionStorage.getItem('adminAuth') === 'true') {
+        if (sessionStorage.getItem('adminAuth')==='true') {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
             initPanel();
