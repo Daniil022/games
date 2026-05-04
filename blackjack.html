@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Касатка</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: #0a3d0a; color: white; }
+        #messages { min-height: 60px; margin: 20px; font-size: 20px; }
+        button { padding: 15px 30px; font-size: 20px; margin: 10px; background: gold; border: none; border-radius: 10px; cursor: pointer; }
+        button:hover { background: orange; }
+    </style>
+</head>
+<body>
+    <h1>🃏 Касатка</h1>
+    <div id="messages">Твоя ставка принята. Тяни карту!</div>
+    <div id="scores">Ты: 0 | Дилер: 0</div>
+    <button onclick="hit()">Ещё</button>
+    <button onclick="stand()">Хватит</button>
+    <button onclick="restart()">Новая игра</button>
+
+    <script>
+        let playerHand = 0, dealerHand = 0, gameOver = false;
+
+        function randomCard() { return Math.floor(Math.random() * 10) + 2; }
+
+        function updateUI(msg) {
+            document.getElementById('messages').innerText = msg;
+            document.getElementById('scores').innerText = `Ты: ${playerHand} | Дилер: ${dealerHand}`;
+        }
+
+        function hit() {
+            if (gameOver) return;
+            playerHand += randomCard();
+            if (playerHand > 21) { updateUI('Перебор! Ты проиграл.'); gameOver = true; }
+            else if (playerHand === 21) { updateUI('Касатка! Ты выиграл!'); gameOver = true; }
+            else { updateUI('Тянешь дальше или хватит?'); }
+        }
+
+        function stand() {
+            if (gameOver) return;
+            while (dealerHand < 17) { dealerHand += randomCard(); }
+            if (dealerHand > 21 || playerHand > dealerHand) { updateUI('Ты выиграл!'); }
+            else if (playerHand < dealerHand) { updateUI('Дилер выиграл.'); }
+            else { updateUI('Ничья!'); }
+            gameOver = true;
+        }
+
+        function restart() {
+            playerHand = randomCard() + randomCard();
+            dealerHand = randomCard();
+            gameOver = false;
+            updateUI('Новая раздача. Тяни или хватит?');
+        }
+
+        restart();
+    </script>
+</body>
+</html>
