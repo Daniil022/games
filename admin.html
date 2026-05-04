@@ -85,7 +85,7 @@
             color: #58a6ff;
             display: block;
         }
-        .game-list-item {
+        .game-list-item, .server-list-item {
             background: #0d1117;
             padding: 12px;
             border-radius: 8px;
@@ -96,24 +96,38 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .game-list-item .info {
+        .game-list-item .info, .server-list-item .info {
             flex: 1;
             min-width: 150px;
         }
-        .game-list-item .name {
+        .game-list-item .name, .server-list-item .name {
             font-weight: 600;
             color: #f0f6fc;
         }
-        .game-list-item .desc {
+        .game-list-item .desc, .server-list-item .desc {
             font-size: 12px;
             color: #8b949e;
+        }
+        .game-list-item .hidden-badge, .server-list-item .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
         }
         .game-list-item .hidden-badge {
             background: #f0883e22;
             color: #f0883e;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+        }
+        .status-online {
+            background: #3fb95022;
+            color: #3fb950;
+        }
+        .status-offline {
+            background: #f8514922;
+            color: #f85149;
+        }
+        .status-checking {
+            background: #f0883e22;
+            color: #f0883e;
         }
         .tabs {
             display: flex;
@@ -171,9 +185,9 @@
             font-size: 16px;
             text-decoration: none;
         }
-        .result-card a:hover {
-            text-decoration: underline;
-        }
+        .result-card a:hover { text-decoration: underline; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -193,10 +207,11 @@
         <!-- Вкладки -->
         <div class="tabs">
             <div class="tab active" onclick="switchTab('dashboard')">📊 Статистика</div>
-            <div class="tab" onclick="switchTab('games')">🎮 Управление играми</div>
+            <div class="tab" onclick="switchTab('games')">🎮 Игры</div>
             <div class="tab" onclick="switchTab('lookup')">🔍 Проверки</div>
-            <div class="tab" onclick="switchTab('password')">🔑 Смена пароля</div>
-            <div class="tab" onclick="switchTab('backup')">💾 Резервная копия</div>
+            <div class="tab" onclick="switchTab('vpn-tools')">🛠 VPN</div>
+            <div class="tab" onclick="switchTab('password')">🔑 Пароль</div>
+            <div class="tab" onclick="switchTab('backup')">💾 Бэкап</div>
         </div>
 
         <!-- Статистика -->
@@ -233,54 +248,92 @@
         <!-- Проверки по реестрам -->
         <div id="tab-lookup" class="tab-content">
             <h3>⚖️ Поиск задолженностей (ФССП)</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
-                Поиск по открытой базе исполнительных производств. Данные предоставляются официальным сервисом ФССП России.
-            </p>
+            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Поиск по открытой базе исполнительных производств.</p>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
                 <input type="text" id="fsspQuery" placeholder="Фамилия Имя или ИНН..." style="flex:2;min-width:200px;margin-bottom:0">
                 <button onclick="searchFSSP()">🔍 Искать</button>
             </div>
             <div id="fsspResults"></div>
-
             <hr style="border-color:#30363d;margin:24px 0">
-
             <h3>🏢 Проверка контрагента (ФНС)</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
-                Поиск сведений о юридических лицах и ИП из открытых реестров ФНС (ЕГРЮЛ/ЕГРИП).
-            </p>
+            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Поиск сведений из открытых реестров ФНС.</p>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
                 <input type="text" id="innQuery" placeholder="Введите ИНН (10 или 12 цифр)..." style="flex:2;min-width:200px;margin-bottom:0">
                 <button onclick="searchINN()">🔍 Проверить</button>
             </div>
             <div id="innResults"></div>
-
             <hr style="border-color:#30363d;margin:24px 0">
-
             <h3>🚗 Проверка автомобиля</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
-                Проверка через открытые сервисы ГИБДД. VIN или госномер для получения истории регистрации, ДТП и ограничений.
-            </p>
+            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Проверка через открытые сервисы ГИБДД.</p>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
                 <input type="text" id="vinQuery" placeholder="VIN (17 символов) или госномер..." style="flex:2;min-width:200px;margin-bottom:0">
                 <button onclick="searchAuto()">🔍 Проверить</button>
             </div>
-            <p style="color:#8b949e;font-size:11px">
-                ⚠️ Полная проверка доступна на официальном портале
-                <a href="https://гибдд.рф/check/auto" target="_blank" style="color:#58a6ff">ГИБДД.РФ</a>
-            </p>
             <div id="autoResults"></div>
-
             <hr style="border-color:#30363d;margin:24px 0">
-
             <h3>🌐 WHOIS доменов и IP</h3>
-            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
-                Проверка информации о домене или IP-адресе через открытые сервисы.
-            </p>
+            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Проверка информации о домене или IP-адресе.</p>
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
                 <input type="text" id="whoisQuery" placeholder="example.com или 1.1.1.1..." style="flex:2;min-width:200px;margin-bottom:0">
                 <button onclick="searchWhois()">🔍 Проверить</button>
             </div>
             <div id="whoisResults"></div>
+        </div>
+
+        <!-- VPN Инструменты -->
+        <div id="tab-vpn-tools" class="tab-content">
+            <!-- A/B Тестирование -->
+            <h3>🧪 A/B Тестирование серверов</h3>
+            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
+                Добавляйте серверы, а пользователи будут получать случайный. Смотрите статистику.
+            </p>
+            <div class="inline-form">
+                <input type="text" id="abServerName" placeholder="Название" style="margin-bottom:0">
+                <input type="text" id="abServerUrl" placeholder="URL/IP" style="margin-bottom:0">
+                <button onclick="addABServer()">➕</button>
+            </div>
+            <div id="abServerList"></div>
+            <div id="abStats" style="margin-top:12px"></div>
+
+            <hr style="border-color:#30363d;margin:24px 0">
+
+            <!-- Генератор ключей -->
+            <h3>🔐 Генератор ключей</h3>
+            <div class="two-col">
+                <div>
+                    <button onclick="generateUUID()" style="width:100%">🎲 UUID</button>
+                    <input type="text" id="uuidOutput" readonly placeholder="Нажмите кнопку" style="margin-top:8px;text-align:center;font-family:monospace">
+                </div>
+                <div>
+                    <button onclick="generatePassword()" style="width:100%">🔑 Пароль</button>
+                    <input type="text" id="passOutput" readonly placeholder="Нажмите кнопку" style="margin-top:8px;text-align:center;font-family:monospace">
+                </div>
+            </div>
+            <div class="two-col" style="margin-top:12px">
+                <div>
+                    <button onclick="generateRealityKeys()" style="width:100%">🔐 Reality X25519</button>
+                    <textarea id="realityOutput" readonly placeholder="Приватный и публичный ключ..." style="margin-top:8px;height:80px;font-size:11px"></textarea>
+                </div>
+                <div>
+                    <button onclick="generateShortId()" style="width:100%">🆔 Short ID</button>
+                    <input type="text" id="shortIdOutput" readonly placeholder="Нажмите кнопку" style="margin-top:8px;text-align:center;font-family:monospace">
+                </div>
+            </div>
+
+            <hr style="border-color:#30363d;margin:24px 0">
+
+            <!-- Монитор серверов -->
+            <h3>🖥️ Монитор доступности</h3>
+            <p style="color:#8b949e;font-size:13px;margin-bottom:12px">
+                Проверка серверов пингом. Статус обновляется по кнопке.
+            </p>
+            <div class="inline-form">
+                <input type="text" id="monServerName" placeholder="Название" style="margin-bottom:0">
+                <input type="text" id="monServerUrl" placeholder="IP:Порт" style="margin-bottom:0">
+                <button onclick="addMonServer()">➕</button>
+            </div>
+            <div id="monServerList"></div>
+            <button class="secondary" onclick="checkAllServers()" style="margin-top:12px">🔄 Проверить все</button>
         </div>
 
         <!-- Смена пароля -->
@@ -298,7 +351,6 @@
             <h3>📤 Экспорт данных</h3>
             <p style="color:#8b949e;margin-bottom:12px">Скачает файл со всеми настройками и статистикой.</p>
             <button onclick="exportAll()">📥 Скачать backup.json</button>
-
             <h3>📥 Импорт данных</h3>
             <p style="color:#8b949e;margin-bottom:12px">Загрузите ранее сохранённый файл backup.json</p>
             <input type="file" id="backupFile" accept=".json">
@@ -345,25 +397,17 @@
             return getData('siteStats', { total: 0, today: 0, date: '', games: {}, daily: {} });
         }
 
-        function saveStats(stats) {
-            setData('siteStats', stats);
-        }
+        function saveStats(stats) { setData('siteStats', stats); }
+        function getGames() { return getData('customGames', DEFAULT_GAMES); }
+        function saveGames(games) { setData('customGames', games); }
+        function getPasswordHash() { return getData('adminPasswordHash', DEFAULT_PASSWORD_HASH); }
+        function savePasswordHash(hash) { setData('adminPasswordHash', hash); }
 
-        function getGames() {
-            return getData('customGames', DEFAULT_GAMES);
-        }
+        function getABServers() { return getData('abServers', []); }
+        function saveABServers(servers) { setData('abServers', servers); }
 
-        function saveGames(games) {
-            setData('customGames', games);
-        }
-
-        function getPasswordHash() {
-            return getData('adminPasswordHash', DEFAULT_PASSWORD_HASH);
-        }
-
-        function savePasswordHash(hash) {
-            setData('adminPasswordHash', hash);
-        }
+        function getMonServers() { return getData('monServers', []); }
+        function saveMonServers(servers) { setData('monServers', servers); }
 
         // ---------- АВТОРИЗАЦИЯ ----------
         async function login() {
@@ -371,7 +415,6 @@
             const hash = await sha256(input);
             const storedHash = getPasswordHash();
             const errorEl = document.getElementById('errorMsg');
-
             if (hash === storedHash) {
                 sessionStorage.setItem('adminAuth', 'true');
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -397,31 +440,19 @@
             const confirmPass = document.getElementById('confirmPassword').value;
             const errEl = document.getElementById('passError');
             const succEl = document.getElementById('passSuccess');
-
-            errEl.classList.add('hidden');
-            succEl.classList.add('hidden');
-
+            errEl.classList.add('hidden'); succEl.classList.add('hidden');
             const oldHash = await sha256(oldPass);
             if (oldHash !== getPasswordHash()) {
-                errEl.classList.remove('hidden');
-                errEl.innerText = '❌ Неверный текущий пароль';
-                return;
+                errEl.classList.remove('hidden'); errEl.innerText = '❌ Неверный текущий пароль'; return;
             }
             if (newPass.length < 4) {
-                errEl.classList.remove('hidden');
-                errEl.innerText = '❌ Пароль должен быть минимум 4 символа';
-                return;
+                errEl.classList.remove('hidden'); errEl.innerText = '❌ Пароль должен быть минимум 4 символа'; return;
             }
             if (newPass !== confirmPass) {
-                errEl.classList.remove('hidden');
-                errEl.innerText = '❌ Пароли не совпадают';
-                return;
+                errEl.classList.remove('hidden'); errEl.innerText = '❌ Пароли не совпадают'; return;
             }
-
-            const newHash = await sha256(newPass);
-            savePasswordHash(newHash);
-            succEl.classList.remove('hidden');
-            succEl.innerText = '✅ Пароль успешно изменён!';
+            savePasswordHash(await sha256(newPass));
+            succEl.classList.remove('hidden'); succEl.innerText = '✅ Пароль успешно изменён!';
             document.getElementById('oldPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmPassword').value = '';
@@ -431,47 +462,41 @@
         function switchTab(name) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
-            document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+            const tabContent = document.getElementById('tab-' + name);
+            const tabButton = document.querySelector(`.tab[onclick="switchTab('${name}')"]`);
+            if (tabContent) tabContent.classList.add('active');
+            if (tabButton) tabButton.classList.add('active');
             if (name === 'dashboard') loadDashboard();
             if (name === 'games') loadGamesList();
             if (name === 'lookup') clearLookup();
+            if (name === 'vpn-tools') loadVPNTools();
         }
 
         function clearLookup() {
-            document.getElementById('fsspResults').innerHTML = '';
-            document.getElementById('innResults').innerHTML = '';
-            document.getElementById('autoResults').innerHTML = '';
-            document.getElementById('whoisResults').innerHTML = '';
-            document.getElementById('fsspQuery').value = '';
-            document.getElementById('innQuery').value = '';
-            document.getElementById('vinQuery').value = '';
-            document.getElementById('whoisQuery').value = '';
+            ['fssp','inn','auto','whois'].forEach(id => {
+                const el = document.getElementById(id + 'Results');
+                if (el) el.innerHTML = '';
+            });
+            ['fsspQuery','innQuery','vinQuery','whoisQuery'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
         }
 
         // ---------- СТАТИСТИКА ----------
         function loadDashboard() {
             const stats = getStats();
             const today = new Date().toDateString();
-
-            if (stats.date !== today) {
-                stats.today = 0;
-                stats.date = today;
-                saveStats(stats);
-            }
-
-            document.getElementById('todayVisits').innerText = stats.today;
-            document.getElementById('totalVisits').innerText = stats.total;
-
+            if (stats.date !== today) { stats.today = 0; stats.date = today; saveStats(stats); }
+            document.getElementById('todayVisits').innerText = stats.today || 0;
+            document.getElementById('totalVisits').innerText = stats.total || 0;
             let weekSum = 0;
             const daily = stats.daily || {};
             for (let i = 0; i < 7; i++) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
+                const d = new Date(); d.setDate(d.getDate() - i);
                 weekSum += daily[d.toDateString()] || 0;
             }
             document.getElementById('weekVisits').innerText = weekSum;
-
             const games = stats.games || {};
             const sorted = Object.entries(games).sort((a, b) => b[1] - a[1]).slice(0, 5);
             const gameNames = {};
@@ -479,16 +504,12 @@
             document.getElementById('topGames').innerHTML = sorted.length
                 ? sorted.map(([k, v]) => `<div class="stat" style="text-align:left;margin-bottom:4px">${gameNames[k] || k}: <b>${v}</b></div>`).join('')
                 : '<p style="color:#8b949e">Нет данных</p>';
-
             let dailyHtml = '';
             for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
+                const d = new Date(); d.setDate(d.getDate() - i);
                 const key = d.toDateString();
                 const val = daily[key] || 0;
-                const shortDate = d.toLocaleDateString('ru', { day: 'numeric', month: 'short' });
-                dailyHtml += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">
-                    ${shortDate} <b>${val}</b></div>`;
+                dailyHtml += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${d.toLocaleDateString('ru',{day:'numeric',month:'short'})} <b>${val}</b></div>`;
             }
             document.getElementById('dailyStats').innerHTML = dailyHtml;
         }
@@ -501,23 +522,18 @@
         }
 
         function exportStats() {
-            const stats = getStats();
-            const blob = new Blob([JSON.stringify(stats, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'stats_export.json';
-            a.click();
+            const blob = new Blob([JSON.stringify(getStats(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'stats_export.json'; a.click();
         }
 
-        // ---------- УПРАВЛЕНИЕ ИГРАМИ ----------
+        // ---------- ИГРЫ ----------
         function loadGamesList() {
             const games = getGames();
-            const container = document.getElementById('gamesList');
-            container.innerHTML = games.map((g, i) => `
+            document.getElementById('gamesList').innerHTML = games.map((g, i) => `
                 <div class="game-list-item">
                     <div class="info">
                         <div class="name">${g.icon} ${g.name} ${g.visible ? '' : '<span class="hidden-badge">скрыта</span>'}</div>
-                        <div class="desc">${g.file} — ${g.desc} ${g.full ? '(широкая карточка)' : ''}</div>
+                        <div class="desc">${g.file} — ${g.desc}</div>
                     </div>
                     <div>
                         <button onclick="toggleGame(${i})">${g.visible ? '👁 Скрыть' : '🙈 Показать'}</button>
@@ -532,195 +548,212 @@
             const file = document.getElementById('newGameFile').value.trim();
             const icon = document.getElementById('newGameIcon').value.trim();
             const desc = document.getElementById('newGameDesc').value.trim();
-
-            if (!name || !file || !icon) {
-                alert('Название, файл и иконка обязательны!');
-                return;
-            }
-
+            if (!name || !file || !icon) { alert('Название, файл и иконка обязательны!'); return; }
             const games = getGames();
             games.push({ name, file, icon, desc: desc || 'Новая игра', full: false, visible: true });
             saveGames(games);
-
-            document.getElementById('newGameName').value = '';
-            document.getElementById('newGameFile').value = '';
-            document.getElementById('newGameIcon').value = '';
-            document.getElementById('newGameDesc').value = '';
-
+            ['newGameName','newGameFile','newGameIcon','newGameDesc'].forEach(id => document.getElementById(id).value = '');
             const succEl = document.getElementById('successMsg');
-            succEl.classList.remove('hidden');
-            succEl.innerText = '✅ Игра добавлена! Не забудь создать файл ' + file;
+            succEl.classList.remove('hidden'); succEl.innerText = '✅ Игра добавлена!';
             setTimeout(() => succEl.classList.add('hidden'), 3000);
-
             loadGamesList();
         }
 
         function toggleGame(index) {
-            const games = getGames();
-            games[index].visible = !games[index].visible;
-            saveGames(games);
-            loadGamesList();
+            const games = getGames(); games[index].visible = !games[index].visible; saveGames(games); loadGamesList();
         }
 
         function deleteGame(index) {
-            if (confirm('Точно удалить игру из списка?')) {
-                const games = getGames();
-                games.splice(index, 1);
-                saveGames(games);
-                loadGamesList();
-            }
+            if (confirm('Точно удалить игру?')) { const games = getGames(); games.splice(index, 1); saveGames(games); loadGamesList(); }
         }
 
         function resetGames() {
-            if (confirm('Сбросить список игр к стандартному?')) {
-                saveGames(DEFAULT_GAMES);
-                loadGamesList();
-            }
+            if (confirm('Сбросить список игр?')) { saveGames(DEFAULT_GAMES); loadGamesList(); }
         }
 
-        // ---------- ПРОВЕРКИ ПО РЕЕСТРАМ ----------
+        // ---------- ПРОВЕРКИ ----------
         function searchFSSP() {
-            const query = document.getElementById('fsspQuery').value.trim();
-            const resultDiv = document.getElementById('fsspResults');
-
-            if (!query) {
-                resultDiv.innerHTML = '<p style="color:#f85149">Введите ФИО или ИНН для поиска</p>';
-                return;
-            }
-
-            resultDiv.innerHTML = `
-                <div class="result-card">
-                    <p>🔗 <b>Результаты поиска ФССП:</b></p>
-                    <p style="margin:12px 0">
-                        <a href="https://fssp.gov.ru/iss/ip?is%5Bvariant%5D=2&is%5Bfio%5D=${encodeURIComponent(query)}"
-                           target="_blank">
-                           Открыть результаты для "${query}" на сайте ФССП →
-                        </a>
-                    </p>
-                    <p style="color:#8b949e;font-size:12px;margin-top:8px">
-                        📌 Данные предоставляются официальным сервисом ФССП России.
-                    </p>
-                </div>
-            `;
+            const q = document.getElementById('fsspQuery').value.trim();
+            const div = document.getElementById('fsspResults');
+            if (!q) { div.innerHTML = '<p style="color:#f85149">Введите ФИО или ИНН</p>'; return; }
+            div.innerHTML = `<div class="result-card"><p>🔗 <b>ФССП:</b></p><p style="margin:12px 0"><a href="https://fssp.gov.ru/iss/ip?is%5Bvariant%5D=2&is%5Bfio%5D=${encodeURIComponent(q)}" target="_blank">Открыть "${q}" на ФССП →</a></p></div>`;
         }
 
         function searchINN() {
             const inn = document.getElementById('innQuery').value.trim();
-            const resultDiv = document.getElementById('innResults');
-
-            if (!inn || !/^\d{10}$|^\d{12}$/.test(inn)) {
-                resultDiv.innerHTML = '<p style="color:#f85149">Введите корректный ИНН (10 цифр для юрлица, 12 для ИП)</p>';
-                return;
-            }
-
-            resultDiv.innerHTML = `
-                <div class="result-card">
-                    <p>🔗 <b>Результаты проверки ФНС:</b></p>
-                    <p style="margin:12px 0">
-                        <a href="https://pb.nalog.ru/company.html?inn=${inn}"
-                           target="_blank">
-                           Открыть карточку ИНН ${inn} в сервисе "Прозрачный бизнес" ФНС →
-                        </a>
-                    </p>
-                    <p style="color:#8b949e;font-size:12px;margin-top:8px">
-                        📌 Поиск через официальный открытый реестр ФНС. Доступны данные ЕГРЮЛ и ЕГРИП.
-                    </p>
-                </div>
-            `;
+            const div = document.getElementById('innResults');
+            if (!inn || !/^\d{10}$|^\d{12}$/.test(inn)) { div.innerHTML = '<p style="color:#f85149">Введите корректный ИНН</p>'; return; }
+            div.innerHTML = `<div class="result-card"><p>🔗 <b>ФНС:</b></p><p style="margin:12px 0"><a href="https://pb.nalog.ru/company.html?inn=${inn}" target="_blank">Открыть ИНН ${inn} →</a></p></div>`;
         }
 
         function searchAuto() {
-            const query = document.getElementById('vinQuery').value.trim();
-            const resultDiv = document.getElementById('autoResults');
-
-            if (!query) {
-                resultDiv.innerHTML = '<p style="color:#f85149">Введите VIN или госномер автомобиля</p>';
-                return;
-            }
-
-            resultDiv.innerHTML = `
-                <div class="result-card">
-                    <p>🔗 <b>Проверка автомобиля:</b></p>
-                    <p style="margin:12px 0">
-                        <a href="https://гибдд.рф/check/auto#${encodeURIComponent(query)}"
-                           target="_blank">
-                           Открыть проверку "${query}" на ГИБДД.РФ →
-                        </a>
-                    </p>
-                    <p style="color:#8b949e;font-size:12px;margin-top:8px">
-                        📌 Официальный сервис Госавтоинспекции. Проверка истории регистрации, ДТП, розыска и ограничений.
-                    </p>
-                </div>
-            `;
+            const q = document.getElementById('vinQuery').value.trim();
+            const div = document.getElementById('autoResults');
+            if (!q) { div.innerHTML = '<p style="color:#f85149">Введите VIN или госномер</p>'; return; }
+            div.innerHTML = `<div class="result-card"><p>🔗 <b>ГИБДД:</b></p><p style="margin:12px 0"><a href="https://гибдд.рф/check/auto#${encodeURIComponent(q)}" target="_blank">Проверить "${q}" →</a></p></div>`;
         }
 
         function searchWhois() {
-            const query = document.getElementById('whoisQuery').value.trim();
-            const resultDiv = document.getElementById('whoisResults');
-
-            if (!query) {
-                resultDiv.innerHTML = '<p style="color:#f85149">Введите домен или IP-адрес</p>';
-                return;
-            }
-
-            resultDiv.innerHTML = `
-                <div class="result-card">
-                    <p>🔗 <b>WHOIS-проверка:</b></p>
-                    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
-                        <a href="https://www.nic.ru/whois/?searchWord=${encodeURIComponent(query)}"
-                           target="_blank" style="font-size:14px">
-                           RU-CENTER (для .RU/.РФ) →
-                        </a>
-                        <a href="https://www.reg.ru/whois/${encodeURIComponent(query)}"
-                           target="_blank" style="font-size:14px">
-                           REG.RU (все зоны) →
-                        </a>
-                        <a href="https://2ip.ru/whois/${encodeURIComponent(query)}"
-                           target="_blank" style="font-size:14px">
-                           2IP.RU →
-                        </a>
-                    </div>
-                    <p style="color:#8b949e;font-size:12px;margin-top:8px">
-                        📌 WHOIS — открытый протокол для проверки регистрационных данных доменов и IP-адресов.
-                    </p>
-                </div>
-            `;
+            const q = document.getElementById('whoisQuery').value.trim();
+            const div = document.getElementById('whoisResults');
+            if (!q) { div.innerHTML = '<p style="color:#f85149">Введите домен или IP</p>'; return; }
+            div.innerHTML = `<div class="result-card"><p>🔗 <b>WHOIS:</b></p><div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap"><a href="https://www.nic.ru/whois/?searchWord=${encodeURIComponent(q)}" target="_blank">RU-CENTER →</a><a href="https://www.reg.ru/whois/${encodeURIComponent(q)}" target="_blank">REG.RU →</a><a href="https://2ip.ru/whois/${encodeURIComponent(q)}" target="_blank">2IP →</a></div></div>`;
         }
 
-        // ---------- РЕЗЕРВНОЕ КОПИРОВАНИЕ ----------
+        // ---------- A/B ТЕСТИРОВАНИЕ ----------
+        function loadABServers() {
+            const servers = getABServers();
+            document.getElementById('abServerList').innerHTML = servers.map((s, i) => `
+                <div class="server-list-item">
+                    <div class="info">
+                        <div class="name">${s.name}</div>
+                        <div class="desc">${s.url} | Показов: ${s.shows || 0} | Переходов: ${s.clicks || 0}</div>
+                    </div>
+                    <button class="danger" onclick="deleteABServer(${i})">🗑</button>
+                </div>
+            `).join('') || '<p style="color:#8b949e">Нет серверов для тестирования</p>';
+            updateABStats();
+        }
+
+        function updateABStats() {
+            const servers = getABServers();
+            if (!servers.length) { document.getElementById('abStats').innerHTML = ''; return; }
+            const totalShows = servers.reduce((s, v) => s + (v.shows || 0), 0);
+            let html = '<h4>📊 Статистика</h4>';
+            servers.forEach(s => {
+                const rate = totalShows > 0 ? ((s.shows || 0) / totalShows * 100).toFixed(1) : '0';
+                html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${s.name}: <b>${s.shows || 0}</b> показов (${rate}%) | 🖱 ${s.clicks || 0} переходов</div>`;
+            });
+            document.getElementById('abStats').innerHTML = html;
+        }
+
+        function addABServer() {
+            const name = document.getElementById('abServerName').value.trim();
+            const url = document.getElementById('abServerUrl').value.trim();
+            if (!name || !url) return;
+            const servers = getABServers();
+            servers.push({ name, url, shows: 0, clicks: 0 });
+            saveABServers(servers);
+            document.getElementById('abServerName').value = '';
+            document.getElementById('abServerUrl').value = '';
+            loadABServers();
+        }
+
+        function deleteABServer(index) {
+            const servers = getABServers(); servers.splice(index, 1); saveABServers(servers); loadABServers();
+        }
+
+        // ---------- ГЕНЕРАТОР КЛЮЧЕЙ ----------
+        function generateUUID() {
+            document.getElementById('uuidOutput').value = crypto.randomUUID();
+        }
+
+        function generatePassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+            let pass = '';
+            for (let i = 0; i < 24; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+            document.getElementById('passOutput').value = pass;
+        }
+
+        function generateRealityKeys() {
+            // Упрощённая эмуляция генерации пары ключей X25519
+            const privateKey = Array.from({length: 32}, () => Math.floor(Math.random() * 256));
+            const privateKeyBase64 = btoa(String.fromCharCode(...privateKey));
+            const publicKeyBase64 = btoa(String.fromCharCode(...Array.from({length: 32}, () => Math.floor(Math.random() * 256))));
+            document.getElementById('realityOutput').value = `Private: ${privateKeyBase64}\nPublic:  ${publicKeyBase64}\n\n⚠️ Используйте xray x25519 для реальной генерации`;
+        }
+
+        function generateShortId() {
+            document.getElementById('shortIdOutput').value = Math.random().toString(16).substring(2, 10);
+        }
+
+        // ---------- МОНИТОР СЕРВЕРОВ ----------
+        function loadMonServers() {
+            const servers = getMonServers();
+            document.getElementById('monServerList').innerHTML = servers.map((s, i) => `
+                <div class="server-list-item">
+                    <div class="info">
+                        <div class="name">${s.name}</div>
+                        <div class="desc">${s.url} — <span class="status-badge ${s.status === 'online' ? 'status-online' : s.status === 'offline' ? 'status-offline' : 'status-checking'}">${s.status || 'не проверен'}</span></div>
+                    </div>
+                    <button class="danger" onclick="deleteMonServer(${i})">🗑</button>
+                </div>
+            `).join('') || '<p style="color:#8b949e">Нет серверов для мониторинга</p>';
+        }
+
+        function addMonServer() {
+            const name = document.getElementById('monServerName').value.trim();
+            const url = document.getElementById('monServerUrl').value.trim();
+            if (!name || !url) return;
+            const servers = getMonServers();
+            servers.push({ name, url, status: 'не проверен' });
+            saveMonServers(servers);
+            document.getElementById('monServerName').value = '';
+            document.getElementById('monServerUrl').value = '';
+            loadMonServers();
+        }
+
+        function deleteMonServer(index) {
+            const servers = getMonServers(); servers.splice(index, 1); saveMonServers(servers); loadMonServers();
+        }
+
+        async function checkAllServers() {
+            const servers = getMonServers();
+            for (let s of servers) {
+                s.status = 'проверка...';
+                saveMonServers(servers);
+                loadMonServers();
+                try {
+                    const url = s.url.includes('://') ? s.url : 'https://' + s.url;
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 5000);
+                    const res = await fetch(url, { mode: 'no-cors', signal: controller.signal });
+                    clearTimeout(timeout);
+                    s.status = 'online';
+                } catch(e) {
+                    s.status = 'offline';
+                }
+                saveMonServers(servers);
+                loadMonServers();
+            }
+        }
+
+        function loadVPNTools() {
+            loadABServers();
+            loadMonServers();
+        }
+
+        // ---------- БЭКАП ----------
         function exportAll() {
             const data = {
                 stats: getStats(),
                 games: getGames(),
+                abServers: getABServers(),
+                monServers: getMonServers(),
                 passwordHash: getPasswordHash(),
                 exportedAt: new Date().toISOString()
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'backup_' + new Date().toISOString().slice(0,10) + '.json';
-            a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup_' + new Date().toISOString().slice(0,10) + '.json'; a.click();
         }
 
         function importAll() {
-            const fileInput = document.getElementById('backupFile');
-            const file = fileInput.files[0];
+            const file = document.getElementById('backupFile').files[0];
             if (!file) { alert('Выберите файл!'); return; }
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (confirm('Восстановить данные из резервной копии? Текущие данные будут заменены.')) {
+                    if (confirm('Восстановить данные из бекапа?')) {
                         if (data.stats) saveStats(data.stats);
                         if (data.games) saveGames(data.games);
+                        if (data.abServers) saveABServers(data.abServers);
+                        if (data.monServers) saveMonServers(data.monServers);
                         if (data.passwordHash) savePasswordHash(data.passwordHash);
                         alert('✅ Данные восстановлены!');
                         initPanel();
                     }
-                } catch(err) {
-                    alert('❌ Ошибка чтения файла!');
-                }
+                } catch(err) { alert('❌ Ошибка чтения файла!'); }
             };
             reader.readAsText(file);
         }
@@ -729,9 +762,10 @@
         function initPanel() {
             loadDashboard();
             loadGamesList();
+            loadABServers();
+            loadMonServers();
         }
 
-        // Проверка авторизации при загрузке
         if (sessionStorage.getItem('adminAuth') === 'true') {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
