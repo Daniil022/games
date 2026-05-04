@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Морской бой</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #0a3d3d;
+            color: white;
+        }
+        .game-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+        .board-wrapper {
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 40px);
+            justify-content: center;
+            gap: 1px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            background: #1a5c5c;
+            border: 1px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .ship {
+            background: #4a90d9;
+        }
+        .hit {
+            background: red;
+        }
+        .miss {
+            background: gray;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 18px;
+            background: gold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: orange;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚓ Морской бой</h1>
+    <p id="status">Твой ход</p>
+    <div class="game-container">
+        <div class="board-wrapper">
+            <h3>Твоё поле</h3>
+            <div id="player-board" class="board"></div>
+        </div>
+        <div class="board-wrapper">
+            <h3>Поле врага</h3>
+            <div id="ai-board" class="board"></div>
+        </div>
+    </div>
+    <button onclick="restartGame()">Новая игра</button>
+
+    <script>
+        const SIZE = 10;
+        const SHIPS = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]; // Классический набор
+
+        let playerBoard = [];
+        let aiBoard = [];
+        let playerTurn = true;
+        let gameOver = false;
+        let aiHits = []; // Для "умной" стрельбы AI
+
+        function createBoard() {
+            return Array(SIZE).fill().map(() => Array(SIZE).fill(0));
+        }
+
+        function isValidPlacement(board, row, col, length, horizontal) {
+            if (horizontal) {
+                if (col + length > SIZE) return false;
+                for (let i = 0; i < length; i++) {
+                    if (board[row][col + i] !== 0) return false;
+                    // Проверка соседей
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            let nr = row + dr, nc = col + i + dc;
+                            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc] === 1) return false;
+                        }
+                    }
+                }
+            } else {
+                if (row + length > SIZE) return false;
+                for (let i = 0; i < length; i++) {
+                    if (board[row + i][col] !== 0) return false;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            let nr = row + i + dr, nc = col + dc;
+                            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc] === 1) return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeShip(board, length) {
+            let attempts = 0;
+            while (attempts < 1000) {
+                let horizontal = Math.random() < 0.5;
+                let row = Math.floor(Math.random() * SIZE);
+                let col = Math.floor(Math.random() * SIZE);
+                if (isValidPlacement(board, row, col, length, horizontal)) {
+                    for (let i = 0; i < length; i++) {
+                        if (horizontal) board[row][col + i] = 1;
+                        else board[row + i][col] = 1;
+                    }
+                    return;
+                }
+                attempts++;
+            }
+            // Если не удалось разместить, пробуем снова для всего поля
+            throw new Error("Не удалось разместить корабль");
+        }
+
+        function placeAllShips(board) {
+            let attempts = 0;
+            while (attempts < 100) {
+                board.forEach(row => row.fill(0));
+                try {
+                    SHIPS.forEach(length => placeShip(board, length));
+                    return;
+                } catch (e) {
+                    attempts++;
+                }
+            }
+            console.error("Не удалось разместить все корабли");
+        }
+
+        function renderBoard(board, elementId, showShips) {
+            let html = '';
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    let cls = 'cell';
+                    let content = '';
+                    if (showShips && board[r][c] === 1) cls += ' ship';
+                    if (board[r][c] === 2) { cls += ' hit'; content = '💥'; }
+                    if (board[r][c] === 3) { cls += ' miss'; content = '•'; }
+                    html += `<div class="${cls}" data-row="${r}" data-col="${c}">${content}</div>`;
+                }
+            }
+            document.getElementById(elementId).innerHTML = html;
+        }
+
+        function renderBothBoards() {
+            renderBoard(playerBoard, 'player-board', true);
+            renderBoard(aiBoard, 'ai-board', false);
+        }
+
+        document.getElementById('ai-board').addEventListener('click', function(e) {
+            if (!playerTurn || gameOver) return;
+            let cell = e.target.closest('.cell');
+            if (!cell) return;
+            let r = parseInt(cell.dataset.row);
+            let c = parseInt(cell.dataset.col);
+            if (aiBoard[r][c] === 2 || aiBoard[r][c] === 3) return;
+            playerAttack(r, c);
+        });
+
+        function playerAttack(r, c) {
+            if (aiBoard[r][c] === 1) {
+                aiBoard[r][c] = 2;
+                document.getElementById('status').innerText = 'Попадание! Стреляй ещё раз.';
+                renderBothBoards();
+                if (checkWin(aiBoard)) {
+                    document.getElementById('status').innerText = 'Ты выиграл! Все корабли врага потоплены.';
+                    gameOver = true;
+                }
+                return;
+            } else {
+                aiBoard[r][c] = 3;
+                document.getElementById('status').innerText = 'Мимо. Ход переходит врагу.';
+                renderBothBoards();
+                playerTurn = false;
+                setTimeout(aiAttack, 800);
+            }
+        }
+
+        function aiAttack() {
+            if (gameOver) return;
+            let r, c;
+            // Умный выбор цели
+            if (aiHits.length > 0) {
+                let target = aiHits[0];
+                let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                let found = false;
+                for (let [dr, dc] of directions) {
+                    let nr = target.r + dr, nc = target.c + dc;
+                    if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && playerBoard[nr][nc] <= 1) {
+                        r = nr; c = nc; found = true; break;
+                    }
+                }
+                if (!found) {
+                    aiHits.shift();
+                    aiAttack();
+                    return;
+                }
+            } else {
+                let attempts = 0;
+                do {
+                    r = Math.floor(Math.random() * SIZE);
+                    c = Math.floor(Math.random() * SIZE);
+                    attempts++;
+                } while ((playerBoard[r][c] === 2 || playerBoard[r][c] === 3) && attempts < 1000);
+                if (attempts >= 1000) return;
+            }
+
+            if (playerBoard[r][c] === 1) {
+                playerBoard[r][c] = 2;
+                aiHits.push({r, c});
+                document.getElementById('status').innerText = 'Враг попал!';
+                renderBothBoards();
+                if (checkWin(playerBoard)) {
+                    document.getElementById('status').innerText = 'Враг выиграл... Твой флот потоплен.';
+                    gameOver = true;
+                } else {
+                    setTimeout(aiAttack, 500); // AI стреляет ещё раз при попадании
+                }
+            } else {
+                playerBoard[r][c] = 3;
+                document.getElementById('status').innerText = 'Враг промахнулся. Твой ход.';
+                renderBothBoards();
+                playerTurn = true;
+            }
+        }
+
+        function checkWin(board) {
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    if (board[r][c] === 1) return false;
+                }
+            }
+            return true;
+        }
+
+        function restartGame() {
+            playerBoard = createBoard();
+            aiBoard = createBoard();
+            placeAllShips(playerBoard);
+            placeAllShips(aiBoard);
+            playerTurn = true;
+            gameOver = false;
+            aiHits = [];
+            document.getElementById('status').innerText = 'Твой ход';
+            renderBothBoards();
+        }
+
+        restartGame();
+    </script>
+</body>
+</html>
