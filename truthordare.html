@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 Правда или действие — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 24px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #f0f6fc; }
+        h1 { font-size: 28px; margin-bottom: 6px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+
+        /* Категория */
+        .category-select {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .cat-btn {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid #30363d;
+            background: #21262d;
+            color: #c9d1d9;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cat-btn.active {
+            background: #1f6feb;
+            border-color: #1f6feb;
+            color: #fff;
+        }
+
+        /* Карточка задания */
+        .task-card {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 14px;
+            padding: 30px 20px;
+            min-height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+            transition: all 0.3s;
+            word-break: break-word;
+        }
+        .task-card.truth {
+            border-color: #58a6ff;
+            box-shadow: 0 0 20px rgba(88,166,255,0.2);
+        }
+        .task-card.dare {
+            border-color: #f0883e;
+            box-shadow: 0 0 20px rgba(240,136,62,0.2);
+        }
+
+        /* Кнопки выбора */
+        .choice-btns {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-truth {
+            background: #1f6feb;
+            color: #fff;
+        }
+        .btn-dare {
+            background: #f0883e;
+            color: #fff;
+        }
+        .btn-new {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #484f58;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Свои вопросы */
+        .custom-section {
+            margin-top: 20px;
+            text-align: left;
+            border-top: 1px solid #30363d;
+            padding-top: 16px;
+        }
+        .custom-section label {
+            font-size: 13px;
+            color: #8b949e;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .custom-section input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .btn-add {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .btn-add-truth { background: #1f6feb; color: #fff; }
+        .btn-add-dare { background: #f0883e; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🎭 Правда или действие</h1>
+        <p class="subtitle">Для весёлой компании!</p>
+
+        <!-- Выбор категории -->
+        <div class="category-select">
+            <button class="cat-btn active" data-cat="all" onclick="setCategory('all', this)">🔥 Все</button>
+            <button class="cat-btn" data-cat="light" onclick="setCategory('light', this)">😊 Лайт</button>
+            <button class="cat-btn" data-cat="hot" onclick="setCategory('hot', this)">🌶️ Хард</button>
+        </div>
+
+        <!-- Карточка задания -->
+        <div class="task-card" id="taskCard">
+            Выбери: Правда или Действие?
+        </div>
+
+        <!-- Кнопки -->
+        <div class="choice-btns">
+            <button class="btn btn-truth" onclick="getTask('truth')">🟦 Правда</button>
+            <button class="btn btn-dare" onclick="getTask('dare')">🟧 Действие</button>
+        </div>
+
+        <button class="btn-new" onclick="resetTask()">🔄 Сбросить</button>
+
+        <!-- Добавить свой вопрос -->
+        <div class="custom-section">
+            <label>Добавить свой вопрос/действие:</label>
+            <input type="text" id="customInput" placeholder="Напиши свой вариант...">
+            <button class="btn-add btn-add-truth" onclick="addCustom('truth')">➕ Правда</button>
+            <button class="btn-add btn-add-dare" onclick="addCustom('dare')">➕ Действие</button>
+        </div>
+    </div>
+
+    <script>
+        var currentCategory = 'all';
+
+        // База вопросов
+        var truthLight = [
+            'Какая твоя самая неловкая ситуация?',
+            'Что ты скрывал(а) от родителей?',
+            'Твой главный страх?',
+            'Кого ты тайно любил(а)?',
+            'Что самое странное ты ел(а)?',
+            'Твой самый стыдный поступок?',
+            'О чём ты врёшь чаще всего?',
+            'Что бы ты изменил(а) в себе?',
+            'Твоя худшая привычка?',
+            'Что ты гуглил(а) последний раз?'
+        ];
+
+        var truthHot = [
+            'С кем из присутствующих ты бы поцеловался(ась)?',
+            'Твой самый безумный поступок?',
+            'Что ты делал(а), когда никто не видел?',
+            'Твоя тайная фантазия?',
+            'Самое пикантное место, где ты был(а)?',
+            'Что ты никогда не расскажешь родителям?',
+            'Твой максимальный счёт в отношениях?',
+            'Что самое дорогое ты ломал(а)?',
+            'Ты когда-нибудь списывал(а) на экзамене?',
+            'Что ты реально думаешь о соседе слева?'
+        ];
+
+        var dareLight = [
+            'Изобрази животное на выбор компании',
+            'Спой куплет любимой песни',
+            'Сделай 10 приседаний',
+            'Расскажи стихотворение',
+            'Покажи фокус',
+            'Станцуй 30 секунд без музыки',
+            'Изобрази робота',
+            'Скажи комплимент каждому',
+            'Прокричи "Я люблю жизнь!"',
+            'Покажи свою лучшую эмоцию'
+        ];
+
+        var dareHot = [
+            'Позвони другу и скажи "Я тебя люблю"',
+            'Выйди на балкон и крикни "Я счастлив(а)!"',
+            'Сделай селфи со смешным лицом и поставь на аватарку на час',
+            'Изобрази пьяного человека',
+            'Расскажи анекдот с серьёзным лицом',
+            'Спой песню на иностранном языке',
+            'Изобрази известную личность',
+            'Сделай комплимент незнакомцу в чате',
+            'Покажи свой последний поиск в телефоне',
+            'Прочитай скороговорку 5 раз быстро'
+        ];
+
+        function getTask(type) {
+            var list;
+            if (type === 'truth') {
+                list = currentCategory === 'hot' ? truthHot : truthLight;
+                if (currentCategory === 'all') list = truthLight.concat(truthHot);
+            } else {
+                list = currentCategory === 'hot' ? dareHot : dareLight;
+                if (currentCategory === 'all') list = dareLight.concat(dareHot);
+            }
+
+            var task = list[Math.floor(Math.random() * list.length)];
+            var card = document.getElementById('taskCard');
+            card.textContent = task;
+            card.className = 'task-card ' + type;
+        }
+
+        function resetTask() {
+            var card = document.getElementById('taskCard');
+            card.textContent = 'Выбери: Правда или Действие?';
+            card.className = 'task-card';
+        }
+
+        function setCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            resetTask();
+        }
+
+        function addCustom(type) {
+            var input = document.getElementById('customInput');
+            var text = input.value.trim();
+            if (!text) { alert('Введи текст!'); return; }
+
+            if (type === 'truth') {
+                truthLight.push(text);
+            } else {
+                dareLight.push(text);
+            }
+            input.value = '';
+            alert('✅ Добавлено в "' + (type === 'truth' ? 'Правда' : 'Действие') + '" (категория Лайт)!');
+        }
+    </script>
+</body>
+</html>
