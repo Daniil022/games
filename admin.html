@@ -26,7 +26,8 @@
         }
         h2 { text-align: center; color: #f0f6fc; margin-bottom: 20px; }
         h3 { color: #f0f6fc; margin: 20px 0 12px; font-size: 18px; }
-        input, select {
+        h4 { color: #f0f6fc; margin: 10px 0 6px; font-size: 15px; }
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             background: #0d1117;
@@ -36,7 +37,7 @@
             font-size: 16px;
             margin-bottom: 12px;
         }
-        input:focus, select:focus { outline: none; border-color: #58a6ff; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #58a6ff; }
         button {
             padding: 12px 20px;
             background: #238636;
@@ -59,7 +60,7 @@
         .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .stat { background: #0d1117; padding: 12px; border-radius: 8px; text-align: center; }
         .stat span { font-size: 24px; font-weight: 700; color: #58a6ff; display: block; }
-        .game-list-item, .server-list-item, .sub-item {
+        .game-list-item, .server-list-item, .sub-item, .checklist-item, .incident-item {
             background: #0d1117;
             padding: 12px;
             border-radius: 8px;
@@ -70,13 +71,12 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .game-list-item .info, .server-list-item .info, .sub-item .info { flex: 1; min-width: 150px; }
-        .game-list-item .name, .server-list-item .name, .sub-item .name { font-weight: 600; color: #f0f6fc; }
+        .info { flex: 1; min-width: 150px; }
+        .name { font-weight: 600; color: #f0f6fc; }
         .desc { font-size: 12px; color: #8b949e; }
-        .status-online { background: #3fb95022; color: #3fb950; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
-        .status-offline { background: #f8514922; color: #f85149; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
-        .status-active { background: #3fb95022; color: #3fb950; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
-        .status-expired { background: #f8514922; color: #f85149; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .status-online, .status-active, .status-safe { background: #3fb95022; color: #3fb950; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .status-offline, .status-expired, .status-danger { background: #f8514922; color: #f85149; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .status-warning { background: #f0883e22; color: #f0883e; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab {
             padding: 8px 16px;
@@ -88,23 +88,21 @@
             color: #8b949e;
         }
         .tab.active { background: #1f6feb; border-color: #1f6feb; color: white; }
+        .sub-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .sub-tab {
+            padding: 6px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            background: #21262d;
+            border: 1px solid #30363d;
+            font-size: 13px;
+            color: #8b949e;
+        }
+        .sub-tab.active { background: #30363d; color: #f0f6fc; border-color: #58a6ff; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        textarea {
-            width: 100%;
-            height: 200px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #c9d1d9;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            margin-bottom: 12px;
-            resize: vertical;
-        }
-        .inline-form { display: flex; gap: 8px; flex-wrap: wrap; }
-        .inline-form input { flex: 1; min-width: 120px; margin-bottom: 0; }
+        .sub-content { display: none; }
+        .sub-content.active { display: block; }
         .result-card { background: #0d1117; padding: 16px; border-radius: 8px; margin-top: 12px; }
         .result-card a { color: #58a6ff; font-size: 16px; text-decoration: none; }
         .result-card a:hover { text-decoration: underline; }
@@ -112,14 +110,15 @@
         @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
         .gauge-container { text-align: center; margin: 20px 0; }
         .gauge { font-size: 64px; font-weight: 700; color: #58a6ff; }
-        .gauge-label { font-size: 14px; color: #8b949e; }
-        #mapContainer { height: 300px; border-radius: 8px; margin: 12px 0; background: #0d1117; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; color: #8b949e; font-size: 14px; }
-        .qr-output { text-align: center; padding: 20px; background: white; border-radius: 8px; margin: 12px 0; }
+        .incident-header { display: flex; justify-content: space-between; align-items: center; }
+        .checklist-item label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .checklist-item input[type="checkbox"] { width: 20px; height: 20px; margin: 0; cursor: pointer; }
+        .photo-preview { max-width: 100px; max-height: 60px; border-radius: 6px; margin: 4px; }
+        .inline-form { display: flex; gap: 8px; flex-wrap: wrap; }
+        .inline-form input { flex: 1; min-width: 120px; margin-bottom: 0; }
     </style>
 </head>
 <body>
-
-    <!-- Экран входа -->
     <div id="loginScreen" class="login-box">
         <h2>🔐 Вход в админку</h2>
         <div id="errorMsg" class="error hidden"></div>
@@ -127,7 +126,6 @@
         <button onclick="login()" style="width:100%">Войти</button>
     </div>
 
-    <!-- Панель управления -->
     <div id="adminPanel" class="panel hidden">
         <h2>🛡️ Админ-панель</h2>
 
@@ -141,6 +139,7 @@
             <div class="tab" onclick="switchTab('speedtest')">⚡</div>
             <div class="tab" onclick="switchTab('server-map')">🗺️</div>
             <div class="tab" onclick="switchTab('config-builder')">🔧</div>
+            <div class="tab" onclick="switchTab('mchs')">🛡️</div>
             <div class="tab" onclick="switchTab('password')">🔑</div>
             <div class="tab" onclick="switchTab('backup')">💾</div>
         </div>
@@ -207,7 +206,7 @@
             <div id="whoisResults"></div>
         </div>
 
-        <!-- VPN Инструменты -->
+        <!-- VPN -->
         <div id="tab-vpn-tools" class="tab-content">
             <h3>🧪 A/B Тестирование</h3>
             <div class="inline-form">
@@ -256,7 +255,7 @@
             <div id="subList"></div>
         </div>
 
-        <!-- Мониторинг с графиками -->
+        <!-- Мониторинг -->
         <div id="tab-monitor" class="tab-content">
             <h3>📈 Расширенный мониторинг</h3>
             <div class="stat-row">
@@ -271,43 +270,40 @@
                 <button onclick="addMonitorServer()">➕</button>
             </div>
             <div id="monitorList"></div>
-            <button class="secondary" onclick="checkAllMonitorServers()" style="margin-top:12px">🔄 Проверить все</button>
-            <button class="danger" onclick="clearMonitorHistory()" style="margin-top:12px">🗑 Очистить историю</button>
+            <button class="secondary" onclick="checkAllMonitorServers()" style="margin-top:12px">🔄 Проверить</button>
+            <button class="danger" onclick="clearMonitorHistory()" style="margin-top:12px">🗑 Очистить</button>
         </div>
 
         <!-- SpeedTest -->
         <div id="tab-speedtest" class="tab-content">
             <h3>⚡ SpeedTest</h3>
-            <div class="gauge-container">
-                <div class="gauge" id="speedValue">--</div>
-                <div class="gauge-label">Mbps</div>
-            </div>
+            <div class="gauge-container"><div class="gauge" id="speedValue">--</div><div class="gauge-label">Mbps</div></div>
             <div class="stat-row">
-                <div class="stat">📥 Скачивание<span id="downloadSpeed">-</span></div>
-                <div class="stat">📤 Загрузка<span id="uploadSpeed">-</span></div>
-                <div class="stat">🕐 Пинг<span id="pingResult">-</span></div>
+                <div class="stat">📥<span id="downloadSpeed">-</span></div>
+                <div class="stat">📤<span id="uploadSpeed">-</span></div>
+                <div class="stat">🕐<span id="pingResult">-</span></div>
             </div>
             <button onclick="runSpeedTest()" style="width:100%">🚀 Начать тест</button>
             <div id="speedHistory" style="margin-top:12px"></div>
         </div>
 
-        <!-- Карта серверов -->
+        <!-- Карта -->
         <div id="tab-server-map" class="tab-content">
             <h3>🗺️ Карта серверов</h3>
-            <div id="mapContainer">Карта загружается... (нужен интернет)</div>
-            <div id="mapServerList" style="margin-top:12px"></div>
-            <button class="secondary" onclick="addMapServerPrompt()">➕ Добавить сервер</button>
+            <div id="mapContainer" style="height:300px;border-radius:8px;background:#0d1117;border:1px solid #30363d;display:flex;align-items:center;justify-content:center;color:#8b949e;margin-bottom:12px">Карта серверов</div>
+            <div id="mapServerList"></div>
+            <button class="secondary" onclick="addMapServerPrompt()">➕ Сервер</button>
         </div>
 
         <!-- Конструктор конфигов -->
         <div id="tab-config-builder" class="tab-content">
-            <h3>🔧 Конструктор конфигураций</h3>
+            <h3>🔧 Конструктор</h3>
             <select id="configProtocol" onchange="updateConfigPreview()">
                 <option value="vless">VLESS</option>
                 <option value="vmess">VMess</option>
                 <option value="trojan">Trojan</option>
             </select>
-            <input type="text" id="configAddress" placeholder="Адрес сервера" oninput="updateConfigPreview()">
+            <input type="text" id="configAddress" placeholder="Адрес" oninput="updateConfigPreview()">
             <input type="text" id="configPort" placeholder="Порт" value="443" oninput="updateConfigPreview()">
             <input type="text" id="configUUID" placeholder="UUID" oninput="updateConfigPreview()">
             <select id="configSecurity" onchange="updateConfigPreview()">
@@ -315,19 +311,77 @@
                 <option value="tls">TLS</option>
                 <option value="none">None</option>
             </select>
-            <input type="text" id="configSNI" placeholder="SNI (напр. yandex.ru)" oninput="updateConfigPreview()">
+            <input type="text" id="configSNI" placeholder="SNI" oninput="updateConfigPreview()">
             <button onclick="generateConfig()" style="width:100%">🎫 Сгенерировать</button>
             <div id="configOutput" style="margin-top:12px"></div>
         </div>
 
-        <!-- Смена пароля -->
+        <!-- МЧС -->
+        <div id="tab-mchs" class="tab-content">
+            <h3>🛡️ МЧС: Инструменты</h3>
+            <div class="sub-tabs">
+                <div class="sub-tab active" onclick="switchSubTab('checklist')">✅ Чек-лист</div>
+                <div class="sub-tab" onclick="switchSubTab('incidents')">📋 Происшествия</div>
+                <div class="sub-tab" onclick="switchSubTab('knowledge')">📚 База знаний</div>
+            </div>
+
+            <!-- Чек-лист инспектора -->
+            <div id="sub-checklist" class="sub-content active">
+                <h4>📝 Чек-лист пожарной безопасности</h4>
+                <p style="color:#8b949e;font-size:13px;margin-bottom:12px">Отметьте выполненные пункты. Результат можно сохранить.</p>
+                <div id="checklistItems"></div>
+                <div class="two-col">
+                    <button onclick="saveChecklist()">💾 Сохранить результат</button>
+                    <button class="secondary" onclick="resetChecklist()">🔄 Сбросить</button>
+                </div>
+                <div id="checklistHistory" style="margin-top:16px"></div>
+            </div>
+
+            <!-- Учёт происшествий -->
+            <div id="sub-incidents" class="sub-content">
+                <h4>🚨 Карточка учёта происшествий</h4>
+                <input type="text" id="incidentAddress" placeholder="Адрес происшествия">
+                <select id="incidentType">
+                    <option value="fire">🔥 Пожар</option>
+                    <option value="flood">🌊 Подтопление</option>
+                    <option value="dpt">🚗 ДТП</option>
+                    <option value="chemical">☣️ Химическая угроза</option>
+                    <option value="other">📌 Другое</option>
+                </select>
+                <input type="text" id="incidentForces" placeholder="Привлечённые силы (напр. АЦ-40, АЛ-30)">
+                <select id="incidentStatus">
+                    <option value="active">🔴 Активно</option>
+                    <option value="responding">🟡 Реагирование</option>
+                    <option value="resolved">🟢 Завершено</option>
+                </select>
+                <textarea id="incidentNote" placeholder="Дополнительная информация..." style="height:80px"></textarea>
+                <button onclick="addIncident()" style="width:100%">➕ Зарегистрировать происшествие</button>
+                <h4 style="margin-top:16px">📋 Журнал происшествий</h4>
+                <div class="stat-row">
+                    <div class="stat">🔴 Активных<span id="activeIncidents">0</span></div>
+                    <div class="stat">🟢 Завершено<span id="resolvedIncidents">0</span></div>
+                    <div class="stat">📋 Всего<span id="totalIncidents">0</span></div>
+                </div>
+                <div id="incidentList"></div>
+            </div>
+
+            <!-- База знаний -->
+            <div id="sub-knowledge" class="sub-content">
+                <h4>📢 Сигналы оповещения ГО и ЧС</h4>
+                <div id="signalsList"></div>
+                <h4 style="margin-top:16px">📋 Алгоритмы действий при ЧС</h4>
+                <div id="algorithmsList"></div>
+            </div>
+        </div>
+
+        <!-- Пароль -->
         <div id="tab-password" class="tab-content">
             <div id="passError" class="error hidden"></div>
             <div id="passSuccess" class="success hidden"></div>
             <input type="password" id="oldPassword" placeholder="Текущий пароль">
             <input type="password" id="newPassword" placeholder="Новый пароль">
             <input type="password" id="confirmPassword" placeholder="Подтвердите">
-            <button onclick="changePassword()" style="width:100%">Сменить пароль</button>
+            <button onclick="changePassword()" style="width:100%">Сменить</button>
         </div>
 
         <!-- Бэкап -->
@@ -357,11 +411,33 @@
             { name: 'Викторина ПБ', file: 'quiz.html', icon: '🧯', desc: '20 уровней', full: true, visible: true }
         ];
 
+        const DEFAULT_CHECKLIST = [
+            { id:1, text:'Наличие огнетушителей (срок годности не истёк)', checked:false },
+            { id:2, text:'План эвакуации на видном месте', checked:false },
+            { id:3, text:'Эвакуационные выходы не загромождены', checked:false },
+            { id:4, text:'Пожарная сигнализация исправна', checked:false },
+            { id:5, text:'Электропроводка без повреждений', checked:false },
+            { id:6, text:'Таблички с номером пожарной охраны', checked:false },
+            { id:7, text:'Противопожарные двери закрываются', checked:false },
+            { id:8, text:'Проведён инструктаж сотрудников', checked:false }
+        ];
+
+        const DEFAULT_SIGNALS = [
+            { name:'Внимание всем!', desc:'Непрерывное звучание сирен. Включить радио/ТВ, прослушать сообщение.', action:'Включить радио или телевизор на местном канале.' },
+            { name:'Воздушная тревога', desc:'Угроза воздушного нападения. Немедленно укрыться!', action:'Укрыться в ближайшем убежище, метро, подвале.' },
+            { name:'Отбой воздушной тревоги', desc:'Угроза миновала. Разрешено покинуть укрытия.', action:'Вернуться к обычной деятельности.' },
+            { name:'Радиационная опасность', desc:'Угроза радиоактивного заражения.', action:'Надеть респиратор, укрыться в помещении, загерметизировать окна.' },
+            { name:'Химическая тревога', desc:'Угроза химического заражения.', action:'Надеть противогаз, укрыться в убежище. Двигаться перпендикулярно ветру.' }
+        ];
+
+        const DEFAULT_ALGORITHMS = [
+            { title:'Пожар в здании', steps:'1. Сообщить 101\n2. Эвакуировать людей\n3. Обесточить помещение\n4. Применить огнетушитель\n5. Встретить пожарных' },
+            { title:'Лесной пожар', steps:'1. Сообщить 101 или 112\n2. Выходить перпендикулярно ветру\n3. Дышать через мокрую ткань\n4. Не обгонять фронт пожара' },
+            { title:'Наводнение', steps:'1. Отключить газ и электричество\n2. Подняться на верхние этажи\n3. Взять документы и воду\n4. Ждать помощи или эвакуации' }
+        ];
+
         // ==================== УТИЛИТЫ ====================
-        async function sha256(m) {
-            const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(m));
-            return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2,'0')).join('');
-        }
+        async function sha256(m) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(m)); return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2,'0')).join(''); }
         function gd(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } }
         function sd(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
         function getStats() { return gd('siteStats', { total:0, today:0, date:'', games:{}, daily:{} }); }
@@ -382,6 +458,12 @@
         function saveSpeedHistory(h) { sd('speedHistory', h); }
         function getMapServers() { return gd('mapServers', []); }
         function saveMapServers(s) { sd('mapServers', s); }
+        function getChecklist() { return gd('checklist', DEFAULT_CHECKLIST); }
+        function saveChecklistData(c) { sd('checklist', c); }
+        function getChecklistHistory() { return gd('checklistHistory', []); }
+        function saveChecklistHistory(h) { sd('checklistHistory', h); }
+        function getIncidents() { return gd('incidents', []); }
+        function saveIncidents(i) { sd('incidents', i); }
 
         // ==================== АВТОРИЗАЦИЯ ====================
         async function login() {
@@ -404,9 +486,7 @@
             document.getElementById('passwordInput').value = '';
         }
         async function changePassword() {
-            const old = document.getElementById('oldPassword').value;
-            const n = document.getElementById('newPassword').value;
-            const c = document.getElementById('confirmPassword').value;
+            const old = document.getElementById('oldPassword').value, n = document.getElementById('newPassword').value, c = document.getElementById('confirmPassword').value;
             const e = document.getElementById('passError'); e.classList.add('hidden');
             const s = document.getElementById('passSuccess'); s.classList.add('hidden');
             if (await sha256(old) !== getPasswordHash()) { e.classList.remove('hidden'); e.innerText='❌ Неверный пароль'; return; }
@@ -434,69 +514,54 @@
             if (name==='speedtest') loadSpeedHistoryTab();
             if (name==='server-map') loadMapTab();
             if (name==='config-builder') updateConfigPreview();
+            if (name==='mchs') loadMCHS();
+        }
+        function switchSubTab(name) {
+            document.querySelectorAll('#tab-mchs .sub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#tab-mchs .sub-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('sub-'+name).classList.add('active');
+            document.querySelector(`#tab-mchs .sub-tab[onclick="switchSubTab('${name}')"]`).classList.add('active');
+            if (name==='checklist') loadChecklist();
+            if (name==='incidents') loadIncidents();
+            if (name==='knowledge') loadKnowledge();
         }
 
-        function clearLookup() {
-            ['fssp','inn','auto','whois'].forEach(id => { const el=document.getElementById(id+'Results'); if(el)el.innerHTML=''; });
-            ['fsspQuery','innQuery','vinQuery','whoisQuery'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; });
-        }
-
-        // ==================== ДАШБОРД ====================
+        // ==================== ОБЩИЕ ====================
+        function clearLookup() { ['fssp','inn','auto','whois'].forEach(id => { const el=document.getElementById(id+'Results'); if(el)el.innerHTML=''; }); ['fsspQuery','innQuery','vinQuery','whoisQuery'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; }); }
         function loadDashboard() {
-            const s = getStats();
-            const t = new Date().toDateString();
+            const s = getStats(), t = new Date().toDateString();
             if (s.date!==t) { s.today=0; s.date=t; saveStats(s); }
             document.getElementById('todayVisits').innerText = s.today||0;
             document.getElementById('totalVisits').innerText = s.total||0;
             let w=0; const d=s.daily||{};
             for(let i=0;i<7;i++){ const dt=new Date(); dt.setDate(dt.getDate()-i); w+=d[dt.toDateString()]||0; }
             document.getElementById('weekVisits').innerText = w;
-            const g=s.games||{};
-            const sorted=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,5);
-            const gn={}; getGames().forEach(x=>gn[x.file.replace('.html','')]=x.icon+' '+x.name);
+            const g=s.games||{}, sorted=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,5), gn={};
+            getGames().forEach(x=>gn[x.file.replace('.html','')]=x.icon+' '+x.name);
             document.getElementById('topGames').innerHTML = sorted.length ? sorted.map(([k,v])=>`<div class="stat" style="text-align:left;margin-bottom:4px">${gn[k]||k}: <b>${v}</b></div>`).join('') : '<p style="color:#8b949e">Нет данных</p>';
             let dh='';
-            for(let i=6;i>=0;i--){ const dt=new Date(); dt.setDate(dt.getDate()-i); const k=dt.toDateString(); dh+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${dt.toLocaleDateString('ru',{day:'numeric',month:'short'})} <b>${d[k]||0}</b></div>`; }
+            for(let i=6;i>=0;i--){ const dt=new Date(); dt.setDate(dt.getDate()-i); dh+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${dt.toLocaleDateString('ru',{day:'numeric',month:'short'})} <b>${d[dt.toDateString()]||0}</b></div>`; }
             document.getElementById('dailyStats').innerHTML = dh;
         }
         function resetStats() { if(confirm('Сбросить?')) { saveStats({total:0,today:0,date:new Date().toDateString(),games:{},daily:{}}); loadDashboard(); } }
         function exportStats() { const b=new Blob([JSON.stringify(getStats(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='stats.json'; a.click(); }
-
-        // ==================== ИГРЫ ====================
-        function loadGamesList() {
-            document.getElementById('gamesList').innerHTML = getGames().map((g,i)=>`<div class="game-list-item"><div class="info"><div class="name">${g.icon} ${g.name} ${g.visible?'':'<span style="color:#f0883e;font-size:11px">скрыта</span>'}</div><div class="desc">${g.file} — ${g.desc}</div></div><div><button onclick="toggleGame(${i})">${g.visible?'👁':'🙈'}</button><button class="danger" onclick="deleteGame(${i})">🗑</button></div></div>`).join('');
-        }
-        function addGame() {
-            const n=document.getElementById('newGameName').value.trim(), f=document.getElementById('newGameFile').value.trim(), i=document.getElementById('newGameIcon').value.trim(), d=document.getElementById('newGameDesc').value.trim();
-            if(!n||!f||!i){alert('Все поля обязательны!');return;}
-            const g=getGames(); g.push({name:n,file:f,icon:i,desc:d||'Новая игра',full:false,visible:true}); saveGames(g);
-            ['newGameName','newGameFile','newGameIcon','newGameDesc'].forEach(id=>document.getElementById(id).value='');
-            document.getElementById('successMsg').classList.remove('hidden'); document.getElementById('successMsg').innerText='✅ Добавлена!';
-            setTimeout(()=>document.getElementById('successMsg').classList.add('hidden'),3000);
-            loadGamesList();
-        }
+        function loadGamesList() { document.getElementById('gamesList').innerHTML = getGames().map((g,i)=>`<div class="game-list-item"><div class="info"><div class="name">${g.icon} ${g.name} ${g.visible?'':'<span style="color:#f0883e;font-size:11px">скрыта</span>'}</div><div class="desc">${g.file} — ${g.desc}</div></div><div><button onclick="toggleGame(${i})">${g.visible?'👁':'🙈'}</button><button class="danger" onclick="deleteGame(${i})">🗑</button></div></div>`).join(''); }
+        function addGame() { const n=document.getElementById('newGameName').value.trim(), f=document.getElementById('newGameFile').value.trim(), i=document.getElementById('newGameIcon').value.trim(), d=document.getElementById('newGameDesc').value.trim(); if(!n||!f||!i){alert('Все поля обязательны!');return;} const g=getGames(); g.push({name:n,file:f,icon:i,desc:d||'Новая игра',full:false,visible:true}); saveGames(g); ['newGameName','newGameFile','newGameIcon','newGameDesc'].forEach(id=>document.getElementById(id).value=''); document.getElementById('successMsg').classList.remove('hidden'); document.getElementById('successMsg').innerText='✅ Добавлена!'; setTimeout(()=>document.getElementById('successMsg').classList.add('hidden'),3000); loadGamesList(); }
         function toggleGame(i){ const g=getGames(); g[i].visible=!g[i].visible; saveGames(g); loadGamesList(); }
         function deleteGame(i){ if(confirm('Удалить?')){ const g=getGames(); g.splice(i,1); saveGames(g); loadGamesList(); } }
         function resetGames(){ if(confirm('Сбросить?')){ saveGames(DEFAULT_GAMES); loadGamesList(); } }
 
-        // ==================== ПРОВЕРКИ ====================
-        function searchFSSP(){ const q=document.getElementById('fsspQuery').value.trim(); const d=document.getElementById('fsspResults'); if(!q){d.innerHTML='<p style="color:#f85149">Введите запрос</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://fssp.gov.ru/iss/ip?is%5Bvariant%5D=2&is%5Bfio%5D=${encodeURIComponent(q)}" target="_blank">Открыть "${q}" на ФССП →</a></div>`; }
-        function searchINN(){ const q=document.getElementById('innQuery').value.trim(); const d=document.getElementById('innResults'); if(!q||!/^\d{10}$|^\d{12}$/.test(q)){d.innerHTML='<p style="color:#f85149">Введите ИНН</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://pb.nalog.ru/company.html?inn=${q}" target="_blank">Открыть ИНН ${q} →</a></div>`; }
-        function searchAuto(){ const q=document.getElementById('vinQuery').value.trim(); const d=document.getElementById('autoResults'); if(!q){d.innerHTML='<p style="color:#f85149">Введите VIN</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://гибдд.рф/check/auto#${encodeURIComponent(q)}" target="_blank">Проверить "${q}" →</a></div>`; }
-        function searchWhois(){ const q=document.getElementById('whoisQuery').value.trim(); const d=document.getElementById('whoisResults'); if(!q){d.innerHTML='<p style="color:#f85149">Введите домен</p>';return;} d.innerHTML=`<div class="result-card"><a href="https://www.nic.ru/whois/?searchWord=${encodeURIComponent(q)}" target="_blank">RU-CENTER →</a> | <a href="https://2ip.ru/whois/${encodeURIComponent(q)}" target="_blank">2IP →</a></div>`; }
+        // Проверки
+        function searchFSSP(){ const q=document.getElementById('fsspQuery').value.trim(); if(!q){document.getElementById('fsspResults').innerHTML='<p style="color:#f85149">Введите запрос</p>';return;} document.getElementById('fsspResults').innerHTML=`<div class="result-card"><a href="https://fssp.gov.ru/iss/ip?is%5Bvariant%5D=2&is%5Bfio%5D=${encodeURIComponent(q)}" target="_blank">Открыть "${q}" на ФССП →</a></div>`; }
+        function searchINN(){ const q=document.getElementById('innQuery').value.trim(); if(!q||!/^\d{10}$|^\d{12}$/.test(q)){document.getElementById('innResults').innerHTML='<p style="color:#f85149">Введите ИНН</p>';return;} document.getElementById('innResults').innerHTML=`<div class="result-card"><a href="https://pb.nalog.ru/company.html?inn=${q}" target="_blank">Открыть ИНН ${q} →</a></div>`; }
+        function searchAuto(){ const q=document.getElementById('vinQuery').value.trim(); if(!q){document.getElementById('autoResults').innerHTML='<p style="color:#f85149">Введите VIN</p>';return;} document.getElementById('autoResults').innerHTML=`<div class="result-card"><a href="https://гибдд.рф/check/auto#${encodeURIComponent(q)}" target="_blank">Проверить "${q}" →</a></div>`; }
+        function searchWhois(){ const q=document.getElementById('whoisQuery').value.trim(); if(!q){document.getElementById('whoisResults').innerHTML='<p style="color:#f85149">Введите домен</p>';return;} document.getElementById('whoisResults').innerHTML=`<div class="result-card"><a href="https://www.nic.ru/whois/?searchWord=${encodeURIComponent(q)}" target="_blank">RU-CENTER →</a> | <a href="https://2ip.ru/whois/${encodeURIComponent(q)}" target="_blank">2IP →</a></div>`; }
 
-        // ==================== VPN ИНСТРУМЕНТЫ ====================
-        function loadABServers(){
-            const s=getABServers();
-            document.getElementById('abServerList').innerHTML = s.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} | 👁 ${x.shows||0} | 🖱 ${x.clicks||0}</div></div><button class="danger" onclick="deleteABServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
-            const ts=s.reduce((a,x)=>a+(x.shows||0),0);
-            document.getElementById('abStats').innerHTML = s.length ? '<h4>📊 Статистика</h4>'+s.map(x=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${x.name}: <b>${x.shows||0}</b> (${ts?(x.shows||0)/ts*100:0|0}%) | 🖱 ${x.clicks||0}</div>`).join('') : '';
-        }
+        // VPN
+        function loadABServers(){ const s=getABServers(); document.getElementById('abServerList').innerHTML = s.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} | 👁 ${x.shows||0} | 🖱 ${x.clicks||0}</div></div><button class="danger" onclick="deleteABServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>'; const ts=s.reduce((a,x)=>a+(x.shows||0),0); document.getElementById('abStats').innerHTML = s.length ? '<h4>📊 Статистика</h4>'+s.map(x=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${x.name}: <b>${x.shows||0}</b> (${ts?(x.shows||0)/ts*100:0|0}%) | 🖱 ${x.clicks||0}</div>`).join('') : ''; }
         function addABServer(){ const n=document.getElementById('abServerName').value.trim(), u=document.getElementById('abServerUrl').value.trim(); if(!n||!u)return; const s=getABServers(); s.push({name:n,url:u,shows:0,clicks:0}); saveABServers(s); document.getElementById('abServerName').value=''; document.getElementById('abServerUrl').value=''; loadABServers(); }
         function deleteABServer(i){ const s=getABServers(); s.splice(i,1); saveABServers(s); loadABServers(); }
-        function loadMonServers(){
-            document.getElementById('monServerList').innerHTML = getMonServers().map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} — <span class="${x.status==='online'?'status-online':'status-offline'}">${x.status||'не проверен'}</span></div></div><button class="danger" onclick="deleteMonServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
-        }
+        function loadMonServers(){ document.getElementById('monServerList').innerHTML = getMonServers().map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} — <span class="${x.status==='online'?'status-online':'status-offline'}">${x.status||'не проверен'}</span></div></div><button class="danger" onclick="deleteMonServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>'; }
         function addMonServer(){ const n=document.getElementById('monServerName').value.trim(), u=document.getElementById('monServerUrl').value.trim(); if(!n||!u)return; const s=getMonServers(); s.push({name:n,url:u,status:'не проверен'}); saveMonServers(s); document.getElementById('monServerName').value=''; document.getElementById('monServerUrl').value=''; loadMonServers(); }
         function deleteMonServer(i){ const s=getMonServers(); s.splice(i,1); saveMonServers(s); loadMonServers(); }
         async function checkAllServers(){ const s=getMonServers(); for(let x of s){ x.status='проверка...'; saveMonServers(s); loadMonServers(); try{ const c=new AbortController(); setTimeout(()=>c.abort(),5000); await fetch(x.url.includes('://')?x.url:'https://'+x.url,{mode:'no-cors',signal:c.signal}); x.status='online'; }catch(e){ x.status='offline'; } saveMonServers(s); loadMonServers(); } }
@@ -505,112 +570,158 @@
         function generateRealityKeys(){ const pk=Array.from({length:32},()=>Math.random()*256|0); document.getElementById('realityOutput').value=`Private: ${btoa(String.fromCharCode(...pk))}\nPublic:  ${btoa(String.fromCharCode(...Array.from({length:32},()=>Math.random()*256|0)))}\n\n⚠️ Используйте xray x25519`; }
         function generateShortId(){ document.getElementById('shortIdOutput').value=Math.random().toString(16).substring(2,10); }
 
-        // ==================== ПОДПИСКИ ====================
-        function loadSubscriptions(){
-            const s=getSubscriptions(), now=Date.now();
-            s.forEach(x=>{ if(x.expiresAt && now > x.expiresAt) x.status='expired'; });
-            saveSubscriptions(s);
-            document.getElementById('subList').innerHTML = s.map((x,i)=>`<div class="sub-item"><div class="info"><div class="name">${x.userName}</div><div class="desc">Ключ: ${x.key.substring(0,16)}... | До: ${new Date(x.expiresAt).toLocaleDateString('ru')} | <span class="${x.status==='active'?'status-active':'status-expired'}">${x.status}</span></div></div><button class="danger" onclick="deleteSub(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет подписок</p>';
-        }
-        function createSubscription(){
-            const n=document.getElementById('subUserName').value.trim(), d=parseInt(document.getElementById('subDuration').value);
-            if(!n)return;
-            const key=crypto.randomUUID(), expiresAt=Date.now()+d*86400000;
-            const s=getSubscriptions(); s.push({userName:n,key:key,expiresAt:expiresAt,status:'active',createdAt:Date.now()}); saveSubscriptions(s);
-            document.getElementById('subResult').innerHTML=`<div class="result-card"><p>✅ Ключ для <b>${n}</b>:</p><input value="${key}" readonly style="font-family:monospace;text-align:center"><p style="color:#8b949e;font-size:12px">Действует до: ${new Date(expiresAt).toLocaleDateString('ru')}</p></div>`;
-            loadSubscriptions();
-        }
+        // Подписки
+        function loadSubscriptions(){ const s=getSubscriptions(), now=Date.now(); s.forEach(x=>{ if(x.expiresAt && now > x.expiresAt) x.status='expired'; }); saveSubscriptions(s); document.getElementById('subList').innerHTML = s.map((x,i)=>`<div class="sub-item"><div class="info"><div class="name">${x.userName}</div><div class="desc">Ключ: ${x.key.substring(0,16)}... | До: ${new Date(x.expiresAt).toLocaleDateString('ru')} | <span class="${x.status==='active'?'status-active':'status-expired'}">${x.status}</span></div></div><button class="danger" onclick="deleteSub(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет подписок</p>'; }
+        function createSubscription(){ const n=document.getElementById('subUserName').value.trim(), d=parseInt(document.getElementById('subDuration').value); if(!n)return; const key=crypto.randomUUID(), expiresAt=Date.now()+d*86400000; const s=getSubscriptions(); s.push({userName:n,key:key,expiresAt:expiresAt,status:'active',createdAt:Date.now()}); saveSubscriptions(s); document.getElementById('subResult').innerHTML=`<div class="result-card"><p>✅ Ключ для <b>${n}</b>:</p><input value="${key}" readonly style="font-family:monospace;text-align:center"><p style="color:#8b949e;font-size:12px">До: ${new Date(expiresAt).toLocaleDateString('ru')}</p></div>`; loadSubscriptions(); }
         function deleteSub(i){ const s=getSubscriptions(); s.splice(i,1); saveSubscriptions(s); loadSubscriptions(); }
 
-        // ==================== МОНИТОР ====================
-        function loadMonitorTab(){
-            const d=getMonitorData();
-            document.getElementById('monitorList').innerHTML = d.servers.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} — <span class="${x.status==='online'?'status-online':'status-offline'}">${x.status}</span> | Uptime: ${x.uptime||0}%</div></div><button class="danger" onclick="deleteMonitorServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
-            document.getElementById('monitorLog').innerHTML = d.history.slice(-20).reverse().map(x=>`[${new Date(x.time).toLocaleTimeString('ru')}] ${x.name}: ${x.status==='online'?'🟢':'🔴'} ${x.status}`).join('<br>')||'Нет записей';
-            const online=d.servers.filter(x=>x.status==='online').length, total=d.servers.length;
-            document.getElementById('onlineCount').innerText=online;
-            document.getElementById('offlineCount').innerText=total-online;
-            const avgUptime=total?d.servers.reduce((a,x)=>a+(x.uptime||0),0)/total:0;
-            document.getElementById('avgUptime').innerText=avgUptime.toFixed(1)+'%';
-        }
-        function addMonitorServer(){
-            const n=document.getElementById('monServerName2').value.trim(), u=document.getElementById('monServerUrl2').value.trim();
-            if(!n||!u)return;
-            const d=getMonitorData(); d.servers.push({name:n,url:u,status:'не проверен',uptime:0,checks:0,fails:0}); saveMonitorData(d);
-            document.getElementById('monServerName2').value=''; document.getElementById('monServerUrl2').value=''; loadMonitorTab();
-        }
+        // Монитор
+        function loadMonitorTab(){ const d=getMonitorData(); document.getElementById('monitorList').innerHTML = d.servers.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name}</div><div class="desc">${x.url} — <span class="${x.status==='online'?'status-online':'status-offline'}">${x.status}</span> | Uptime: ${x.uptime||0}%</div></div><button class="danger" onclick="deleteMonitorServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>'; document.getElementById('monitorLog').innerHTML = d.history.slice(-20).reverse().map(x=>`[${new Date(x.time).toLocaleTimeString('ru')}] ${x.name}: ${x.status==='online'?'🟢':'🔴'} ${x.status}`).join('<br>')||'Нет записей'; const online=d.servers.filter(x=>x.status==='online').length, total=d.servers.length; document.getElementById('onlineCount').innerText=online; document.getElementById('offlineCount').innerText=total-online; document.getElementById('avgUptime').innerText=(total?d.servers.reduce((a,x)=>a+(x.uptime||0),0)/total:0).toFixed(1)+'%'; }
+        function addMonitorServer(){ const n=document.getElementById('monServerName2').value.trim(), u=document.getElementById('monServerUrl2').value.trim(); if(!n||!u)return; const d=getMonitorData(); d.servers.push({name:n,url:u,status:'не проверен',uptime:0,checks:0,fails:0}); saveMonitorData(d); document.getElementById('monServerName2').value=''; document.getElementById('monServerUrl2').value=''; loadMonitorTab(); }
         function deleteMonitorServer(i){ const d=getMonitorData(); d.servers.splice(i,1); saveMonitorData(d); loadMonitorTab(); }
-        async function checkAllMonitorServers(){
-            const d=getMonitorData();
-            for(let x of d.servers){
-                try{ const c=new AbortController(); setTimeout(()=>c.abort(),5000); await fetch(x.url.includes('://')?x.url:'https://'+x.url,{mode:'no-cors',signal:c.signal}); x.status='online'; x.fails=0; }
-                catch(e){ x.status='offline'; x.fails=(x.fails||0)+1; }
-                x.checks=(x.checks||0)+1;
-                x.uptime=Math.round(((x.checks-x.fails)/x.checks)*100);
-                d.history.push({name:x.name,status:x.status,url:x.url,time:Date.now()});
-                saveMonitorData(d); loadMonitorTab();
-            }
-        }
+        async function checkAllMonitorServers(){ const d=getMonitorData(); for(let x of d.servers){ try{ const c=new AbortController(); setTimeout(()=>c.abort(),5000); await fetch(x.url.includes('://')?x.url:'https://'+x.url,{mode:'no-cors',signal:c.signal}); x.status='online'; x.fails=0; }catch(e){ x.status='offline'; x.fails=(x.fails||0)+1; } x.checks=(x.checks||0)+1; x.uptime=Math.round(((x.checks-x.fails)/x.checks)*100); d.history.push({name:x.name,status:x.status,url:x.url,time:Date.now()}); saveMonitorData(d); loadMonitorTab(); } }
         function clearMonitorHistory(){ const d=getMonitorData(); d.history=[]; saveMonitorData(d); loadMonitorTab(); }
 
-        // ==================== SPEEDTEST ====================
-        async function runSpeedTest(){
-            document.getElementById('speedValue').innerText='...';
-            const dl=document.getElementById('downloadSpeed'), ul=document.getElementById('uploadSpeed'), ping=document.getElementById('pingResult');
-            dl.innerText='...'; ul.innerText='...'; ping.innerText='...';
-            const testFile='https://speed.cloudflare.com/__down?bytes=5000000';
-            const start=Date.now();
-            try{
-                const c=new AbortController(); setTimeout(()=>c.abort(),10000);
-                const res=await fetch(testFile,{signal:c.signal});
-                const data=await res.arrayBuffer();
-                const duration=(Date.now()-start)/1000;
-                const speed=(data.byteLength*8/1e6/duration).toFixed(1);
-                document.getElementById('speedValue').innerText=speed;
-                dl.innerText=speed+' Mbps';
-                ul.innerText=(speed*0.6).toFixed(1)+' Mbps';
-                ping.innerText=(Math.random()*50+10).toFixed(0)+' ms';
-                const h=getSpeedHistory(); h.push({time:Date.now(),download:speed,upload:(speed*0.6).toFixed(1)});
-                if(h.length>10)h.shift(); saveSpeedHistory(h); loadSpeedHistoryTab();
-            }catch(e){ document.getElementById('speedValue').innerText='Ошибка'; dl.innerText='-'; ul.innerText='-'; ping.innerText='-'; }
-        }
-        function loadSpeedHistoryTab(){
-            const h=getSpeedHistory();
-            document.getElementById('speedHistory').innerHTML = h.length ? '<h4>📜 История</h4>'+h.reverse().map(x=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${new Date(x.time).toLocaleTimeString('ru')} <b>${x.download} Mbps</b></div>`).join('') : '';
-        }
+        // SpeedTest
+        async function runSpeedTest(){ document.getElementById('speedValue').innerText='...'; const dl=document.getElementById('downloadSpeed'), ul=document.getElementById('uploadSpeed'), ping=document.getElementById('pingResult'); dl.innerText='...'; ul.innerText='...'; ping.innerText='...'; const start=Date.now(); try{ const c=new AbortController(); setTimeout(()=>c.abort(),10000); const res=await fetch('https://speed.cloudflare.com/__down?bytes=5000000',{signal:c.signal}); await res.arrayBuffer(); const speed=((5e6*8/1e6)/((Date.now()-start)/1000)).toFixed(1); document.getElementById('speedValue').innerText=speed; dl.innerText=speed+' Mbps'; ul.innerText=(speed*0.6).toFixed(1)+' Mbps'; ping.innerText=(Math.random()*50+10).toFixed(0)+' ms'; const h=getSpeedHistory(); h.push({time:Date.now(),download:speed,upload:(speed*0.6).toFixed(1)}); if(h.length>10)h.shift(); saveSpeedHistory(h); loadSpeedHistoryTab(); }catch(e){ document.getElementById('speedValue').innerText='Ошибка'; dl.innerText='-'; ul.innerText='-'; ping.innerText='-'; } }
+        function loadSpeedHistoryTab(){ const h=getSpeedHistory(); document.getElementById('speedHistory').innerHTML = h.length ? '<h4>📜 История</h4>'+h.reverse().map(x=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">${new Date(x.time).toLocaleTimeString('ru')} <b>${x.download} Mbps</b></div>`).join('') : ''; }
 
-        // ==================== КАРТА ====================
-        function loadMapTab(){
-            const s=getMapServers();
-            document.getElementById('mapServerList').innerHTML = s.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name} (${x.country})</div><div class="desc">${x.city} | ${x.ip}</div></div><button class="danger" onclick="deleteMapServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>';
-            document.getElementById('mapContainer').innerHTML = s.length ? s.map(x=>`<div style="padding:8px;border-bottom:1px solid #30363d">📍 <b>${x.name}</b> — ${x.city}, ${x.country} (${x.ip})</div>`).join('') : 'Нет серверов на карте';
-        }
-        function addMapServerPrompt(){
-            const n=prompt('Название сервера:'), ip=prompt('IP адрес:'), city=prompt('Город:'), country=prompt('Страна (код, напр. RU):');
-            if(!n||!ip)return;
-            const s=getMapServers(); s.push({name:n,ip:ip,city:city||'Неизвестно',country:country||'??'}); saveMapServers(s); loadMapTab();
-        }
+        // Карта
+        function loadMapTab(){ const s=getMapServers(); document.getElementById('mapServerList').innerHTML = s.map((x,i)=>`<div class="server-list-item"><div class="info"><div class="name">${x.name} (${x.country})</div><div class="desc">${x.city} | ${x.ip}</div></div><button class="danger" onclick="deleteMapServer(${i})">🗑</button></div>`).join('')||'<p style="color:#8b949e">Нет серверов</p>'; document.getElementById('mapContainer').innerHTML = s.length ? s.map(x=>`<div style="padding:8px;border-bottom:1px solid #30363d">📍 <b>${x.name}</b> — ${x.city}, ${x.country} (${x.ip})</div>`).join('') : 'Нет серверов на карте'; }
+        function addMapServerPrompt(){ const n=prompt('Название:'), ip=prompt('IP:'), city=prompt('Город:'), country=prompt('Страна:'); if(!n||!ip)return; const s=getMapServers(); s.push({name:n,ip:ip,city:city||'Неизвестно',country:country||'??'}); saveMapServers(s); loadMapTab(); }
         function deleteMapServer(i){ const s=getMapServers(); s.splice(i,1); saveMapServers(s); loadMapTab(); }
 
-        // ==================== КОНСТРУКТОР КОНФИГОВ ====================
-        function updateConfigPreview(){
-            const proto=document.getElementById('configProtocol').value;
-            const addr=document.getElementById('configAddress').value||'SERVER_IP';
-            const port=document.getElementById('configPort').value||'443';
-            const uuid=document.getElementById('configUUID').value||crypto.randomUUID();
-            const sec=document.getElementById('configSecurity').value;
-            const sni=document.getElementById('configSNI').value||'yandex.ru';
-            let link='';
-            if(proto==='vless') link=`vless://${uuid}@${addr}:${port}?encryption=none&security=${sec}&sni=${sni}&type=tcp#VLESS_Config`;
-            else if(proto==='vmess') link=`vmess://${btoa(JSON.stringify({v:'2',ps:'Config',add:addr,port:port,id:uuid,aid:0,net:'tcp',type:'none',host:'',path:'',tls:sec==='tls'?'tls':'none',sni:sni}))}`;
-            else if(proto==='trojan') link=`trojan://${uuid}@${addr}:${port}?security=${sec}&sni=${sni}&type=tcp#Trojan_Config`;
-            document.getElementById('configOutput').innerHTML=`<div class="result-card"><p>🔗 Ссылка:</p><textarea readonly style="height:60px">${link}</textarea></div>`;
-        }
+        // Конфигуратор
+        function updateConfigPreview(){ const proto=document.getElementById('configProtocol').value, addr=document.getElementById('configAddress').value||'SERVER_IP', port=document.getElementById('configPort').value||'443', uuid=document.getElementById('configUUID').value||crypto.randomUUID(), sec=document.getElementById('configSecurity').value, sni=document.getElementById('configSNI').value||'yandex.ru'; let link=''; if(proto==='vless') link=`vless://${uuid}@${addr}:${port}?encryption=none&security=${sec}&sni=${sni}&type=tcp#VLESS_Config`; else if(proto==='vmess') link=`vmess://${btoa(JSON.stringify({v:'2',ps:'Config',add:addr,port:port,id:uuid,aid:0,net:'tcp',type:'none',host:'',path:'',tls:sec==='tls'?'tls':'none',sni:sni}))}`; else link=`trojan://${uuid}@${addr}:${port}?security=${sec}&sni=${sni}&type=tcp#Trojan_Config`; document.getElementById('configOutput').innerHTML=`<div class="result-card"><textarea readonly style="height:60px">${link}</textarea></div>`; }
         function generateConfig(){ updateConfigPreview(); }
+
+        // ==================== МЧС ====================
+        function loadMCHS() {
+            loadChecklist();
+            loadIncidents();
+            loadKnowledge();
+        }
+
+        // Чек-лист
+        function loadChecklist() {
+            const items = getChecklist();
+            document.getElementById('checklistItems').innerHTML = items.map((x,i) => `
+                <div class="checklist-item">
+                    <label>
+                        <input type="checkbox" ${x.checked?'checked':''} onchange="toggleChecklistItem(${i})">
+                        <span>${x.text}</span>
+                    </label>
+                </div>
+            `).join('');
+            const history = getChecklistHistory();
+            document.getElementById('checklistHistory').innerHTML = history.length ? '<h4>📋 История проверок</h4>' + history.slice(-5).reverse().map(x => `<div style="padding:4px 0;border-bottom:1px solid #21262d">${new Date(x.time).toLocaleDateString('ru')} — выполнено: <b>${x.done}/${x.total}</b> (${x.percent}%)</div>`).join('') : '';
+        }
+        function toggleChecklistItem(i) {
+            const items = getChecklist();
+            items[i].checked = !items[i].checked;
+            saveChecklistData(items);
+        }
+        function saveChecklist() {
+            const items = getChecklist();
+            const done = items.filter(x => x.checked).length;
+            const total = items.length;
+            const percent = Math.round((done / total) * 100);
+            const history = getChecklistHistory();
+            history.push({ time: Date.now(), done, total, percent });
+            if (history.length > 20) history.shift();
+            saveChecklistHistory(history);
+            loadChecklist();
+        }
+        function resetChecklist() {
+            const items = getChecklist();
+            items.forEach(x => x.checked = false);
+            saveChecklistData(items);
+            loadChecklist();
+        }
+
+        // Происшествия
+        function loadIncidents() {
+            const incidents = getIncidents();
+            document.getElementById('activeIncidents').innerText = incidents.filter(x => x.status === 'active').length;
+            document.getElementById('resolvedIncidents').innerText = incidents.filter(x => x.status === 'resolved').length;
+            document.getElementById('totalIncidents').innerText = incidents.length;
+            document.getElementById('incidentList').innerHTML = incidents.slice(-10).reverse().map((x, i) => `
+                <div class="incident-item">
+                    <div class="info">
+                        <div class="name">${getIncidentIcon(x.type)} ${x.address}</div>
+                        <div class="desc">Силы: ${x.forces||'не указаны'} | ${new Date(x.time).toLocaleString('ru')}</div>
+                    </div>
+                    <div>
+                        <span class="${x.status==='active'?'status-danger':x.status==='responding'?'status-warning':'status-safe'}">${getIncidentStatus(x.status)}</span>
+                        <button onclick="changeIncidentStatus(${incidents.length-1-i})" style="margin-left:8px">↻</button>
+                        <button class="danger" onclick="deleteIncident(${incidents.length-1-i})">🗑</button>
+                    </div>
+                </div>
+            `).join('') || '<p style="color:#8b949e">Нет происшествий</p>';
+        }
+        function getIncidentIcon(type) {
+            const icons = { fire: '🔥', flood: '🌊', dpt: '🚗', chemical: '☣️', other: '📌' };
+            return icons[type] || '📌';
+        }
+        function getIncidentStatus(status) {
+            const statuses = { active: 'Активно', responding: 'Реагирование', resolved: 'Завершено' };
+            return statuses[status] || status;
+        }
+        function addIncident() {
+            const address = document.getElementById('incidentAddress').value.trim();
+            const type = document.getElementById('incidentType').value;
+            const forces = document.getElementById('incidentForces').value.trim();
+            const status = document.getElementById('incidentStatus').value;
+            const note = document.getElementById('incidentNote').value.trim();
+            if (!address) { alert('Укажите адрес!'); return; }
+            const incidents = getIncidents();
+            incidents.push({ address, type, forces, status, note, time: Date.now() });
+            saveIncidents(incidents);
+            ['incidentAddress','incidentForces','incidentNote'].forEach(id => document.getElementById(id).value = '');
+            loadIncidents();
+        }
+        function changeIncidentStatus(i) {
+            const incidents = getIncidents();
+            const order = ['active', 'responding', 'resolved', 'active'];
+            const current = order.indexOf(incidents[i].status);
+            incidents[i].status = order[current + 1] || 'active';
+            saveIncidents(incidents);
+            loadIncidents();
+        }
+        function deleteIncident(i) {
+            if (confirm('Удалить происшествие?')) {
+                const incidents = getIncidents();
+                incidents.splice(i, 1);
+                saveIncidents(incidents);
+                loadIncidents();
+            }
+        }
+
+        // База знаний
+        function loadKnowledge() {
+            document.getElementById('signalsList').innerHTML = DEFAULT_SIGNALS.map(s => `
+                <div class="result-card" style="margin-bottom:8px">
+                    <b>📢 ${s.name}</b>
+                    <p style="color:#8b949e;margin:4px 0">${s.desc}</p>
+                    <p>✅ <b>Действия:</b> ${s.action}</p>
+                </div>
+            `).join('');
+            document.getElementById('algorithmsList').innerHTML = DEFAULT_ALGORITHMS.map(a => `
+                <div class="result-card" style="margin-bottom:8px">
+                    <b>📋 ${a.title}</b>
+                    <pre style="color:#c9d1d9;margin-top:4px;white-space:pre-wrap">${a.steps}</pre>
+                </div>
+            `).join('');
+        }
 
         // ==================== БЭКАП ====================
         function exportAll(){
-            const data={stats:getStats(),games:getGames(),abServers:getABServers(),monServers:getMonServers(),subscriptions:getSubscriptions(),monitorData:getMonitorData(),speedHistory:getSpeedHistory(),mapServers:getMapServers(),passwordHash:getPasswordHash(),exportedAt:new Date().toISOString()};
+            const data={
+                stats:getStats(), games:getGames(), abServers:getABServers(), monServers:getMonServers(),
+                subscriptions:getSubscriptions(), monitorData:getMonitorData(), speedHistory:getSpeedHistory(),
+                mapServers:getMapServers(), checklist:getChecklist(), checklistHistory:getChecklistHistory(),
+                incidents:getIncidents(), passwordHash:getPasswordHash(), exportedAt:new Date().toISOString()
+            };
             const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
             const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
         }
@@ -626,7 +737,8 @@
                         if(d.abServers)saveABServers(d.abServers); if(d.monServers)saveMonServers(d.monServers);
                         if(d.subscriptions)saveSubscriptions(d.subscriptions); if(d.monitorData)saveMonitorData(d.monitorData);
                         if(d.speedHistory)saveSpeedHistory(d.speedHistory); if(d.mapServers)saveMapServers(d.mapServers);
-                        if(d.passwordHash)savePasswordHash(d.passwordHash);
+                        if(d.checklist)saveChecklistData(d.checklist); if(d.checklistHistory)saveChecklistHistory(d.checklistHistory);
+                        if(d.incidents)saveIncidents(d.incidents); if(d.passwordHash)savePasswordHash(d.passwordHash);
                         alert('✅ Восстановлено!'); initPanel();
                     }
                 }catch(err){alert('❌ Ошибка!');}
@@ -634,16 +746,9 @@
             r.readAsText(f);
         }
 
-        // ==================== ИНИТ ====================
         function initPanel(){
-            loadDashboard();
-            loadGamesList();
-            loadABServers();
-            loadMonServers();
-            loadSubscriptions();
-            loadMonitorTab();
-            loadSpeedHistoryTab();
-            loadMapTab();
+            loadDashboard(); loadGamesList(); loadABServers(); loadMonServers();
+            loadSubscriptions(); loadMonitorTab(); loadSpeedHistoryTab(); loadMapTab(); loadMCHS();
         }
 
         if (sessionStorage.getItem('adminAuth')==='true') {
