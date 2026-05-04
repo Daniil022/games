@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❌⭕ Крестики-нолики — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 24px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #f0f6fc; }
+        h1 { font-size: 28px; margin-bottom: 6px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+
+        /* Статус */
+        .status {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #f0f6fc;
+            min-height: 32px;
+        }
+        .status.win-x { color: #f85149; }
+        .status.win-o { color: #58a6ff; }
+        .status.draw { color: #d29922; }
+
+        /* Доска */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 300px;
+            margin: 0 auto 20px;
+            aspect-ratio: 1;
+        }
+        .cell {
+            background: #21262d;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .cell:hover {
+            border-color: #58a6ff;
+            background: #1a2332;
+        }
+        .cell.x {
+            color: #f85149;
+            border-color: #f85149;
+            background: #1f1517;
+        }
+        .cell.o {
+            color: #58a6ff;
+            border-color: #58a6ff;
+            background: #151b24;
+        }
+        .cell.win {
+            animation: winPulse 0.6s infinite alternate;
+        }
+        @keyframes winPulse {
+            from { box-shadow: 0 0 5px currentColor; }
+            to { box-shadow: 0 0 20px currentColor; }
+        }
+
+        /* Кнопки */
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-reset {
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #484f58;
+        }
+        .btn-reset:hover { background: #383d47; }
+
+        /* Счёт */
+        .score {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 16px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .score-x { color: #f85149; }
+        .score-o { color: #58a6ff; }
+        .score-draw { color: #d29922; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>❌⭕ Крестики-нолики</h1>
+        <p class="subtitle">Игра для двоих на одном экране</p>
+
+        <div class="status" id="status">Ход: ❌ Крестики</div>
+
+        <div class="board" id="board"></div>
+
+        <button class="btn btn-reset" onclick="resetGame()">🔄 Новая игра</button>
+
+        <div class="score">
+            <span class="score-x">❌ <span id="scoreX">0</span></span>
+            <span class="score-draw">🤝 <span id="scoreDraw">0</span></span>
+            <span class="score-o"><span id="scoreO">0</span> ⭕</span>
+        </div>
+    </div>
+
+    <script>
+        var board = ['', '', '', '', '', '', '', '', ''];
+        var currentPlayer = 'X';
+        var gameOver = false;
+        var winCells = [];
+        var scores = { X: 0, O: 0, draw: 0 };
+
+        var winCombos = [
+            [0,1,2], [3,4,5], [6,7,8], // строки
+            [0,3,6], [1,4,7], [2,5,8], // столбцы
+            [0,4,8], [2,4,6]            // диагонали
+        ];
+
+        function initBoard() {
+            var boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+            for (var i = 0; i < 9; i++) {
+                var cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', function() { makeMove(parseInt(this.dataset.index)); });
+                boardEl.appendChild(cell);
+            }
+        }
+
+        function makeMove(index) {
+            if (gameOver || board[index] !== '') return;
+
+            board[index] = currentPlayer;
+            var cell = document.querySelectorAll('.cell')[index];
+            cell.textContent = currentPlayer === 'X' ? '❌' : '⭕';
+            cell.classList.add(currentPlayer === 'X' ? 'x' : 'o');
+
+            var winner = checkWinner();
+            if (winner) {
+                gameOver = true;
+                highlightWin();
+                document.getElementById('status').textContent = 'Победитель: ' + (winner === 'X' ? '❌ Крестики!' : '⭕ Нолики!');
+                document.getElementById('status').className = 'status ' + (winner === 'X' ? 'win-x' : 'win-o');
+                scores[winner]++;
+                updateScore();
+            } else if (board.every(function(c) { return c !== ''; })) {
+                gameOver = true;
+                document.getElementById('status').textContent = '🤝 Ничья!';
+                document.getElementById('status').className = 'status draw';
+                scores.draw++;
+                updateScore();
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                document.getElementById('status').textContent = 'Ход: ' + (currentPlayer === 'X' ? '❌ Крестики' : '⭕ Нолики');
+                document.getElementById('status').className = 'status';
+            }
+        }
+
+        function checkWinner() {
+            for (var i = 0; i < winCombos.length; i++) {
+                var combo = winCombos[i];
+                if (board[combo[0]] !== '' &&
+                    board[combo[0]] === board[combo[1]] &&
+                    board[combo[1]] === board[combo[2]]) {
+                    winCells = combo;
+                    return board[combo[0]];
+                }
+            }
+            return null;
+        }
+
+        function highlightWin() {
+            var cells = document.querySelectorAll('.cell');
+            for (var i = 0; i < winCells.length; i++) {
+                cells[winCells[i]].classList.add('win');
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('scoreX').textContent = scores.X;
+            document.getElementById('scoreO').textContent = scores.O;
+            document.getElementById('scoreDraw').textContent = scores.draw;
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameOver = false;
+            winCells = [];
+            document.getElementById('status').textContent = 'Ход: ❌ Крестики';
+            document.getElementById('status').className = 'status';
+            initBoard();
+        }
+
+        // Запуск
+        initBoard();
+    </script>
+</body>
+</html>
