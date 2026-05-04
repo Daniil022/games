@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎡 Колесо фортуны</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 { font-size: 26px; color: #f0f6fc; margin-bottom: 6px; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+        
+        canvas {
+            border: 4px solid #30363d;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+            background: #161b22;
+        }
+        
+        .pointer {
+            font-size: 36px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        
+        .result {
+            font-size: 22px;
+            font-weight: 700;
+            color: #58a6ff;
+            min-height: 36px;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            margin: 6px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-spin {
+            background: linear-gradient(135deg, #f0883e, #db6d28);
+            color: #fff;
+            font-size: 18px;
+            padding: 16px 50px;
+            box-shadow: 0 4px 15px rgba(240,136,62,0.4);
+        }
+        .btn-spin:active { transform: scale(0.95); }
+        .btn-spin:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .btn-secondary {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+        
+        .edit-section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .edit-section h3 {
+            font-size: 15px;
+            color: #f0f6fc;
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #c9d1d9;
+            padding: 10px;
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .btn-save {
+            background: #238636;
+            color: #fff;
+            margin-top: 8px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .back-link:hover { color: #58a6ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Назад к играм</a>
+        <h1>🎡 Колесо фортуны</h1>
+        <p class="subtitle">Добавь свои варианты и крути!</p>
+        
+        <canvas id="wheel" width="400" height="400"></canvas>
+        <div class="pointer">👇</div>
+        <div class="result" id="result"></div>
+        
+        <button class="btn btn-spin" id="spinBtn" onclick="spin()">🎯 Крутить!</button>
+        
+        <button class="btn btn-secondary" onclick="toggleEdit()">✏️ Редактировать варианты</button>
+        
+        <div class="edit-section" id="editSection" style="display:none;">
+            <h3>Введи варианты (каждый с новой строки):</h3>
+            <textarea id="itemsInput"></textarea>
+            <button class="btn btn-save" onclick="saveItems()">💾 Сохранить</button>
+        </div>
+    </div>
+
+    <script>
+        var canvas = document.getElementById('wheel');
+        var ctx = canvas.getContext('2d');
+        var resultDiv = document.getElementById('result');
+        var spinBtn = document.getElementById('spinBtn');
+        
+        // Стандартные варианты
+        var defaultItems = [
+            '🎁 Приз 1', '💰 1000₽', '🍕 Пицца', '🎬 Кино',
+            '📱 Телефон', '🚗 Машина', '🏝 Отпуск', '💻 Ноутбук'
+        ];
+        
+        var items = JSON.parse(localStorage.getItem('wheelItems')) || defaultItems;
+        var spinning = false;
+        var currentAngle = 0;
+        
+        var colors = [
+            '#f0883e', '#db6d28', '#238636', '#1f6feb',
+            '#8957e5', '#c93c37', '#d29922', '#58a6ff',
+            '#3fb950', '#f85149', '#a371f7', '#79c0ff'
+        ];
+        
+        function drawWheel(rotation) {
+            var r = 190;
+            var cx = 200, cy = 200;
+            var sliceAngle = (2 * Math.PI) / items.length;
+            
+            ctx.clearRect(0, 0, 400, 400);
+            
+            for (var i = 0; i < items.length; i++) {
+                var startAngle = rotation + i * sliceAngle;
+                var endAngle = startAngle + sliceAngle;
+                
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, startAngle, endAngle);
+                ctx.closePath();
+                
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                ctx.strokeStyle = '#0d1117';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Текст
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 13px -apple-system, sans-serif';
+                ctx.fillText(items[i], r - 15, 5);
+                ctx.restore();
+            }
+            
+            // Центр
+            ctx.beginPath();
+            ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
+            ctx.fillStyle = '#0d1117';
+            ctx.fill();
+            ctx.strokeStyle = '#f0f6fc';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+        
+        function spin() {
+            if (spinning || items.length < 2) return;
+            spinning = true;
+            spinBtn.disabled = true;
+            resultDiv.textContent = 'Крутим...';
+            
+            var spins = 5 + Math.floor(Math.random() * 5);
+            var targetSlice = Math.floor(Math.random() * items.length);
+            var sliceAngle = (2 * Math.PI) / items.length;
+            var targetAngle = spins * 2 * Math.PI + (2 * Math.PI - targetSlice * sliceAngle - sliceAngle / 2);
+            
+            var startAngle = currentAngle;
+            var duration = 4000;
+            var startTime = null;
+            
+            function animate(time) {
+                if (!startTime) startTime = time;
+                var elapsed = time - startTime;
+                var progress = Math.min(elapsed / duration, 1);
+                
+                // Замедление в конце
+                var eased = 1 - Math.pow(1 - progress, 3);
+                currentAngle = startAngle + (targetAngle - startAngle) * eased;
+                
+                drawWheel(currentAngle);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Определяем результат
+                    var normalizedAngle = currentAngle % (2 * Math.PI);
+                    var sliceAngle = (2 * Math.PI) / items.length;
+                    var winningSlice = Math.floor(((2 * Math.PI - normalizedAngle) % (2 * Math.PI)) / sliceAngle);
+                    winningSlice = winningSlice % items.length;
+                    
+                    resultDiv.textContent = '🎉 Выпало: ' + items[winningSlice] + '!';
+                    spinning = false;
+                    spinBtn.disabled = false;
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function toggleEdit() {
+            var section = document.getElementById('editSection');
+            var textarea = document.getElementById('itemsInput');
+            
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                textarea.value = items.join('\n');
+            } else {
+                section.style.display = 'none';
+            }
+        }
+        
+        function saveItems() {
+            var textarea = document.getElementById('itemsInput');
+            var newItems = textarea.value.split('\n').filter(function(item) {
+                return item.trim() !== '';
+            });
+            
+            if (newItems.length < 2) {
+                alert('Нужно минимум 2 варианта!');
+                return;
+            }
+            
+            items = newItems;
+            localStorage.setItem('wheelItems', JSON.stringify(items));
+            document.getElementById('editSection').style.display = 'none';
+            currentAngle = 0;
+            resultDiv.textContent = '';
+            drawWheel(0);
+        }
+        
+        drawWheel(0);
+    </script>
+</body>
+  </html>
