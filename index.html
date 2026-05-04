@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin: 20px 0 8px;
+            color: #f0f6fc;
+        }
+        .subtitle {
+            text-align: center;
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .game-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 14px;
+            padding: 20px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #c9d1d9;
+            transition: all 0.2s;
+            display: block;
+        }
+        .game-card:hover {
+            border-color: #58a6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        .game-card:active {
+            transform: scale(0.97);
+        }
+        .game-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .game-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+        .game-desc {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+        .card-full {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #1a2332, #161b22);
+            border-color: #f0883e;
+        }
+        .card-full .game-icon {
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Игровой портал</h1>
+        <p class="subtitle">Выбери игру и играй прямо в браузере!</p>
 
+        <div class="games-grid">
+            <!-- Колесо фортуны -->
+            <a href="wheel.html" class="game-card card-full">
+                <div class="game-icon">🎡</div>
+                <div class="game-name">Колесо фортуны</div>
+                <div class="game-desc">Заполни ячейки и крути!</div>
+            </a>
+
+            <!-- Кубики -->
+            <a href="dice.html" class="game-card">
+                <div class="game-icon">🎲</div>
+                <div class="game-name">Кубики</div>
+                <div class="game-desc">Брось до 6 кубиков</div>
+            </a>
+
+            <!-- Крестики-нолики -->
+            <a href="tictactoe.html" class="game-card">
+                <div class="game-icon">❌⭕</div>
+                <div class="game-name">Крестики-нолики</div>
+                <div class="game-desc">Классика на двоих</div>
+            </a>
+
+            <!-- Правда или действие -->
+            <a href="truthordare.html" class="game-card">
+                <div class="game-icon">🎭</div>
+                <div class="game-name">Правда или действие</div>
+                <div class="game-desc">Для весёлой компании</div>
+            </a>
+
+            <!-- Шашки -->
+            <a href="checkers.html" class="game-card">
+                <div class="game-icon">🔴⚫</div>
+                <div class="game-name">Шашки</div>
+                <div class="game-desc">Русские шашки</div>
+            </a>
+
+            <!-- Шахматы -->
+            <a href="chess.html" class="game-card">
+                <div class="game-icon">♟️</div>
+                <div class="game-name">Шахматы</div>
+                <div class="game-desc">Классические шахматы</div>
+            </a>
+
+            <!-- Викторина -->
+            <a href="quiz.html" class="game-card card-full">
+                <div class="game-icon">🧯</div>
+                <div class="game-name">Викторина по пожарной безопасности</div>
+                <div class="game-desc">20 уровней на знание ПБ</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
