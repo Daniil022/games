@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧯 Викторина по пожарной безопасности — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #f0f6fc; }
+        h1 { font-size: 26px; margin-bottom: 4px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 16px; }
+
+        /* Прогресс-бар */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #21262d;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f0883e, #f85149);
+            border-radius: 4px;
+            transition: width 0.4s;
+        }
+        .progress-text {
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 14px;
+        }
+
+        /* Вопрос */
+        .question-box {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.5;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ответы */
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .answer-btn {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #21262d;
+            color: #c9d1d9;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .answer-btn:hover {
+            border-color: #58a6ff;
+            background: #1a2332;
+        }
+        .answer-btn.correct {
+            background: #1a3a2a;
+            border-color: #238636;
+            color: #7ee787;
+        }
+        .answer-btn.wrong {
+            background: #3a1a1a;
+            border-color: #f85149;
+            color: #ff7b72;
+        }
+        .answer-btn:disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Результат */
+        .result-screen {
+            display: none;
+        }
+        .result-screen.show {
+            display: block;
+        }
+        .result-emoji {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+        .result-score {
+            font-size: 30px;
+            font-weight: 900;
+            color: #f0f6fc;
+            margin-bottom: 6px;
+        }
+        .result-text {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-restart {
+            background: #f0883e;
+            color: #fff;
+        }
+        .btn-menu {
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #484f58;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🧯 Пожарная безопасность</h1>
+        <p class="subtitle">Викторина на 20 вопросов</p>
+
+        <!-- Экран викторины -->
+        <div id="quizScreen">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+            <p class="progress-text" id="progressText">Вопрос 1 из 20</p>
+            <div class="question-box" id="questionBox"></div>
+            <div class="answers" id="answersBox"></div>
+        </div>
+
+        <!-- Экран результата -->
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-score" id="resultScore"></div>
+            <p class="result-text" id="resultText"></p>
+            <button class="btn btn-restart" onclick="restartQuiz()">🔄 Пройти заново</button>
+            <a href="index.html" class="btn btn-menu">🎮 К списку игр</a>
+        </div>
+    </div>
+
+    <script>
+        var questions = [
+            {
+                q: 'По какому номеру телефона нужно вызывать пожарную охрану?',
+                a: ['101', '102', '103', '104'],
+                correct: 0
+            },
+            {
+                q: 'Можно ли тушить водой горящие электроприборы?',
+                a: ['Да, всегда можно', 'Нет, нельзя — ударит током', 'Можно, если выключить из розетки', 'Можно только кипятком'],
+                correct: 1
+            },
+            {
+                q: 'Что делать, если в комнате много дыма?',
+                a: ['Бежать в полный рост', 'Открыть все окна', 'Двигаться ползком к выходу', 'Прятаться в шкаф'],
+                correct: 2
+            },
+            {
+                q: 'Какой огнетушитель подходит для тушения электропроводки?',
+                a: ['Пенный', 'Водный', 'Углекислотный', 'Воздушно-пенный'],
+                correct: 2
+            },
+            {
+                q: 'Можно ли пользоваться лифтом при пожаре?',
+                a: ['Да, это быстро', 'Нет, только лестница', 'Можно, если нет дыма', 'Только на верхние этажи'],
+                correct: 1
+            },
+            {
+                q: 'Что делать, если на человеке загорелась одежда?',
+                a: ['Бежать за водой', 'Накрыть одеялом и катать по полу', 'Срывать одежду', 'Махать руками'],
+                correct: 1
+            },
+            {
+                q: 'Какое главное правило пожарной безопасности?',
+                a: ['Хранить спички в сейфе', 'Не оставлять открытый огонь без присмотра', 'Всегда носить с собой огнетушитель', 'Спать в каске'],
+                correct: 1
+            },
+            {
+                q: 'Что должно быть на каждом этаже здания?',
+                a: ['Огнетушитель', 'План эвакуации', 'Пожарный кран', 'Всё перечисленное'],
+                correct: 3
+            },
+            {
+                q: 'Как быстро нужно покинуть здание при сигнале пожарной тревоги?',
+                a: ['В течение 10 минут', 'Немедленно, не собирая вещи', 'Когда приедет пожарная', 'Через час'],
+                correct: 1
+            },
+            {
+                q: 'Что относится к первичным средствам пожаротушения?',
+                a: ['Ведро с песком', 'Огнетушитель', 'Пожарный кран', 'Всё перечисленное'],
+                correct: 3
+            },
+            {
+                q: 'Можно ли оставлять зарядку от телефона в розетке без присмотра?',
+                a: ['Да, это безопасно', 'Нет, это опасно', 'Можно, если зарядка фирменная', 'Только ночью'],
+                correct: 1
+            },
+            {
+                q: 'Что означает знак "Бегущий человек" на зелёном фоне?',
+                a: ['Место для спорта', 'Эвакуационный выход', 'Вход в здание', 'Зона для курения'],
+                correct: 1
+            },
+            {
+                q: 'Какая группа горючести у дерева?',
+                a: ['Негорючее', 'Трудногорючее', 'Горючее', 'Самозатухающее'],
+                correct: 2
+            },
+            {
+                q: 'При каком действии можно получить ожог дыхательных путей?',
+                a: ['При вдыхании горячего воздуха', 'При беге', 'При питье воды', 'При разговоре'],
+                correct: 0
+            },
+            {
+                q: 'Как правильно надеть спасательную маску при пожаре?',
+                a: ['Наоборот', 'На голову', 'На лицо, закрыв нос и рот', 'На шею'],
+                correct: 2
+            },
+            {
+                q: 'Что делать, если вы не можете выйти из горящего помещения?',
+                a: ['Прыгать в окно', 'Закрыть дверь, заткнуть щели и ждать помощи', 'Прятаться под кровать', 'Открыть все окна'],
+                correct: 1
+            },
+            {
+                q: 'Какая причина пожаров самая частая?',
+                a: ['Молния', 'Неосторожное обращение с огнём', 'Поджог', 'Землетрясение'],
+                correct: 1
+            },
+            {
+                q: 'Что нельзя тушить водой?',
+                a: ['Бумагу', 'Дерево', 'Горящее масло на сковороде', 'Траву'],
+                correct: 2
+            },
+            {
+                q: 'На каком расстоянии от здания нужно разводить костёр?',
+                a: ['1 метр', '5 метров', 'Не менее 15 метров', 'Можно рядом'],
+                correct: 2
+            },
+            {
+                q: 'Что делать в первую очередь при обнаружении пожара?',
+                a: ['Фотографировать', 'Сообщить в пожарную охрану (101)', 'Прятать ценные вещи', 'Закрыть глаза'],
+                correct: 1
+            }
+        ];
+
+        var currentQuestion = 0;
+        var score = 0;
+        var answered = false;
+
+        function showQuestion() {
+            answered = false;
+            var q = questions[currentQuestion];
+            document.getElementById('questionBox').textContent = q.q;
+            document.getElementById('progressText').textContent = 'Вопрос ' + (currentQuestion + 1) + ' из ' + questions.length;
+            document.getElementById('progressFill').style.width = ((currentQuestion) / questions.length * 100) + '%';
+
+            var answersBox = document.getElementById('answersBox');
+            answersBox.innerHTML = '';
+            for (var i = 0; i < q.a.length; i++) {
+                var btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = (i + 1) + '. ' + q.a[i];
+                btn.addEventListener('click', function(index) {
+                    return function() { checkAnswer(index); };
+                }(i));
+                answersBox.appendChild(btn);
+            }
+        }
+
+        function checkAnswer(index) {
+            if (answered) return;
+            answered = true;
+
+            var q = questions[currentQuestion];
+            var buttons = document.querySelectorAll('.answer-btn');
+
+            // Подсветка правильного
+            buttons[q.correct].classList.add('correct');
+
+            // Проверка
+            if (index === q.correct) {
+                score++;
+                buttons[index].classList.add('correct');
+            } else {
+                buttons[index].classList.add('wrong');
+            }
+
+            // Задержка перед следующим вопросом
+            setTimeout(function() {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 1000);
+        }
+
+        function showResult() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('resultScore').textContent = score + ' / ' + questions.length;
+
+            var percent = score / questions.length * 100;
+            var emoji, text;
+
+            if (percent === 100) {
+                emoji = '🏆';
+                text = 'Идеально! Ты настоящий эксперт по пожарной безопасности!';
+            } else if (percent >= 80) {
+                emoji = '🔥';
+                text = 'Отлично! Ты знаешь правила на пятёрку!';
+            } else if (percent >= 60) {
+                emoji = '👍';
+                text = 'Хорошо! Но повторить правила не помешает.';
+            } else if (percent >= 40) {
+                emoji = '📖';
+                text = 'Неплохо, но стоит подтянуть знания о безопасности.';
+            } else {
+                emoji = '🧯';
+                text = 'Нужно срочно выучить правила пожарной безопасности!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultText').textContent = text;
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('quizScreen').style.display = 'block';
+            document.getElementById('resultScreen').classList.remove('show');
+            document.getElementById('progressFill').style.width = '0%';
+            showQuestion();
+        }
+
+        // Старт
+        showQuestion();
+    </script>
+</body>
+</html>
