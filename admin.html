@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Админ-панель</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-box, .panel {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 14px;
+            padding: 30px;
+            width: 100%;
+            max-width: 700px;
+        }
+        h2 {
+            text-align: center;
+            color: #f0f6fc;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #f0f6fc;
+            margin: 20px 0 12px;
+            font-size: 18px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #c9d1d9;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+        button {
+            padding: 12px 20px;
+            background: #238636;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 4px;
+        }
+        button:hover { background: #2ea043; }
+        button.danger { background: #da3633; }
+        button.danger:hover { background: #f85149; }
+        button.secondary { background: #30363d; }
+        button.secondary:hover { background: #484f58; }
+        .hidden { display: none; }
+        .error { color: #f85149; text-align: center; margin-bottom: 10px; font-size: 14px; }
+        .success { color: #3fb950; text-align: center; margin-bottom: 10px; font-size: 14px; }
+        .stat-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat span {
+            font-size: 24px;
+            font-weight: 700;
+            color: #58a6ff;
+            display: block;
+        }
+        .game-list-item {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .game-list-item .info {
+            flex: 1;
+            min-width: 150px;
+        }
+        .game-list-item .name {
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+        .game-list-item .desc {
+            font-size: 12px;
+            color: #8b949e;
+        }
+        .game-list-item .hidden-badge {
+            background: #f0883e22;
+            color: #f0883e;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            background: #21262d;
+            border: 1px solid #30363d;
+            font-size: 14px;
+            color: #8b949e;
+        }
+        .tab.active {
+            background: #1f6feb;
+            border-color: #1f6feb;
+            color: white;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #c9d1d9;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-bottom: 12px;
+            resize: vertical;
+        }
+        .inline-form {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .inline-form input {
+            flex: 1;
+            min-width: 120px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Экран входа -->
+    <div id="loginScreen" class="login-box">
+        <h2>🔐 Вход в админку</h2>
+        <div id="errorMsg" class="error hidden"></div>
+        <input type="password" id="passwordInput" placeholder="Введите пароль" onkeypress="if(event.key==='Enter')login()">
+        <button onclick="login()" style="width:100%">Войти</button>
+    </div>
+
+    <!-- Панель управления -->
+    <div id="adminPanel" class="panel hidden">
+        <h2>🛡️ Админ-панель</h2>
+
+        <!-- Вкладки -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('dashboard')">📊 Статистика</div>
+            <div class="tab" onclick="switchTab('games')">🎮 Управление играми</div>
+            <div class="tab" onclick="switchTab('password')">🔑 Смена пароля</div>
+            <div class="tab" onclick="switchTab('backup')">💾 Резервная копия</div>
+        </div>
+
+        <!-- Статистика -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="stat-row">
+                <div class="stat">📅 Сегодня<span id="todayVisits">0</span></div>
+                <div class="stat">👥 Всего<span id="totalVisits">0</span></div>
+                <div class="stat">🕐 Уник. за 7 дн.<span id="weekVisits">0</span></div>
+            </div>
+            <h3>🏆 Топ игр</h3>
+            <div id="topGames"></div>
+            <h3>📈 По дням (последние 7)</h3>
+            <div id="dailyStats"></div>
+            <button class="danger" onclick="resetStats()">🔄 Сбросить всю статистику</button>
+            <button class="secondary" onclick="exportStats()">📥 Экспорт статистики</button>
+        </div>
+
+        <!-- Управление играми -->
+        <div id="tab-games" class="tab-content">
+            <div id="successMsg" class="success hidden"></div>
+            <h3>➕ Добавить игру</h3>
+            <div class="inline-form">
+                <input type="text" id="newGameName" placeholder="Название (напр. Змейка)">
+                <input type="text" id="newGameFile" placeholder="Файл (напр. snake.html)">
+                <input type="text" id="newGameIcon" placeholder="Иконка (напр. 🐍)" style="max-width:80px">
+                <input type="text" id="newGameDesc" placeholder="Описание">
+                <button onclick="addGame()">Добавить</button>
+            </div>
+            <h3>📋 Список игр</h3>
+            <div id="gamesList"></div>
+            <button class="secondary" onclick="resetGames()">🔄 Сбросить к стандартному списку</button>
+        </div>
+
+        <!-- Смена пароля -->
+        <div id="tab-password" class="tab-content">
+            <div id="passError" class="error hidden"></div>
+            <div id="passSuccess" class="success hidden"></div>
+            <input type="password" id="oldPassword" placeholder="Текущий пароль">
+            <input type="password" id="newPassword" placeholder="Новый пароль">
+            <input type="password" id="confirmPassword" placeholder="Подтвердите новый пароль">
+            <button onclick="changePassword()" style="width:100%">Сменить пароль</button>
+        </div>
+
+        <!-- Резервная копия -->
+        <div id="tab-backup" class="tab-content">
+            <h3>📤 Экспорт данных</h3>
+            <p style="color:#8b949e;margin-bottom:12px">Скачает файл со всеми настройками и статистикой.</p>
+            <button onclick="exportAll()">📥 Скачать backup.json</button>
+
+            <h3>📥 Импорт данных</h3>
+            <p style="color:#8b949e;margin-bottom:12px">Загрузите ранее сохранённый файл backup.json</p>
+            <input type="file" id="backupFile" accept=".json">
+            <button onclick="importAll()">📤 Восстановить из файла</button>
+        </div>
+
+        <hr style="border-color:#30363d;margin:20px 0">
+        <button class="danger" onclick="logout()">🚪 Выйти</button>
+    </div>
+
+    <script>
+        // ---------- КОНФИГУРАЦИЯ ----------
+        const DEFAULT_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // admin123
+
+        const DEFAULT_GAMES = [
+            { name: 'Колесо фортуны', file: 'wheel.html', icon: '🎡', desc: 'Заполни ячейки и крути!', full: true, visible: true },
+            { name: 'Кубики', file: 'dice.html', icon: '🎲', desc: 'Брось до 6 кубиков', full: false, visible: true },
+            { name: 'Крестики-нолики', file: 'tictactoe.html', icon: '❌⭕', desc: 'Классика на двоих', full: false, visible: true },
+            { name: 'Правда или действие', file: 'truthordare.html', icon: '🎭', desc: 'Для весёлой компании', full: false, visible: true },
+            { name: 'Шашки', file: 'checkers.html', icon: '🔴⚫', desc: 'Русские шашки', full: false, visible: true },
+            { name: 'Касатка', file: 'blackjack.html', icon: '🃏', desc: 'Блэкджек против дилера', full: false, visible: true },
+            { name: 'Морской бой', file: 'seawar.html', icon: '⚓', desc: 'Классика против AI', full: false, visible: true },
+            { name: 'Викторина по ПБ', file: 'quiz.html', icon: '🧯', desc: '20 уровней на знание ПБ', full: true, visible: true }
+        ];
+
+        // ---------- УТИЛИТЫ ----------
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function getData(key, defaultValue) {
+            try { return JSON.parse(localStorage.getItem(key)) || defaultValue; }
+            catch(e) { return defaultValue; }
+        }
+
+        function setData(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function getStats() {
+            return getData('siteStats', { total: 0, today: 0, date: '', games: {}, daily: {} });
+        }
+
+        function saveStats(stats) {
+            setData('siteStats', stats);
+        }
+
+        function getGames() {
+            return getData('customGames', DEFAULT_GAMES);
+        }
+
+        function saveGames(games) {
+            setData('customGames', games);
+        }
+
+        function getPasswordHash() {
+            return getData('adminPasswordHash', DEFAULT_PASSWORD_HASH);
+        }
+
+        function savePasswordHash(hash) {
+            setData('adminPasswordHash', hash);
+        }
+
+        // ---------- АВТОРИЗАЦИЯ ----------
+        async function login() {
+            const input = document.getElementById('passwordInput').value;
+            const hash = await sha256(input);
+            const storedHash = getPasswordHash();
+            const errorEl = document.getElementById('errorMsg');
+
+            if (hash === storedHash) {
+                sessionStorage.setItem('adminAuth', 'true');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                errorEl.classList.add('hidden');
+                initPanel();
+            } else {
+                errorEl.classList.remove('hidden');
+                errorEl.innerText = '❌ Неверный пароль';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuth');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        async function changePassword() {
+            const oldPass = document.getElementById('oldPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            const errEl = document.getElementById('passError');
+            const succEl = document.getElementById('passSuccess');
+
+            errEl.classList.add('hidden');
+            succEl.classList.add('hidden');
+
+            const oldHash = await sha256(oldPass);
+            if (oldHash !== getPasswordHash()) {
+                errEl.classList.remove('hidden');
+                errEl.innerText = '❌ Неверный текущий пароль';
+                return;
+            }
+            if (newPass.length < 4) {
+                errEl.classList.remove('hidden');
+                errEl.innerText = '❌ Пароль должен быть минимум 4 символа';
+                return;
+            }
+            if (newPass !== confirmPass) {
+                errEl.classList.remove('hidden');
+                errEl.innerText = '❌ Пароли не совпадают';
+                return;
+            }
+
+            const newHash = await sha256(newPass);
+            savePasswordHash(newHash);
+            succEl.classList.remove('hidden');
+            succEl.innerText = '✅ Пароль успешно изменён!';
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // ---------- ВКЛАДКИ ----------
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+            if (name === 'dashboard') loadDashboard();
+            if (name === 'games') loadGamesList();
+        }
+
+        // ---------- СТАТИСТИКА ----------
+        function loadDashboard() {
+            const stats = getStats();
+            const today = new Date().toDateString();
+
+            if (stats.date !== today) {
+                stats.today = 0;
+                stats.date = today;
+                saveStats(stats);
+            }
+
+            document.getElementById('todayVisits').innerText = stats.today;
+            document.getElementById('totalVisits').innerText = stats.total;
+
+            // Уникальные за 7 дней
+            let weekSum = 0;
+            const daily = stats.daily || {};
+            for (let i = 0; i < 7; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                weekSum += daily[d.toDateString()] || 0;
+            }
+            document.getElementById('weekVisits').innerText = weekSum;
+
+            // Топ игр
+            const games = stats.games || {};
+            const sorted = Object.entries(games).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const gameNames = {};
+            getGames().forEach(g => gameNames[g.file.replace('.html','')] = g.icon + ' ' + g.name);
+            document.getElementById('topGames').innerHTML = sorted.length
+                ? sorted.map(([k, v]) => `<div class="stat" style="text-align:left;margin-bottom:4px">${gameNames[k] || k}: <b>${v}</b></div>`).join('')
+                : '<p style="color:#8b949e">Нет данных</p>';
+
+            // По дням
+            let dailyHtml = '';
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = d.toDateString();
+                const val = daily[key] || 0;
+                const shortDate = d.toLocaleDateString('ru', { day: 'numeric', month: 'short' });
+                dailyHtml += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d">
+                    ${shortDate} <b>${val}</b></div>`;
+            }
+            document.getElementById('dailyStats').innerHTML = dailyHtml;
+        }
+
+        function resetStats() {
+            if (confirm('Точно сбросить всю статистику?')) {
+                saveStats({ total: 0, today: 0, date: new Date().toDateString(), games: {}, daily: {} });
+                loadDashboard();
+            }
+        }
+
+        function exportStats() {
+            const stats = getStats();
+            const blob = new Blob([JSON.stringify(stats, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'stats_export.json';
+            a.click();
+        }
+
+        // ---------- УПРАВЛЕНИЕ ИГРАМИ ----------
+        function loadGamesList() {
+            const games = getGames();
+            const container = document.getElementById('gamesList');
+            container.innerHTML = games.map((g, i) => `
+                <div class="game-list-item">
+                    <div class="info">
+                        <div class="name">${g.icon} ${g.name} ${g.visible ? '' : '<span class="hidden-badge">скрыта</span>'}</div>
+                        <div class="desc">${g.file} — ${g.desc} ${g.full ? '(широкая карточка)' : ''}</div>
+                    </div>
+                    <div>
+                        <button onclick="toggleGame(${i})">${g.visible ? '👁 Скрыть' : '🙈 Показать'}</button>
+                        <button class="danger" onclick="deleteGame(${i})">🗑</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addGame() {
+            const name = document.getElementById('newGameName').value.trim();
+            const file = document.getElementById('newGameFile').value.trim();
+            const icon = document.getElementById('newGameIcon').value.trim();
+            const desc = document.getElementById('newGameDesc').value.trim();
+
+            if (!name || !file || !icon) {
+                alert('Название, файл и иконка обязательны!');
+                return;
+            }
+
+            const games = getGames();
+            games.push({ name, file, icon, desc: desc || 'Новая игра', full: false, visible: true });
+            saveGames(games);
+
+            document.getElementById('newGameName').value = '';
+            document.getElementById('newGameFile').value = '';
+            document.getElementById('newGameIcon').value = '';
+            document.getElementById('newGameDesc').value = '';
+
+            const succEl = document.getElementById('successMsg');
+            succEl.classList.remove('hidden');
+            succEl.innerText = '✅ Игра добавлена! Не забудь создать файл ' + file;
+            setTimeout(() => succEl.classList.add('hidden'), 3000);
+
+            loadGamesList();
+        }
+
+        function toggleGame(index) {
+            const games = getGames();
+            games[index].visible = !games[index].visible;
+            saveGames(games);
+            loadGamesList();
+        }
+
+        function deleteGame(index) {
+            if (confirm('Точно удалить игру из списка?')) {
+                const games = getGames();
+                games.splice(index, 1);
+                saveGames(games);
+                loadGamesList();
+            }
+        }
+
+        function resetGames() {
+            if (confirm('Сбросить список игр к стандартному?')) {
+                saveGames(DEFAULT_GAMES);
+                loadGamesList();
+            }
+        }
+
+        // ---------- РЕЗЕРВНОЕ КОПИРОВАНИЕ ----------
+        function exportAll() {
+            const data = {
+                stats: getStats(),
+                games: getGames(),
+                passwordHash: getPasswordHash(),
+                exportedAt: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'backup_' + new Date().toISOString().slice(0,10) + '.json';
+            a.click();
+        }
+
+        function importAll() {
+            const fileInput = document.getElementById('backupFile');
+            const file = fileInput.files[0];
+            if (!file) { alert('Выберите файл!'); return; }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (confirm('Восстановить данные из резервной копии? Текущие данные будут заменены.')) {
+                        if (data.stats) saveStats(data.stats);
+                        if (data.games) saveGames(data.games);
+                        if (data.passwordHash) savePasswordHash(data.passwordHash);
+                        alert('✅ Данные восстановлены!');
+                        initPanel();
+                    }
+                } catch(err) {
+                    alert('❌ Ошибка чтения файла!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+        function initPanel() {
+            loadDashboard();
+            loadGamesList();
+        }
+
+        // Проверка авторизации при загрузке
+        if (sessionStorage.getItem('adminAuth') === 'true') {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            initPanel();
+        }
+    </script>
+</body>
+</html>
