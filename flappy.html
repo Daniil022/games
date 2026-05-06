@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐦 Flappy Bird — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px 20px;text-align:center;max-width:400px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.score{font-size:22px;font-weight:900;color:#d29922;margin:8px 0}
+canvas{border:2px solid #30363d;border-radius:8px;background:#4ec0ca;display:block;margin:10px auto}
+.btn{margin:8px;padding:10px 24px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer}
+.btn:active{transform:scale(.97)}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🐦 Flappy Bird</h1>
+<p class="score">Счёт: <span id="score">0</span></p>
+<canvas id="canvas" width="300" height="400"></canvas>
+<button class="btn" onclick="startGame()">🔄 Играть / Заново</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var bird={x:60,y:200,vy:0,r:14},pipes=[],score=0,gameOver=true,gameLoop,gravity=0.4,jump=-6,pipeSpeed=2,pipeGap=100,pipeWidth=50;
+function startGame(){bird={x:60,y:200,vy:0,r:14};pipes=[];score=0;gameOver=false;document.getElementById('score').textContent='0';clearInterval(gameLoop);gameLoop=setInterval(update,20)}
+function spawnPipe(){var h=100+Math.random()*150;pipes.push({x:canvas.width,y:0,w:pipeWidth,h:h,scored:false});pipes.push({x:canvas.width,y:h+pipeGap,w:pipeWidth,h:canvas.height-h-pipeGap})}
+function update(){if(gameOver)return;bird.vy+=gravity;bird.y+=bird.vy;
+if(pipes.length===0||pipes[pipes.length-1].x<canvas.width-200)spawnPipe();
+for(var i=pipes.length-1;i>=0;i--){pipes[i].x-=pipeSpeed;
+if(pipes[i].x+pipes[i].w<0){pipes.splice(i,1);continue}
+if(pipes[i].x<bird.x+bird.r&&pipes[i].x+pipes[i].w>bird.x-bird.r&&bird.y-bird.r<pipes[i].y+pipes[i].h&&bird.y+bird.r>pipes[i].y){gameOver=true;clearInterval(gameLoop)}
+if(!pipes[i].scored&&pipes[i].x+pipes[i].w<bird.x&&pipes[i].y===0){score++;document.getElementById('score').textContent=score;pipes[i].scored=true}}
+if(bird.y+bird.r>canvas.height||bird.y-bird.r<0){gameOver=true;clearInterval(gameLoop)}draw()}
+function draw(){ctx.fillStyle='#4ec0ca';ctx.fillRect(0,0,canvas.width,canvas.height);
+pipes.forEach(function(p){ctx.fillStyle='#238636';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle='#1a5c2a';ctx.fillRect(p.x-3,p.y<10?p.h-20:p.y-5,p.w+6,10)});
+ctx.fillStyle='#d29922';ctx.beginPath();ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#000';ctx.beginPath();ctx.arc(bird.x+4,bird.y-4,4,0,Math.PI*2);ctx.fill()}
+canvas.addEventListener('click',function(){if(!gameOver)bird.vy=jump});
+document.addEventListener('keydown',function(e){if(e.key===' '||e.key==='ArrowUp'){e.preventDefault();if(!gameOver)bird.vy=jump}});
+startGame();gameOver=true;draw();
+</script>
+</body>
+</html>
