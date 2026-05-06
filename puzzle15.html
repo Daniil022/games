@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧩 Пятнашки — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 14px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        h1 { font-size: 26px; color: #f0f6fc; margin-bottom: 6px; }
+        .moves { color: #8b949e; margin-bottom: 12px; }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 16px;
+        }
+        .tile {
+            background: #1f6feb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.15s;
+            user-select: none;
+        }
+        .tile:active { transform: scale(0.93); }
+        .tile.empty { background: transparent; cursor: default; }
+        .tile.empty:active { transform: none; }
+        .btn {
+            padding: 10px 20px;
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #484f58;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            margin: 4px;
+        }
+        .btn-shuffle { background: #f0883e; color: #fff; border: none; }
+        .win-text { color: #7ee787; font-size: 18px; font-weight: 700; min-height: 28px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🧩 Пятнашки</h1>
+        <p class="moves">Ходов: <span id="moveCount">0</span></p>
+        <div class="board" id="board"></div>
+        <p class="win-text" id="winText"></p>
+        <button class="btn btn-shuffle" onclick="shuffleTiles()">🔀 Перемешать</button>
+        <button class="btn" onclick="resetGame()">🔄 Сброс</button>
+    </div>
+
+    <script>
+        var tiles = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0];
+        var moves = 0;
+        
+        function render() {
+            var board = document.getElementById('board');
+            board.innerHTML = '';
+            for (var i = 0; i < 16; i++) {
+                var tile = document.createElement('div');
+                tile.className = 'tile' + (tiles[i] === 0 ? ' empty' : '');
+                tile.textContent = tiles[i] || '';
+                tile.addEventListener('click', (function(idx) {
+                    return function() { moveTile(idx); };
+                })(i));
+                board.appendChild(tile);
+            }
+            document.getElementById('moveCount').textContent = moves;
+        }
+        
+        function moveTile(idx) {
+            var emptyIdx = tiles.indexOf(0);
+            var row = Math.floor(idx / 4), col = idx % 4;
+            var erow = Math.floor(emptyIdx / 4), ecol = emptyIdx % 4;
+            if (Math.abs(row - erow) + Math.abs(col - ecol) === 1) {
+                var tmp = tiles[idx]; tiles[idx] = tiles[emptyIdx]; tiles[emptyIdx] = tmp;
+                moves++;
+                render();
+                if (checkWin()) {
+                    document.getElementById('winText').textContent = '🏆 Победа за ' + moves + ' ходов!';
+                }
+            }
+        }
+        
+        function checkWin() {
+            for (var i = 0; i < 15; i++) if (tiles[i] !== i + 1) return false;
+            return tiles[15] === 0;
+        }
+        
+        function shuffleTiles() {
+            do {
+                for (var i = tiles.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = tiles[i]; tiles[i] = tiles[j]; tiles[j] = tmp;
+                }
+            } while (checkWin() || !isSolvable());
+            moves = 0;
+            document.getElementById('winText').textContent = '';
+            render();
+        }
+        
+        function isSolvable() {
+            var inv = 0;
+            for (var i = 0; i < 16; i++) {
+                if (tiles[i] === 0) continue;
+                for (var j = i + 1; j < 16; j++) {
+                    if (tiles[j] !== 0 && tiles[i] > tiles[j]) inv++;
+                }
+            }
+            var emptyRow = Math.floor(tiles.indexOf(0) / 4);
+            return (inv + emptyRow) % 2 === 1;
+        }
+        
+        function resetGame() {
+            tiles = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0];
+            moves = 0;
+            document.getElementById('winText').textContent = '';
+            render();
+        }
+        
+        shuffleTiles();
+    </script>
+</body>
+</html>
