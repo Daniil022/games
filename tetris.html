@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧱 Тетрис — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px;text-align:center;max-width:400px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.score{font-size:18px;font-weight:700;color:#7ee787;margin:8px 0}
+canvas{border:2px solid #30363d;border-radius:4px;background:#0d1117;display:block;margin:10px auto}
+.btn{margin:8px 4px;padding:10px 20px;background:#30363d;color:#c9d1d9;border:1px solid #484f58;border-radius:8px;cursor:pointer;font-size:15px}
+.btn:active{transform:scale(.97)}
+.mobile-btns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🧱 Тетрис</h1>
+<p class="score">Очки: <span id="score">0</span></p>
+<canvas id="canvas" width="200" height="360"></canvas>
+<div class="mobile-btns">
+<button class="btn" onclick="move(-1)">◀</button>
+<button class="btn" onclick="rotatePiece()">🔄</button>
+<button class="btn" onclick="move(1)">▶</button>
+<button class="btn" onclick="dropDown()">▼</button>
+</div>
+<button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var COLS=10,ROWS=18,BLOCK=20;
+var board=[],current,score=0,gameOver=false,gameLoop;
+var PIECES=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
+var COLORS=['#58a6ff','#d29922','#7ee787','#f85149','#f0883e','#1f6feb','#6e40c9'];
+function resetGame(){board=[];for(var r=0;r<ROWS;r++){board[r]=Array(COLS).fill(0)}score=0;gameOver=false;document.getElementById('score').textContent='0';spawnPiece();clearInterval(gameLoop);gameLoop=setInterval(drop,800);draw()}
+function spawnPiece(){var idx=Math.floor(Math.random()*PIECES.length);current={shape:PIECES[idx],color:COLORS[idx],x:Math.floor(COLS/2)-Math.floor(PIECES[idx][0].length/2),y:0};if(!valid(0,0))gameOver=true}
+function valid(offsetX,offsetY,shape){shape=shape||current.shape;for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++){if(shape[r][c]){var nx=current.x+c+offsetX,ny=current.y+r+offsetY;if(nx<0||nx>=COLS||ny>=ROWS||(ny>=0&&board[ny][nx]))return false}}return true}
+function move(dir){if(!gameOver&&valid(dir,0)){current.x+=dir;draw()}}
+function rotatePiece(){var shape=current.shape;var newShape=[];for(var c=0;c<shape[0].length;c++){newShape[c]=[];for(var r=shape.length-1;r>=0;r--)newShape[c].push(shape[r][c])}if(valid(0,0,newShape)){current.shape=newShape;draw()}}
+function drop(){if(gameOver)return;if(valid(0,1)){current.y++;draw()}else{lockPiece();clearLines();spawnPiece();draw();if(gameOver){clearInterval(gameLoop);alert('Игра окончена! Очки: '+score)}}}
+function dropDown(){while(valid(0,1))current.y++;drop()}
+function lockPiece(){for(var r=0;r<current.shape.length;r++)for(var c=0;c<current.shape[r].length;c++){if(current.shape[r][c]){var ny=current.y+r;if(ny<0){gameOver=true;return}board[ny][current.x+c]=current.color}}}
+function clearLines(){var lines=0;for(var r=ROWS-1;r>=0;r--){if(board[r].every(function(c){return c!==0})){board.splice(r,1);board.unshift(Array(COLS).fill(0));lines++;r++}}if(lines>0){score+=lines*100;document.getElementById('score').textContent=score}}
+function draw(){ctx.fillStyle='#0d1117';ctx.fillRect(0,0,canvas.width,canvas.height);
+for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){if(board[r][c]){ctx.fillStyle=board[r][c];ctx.fillRect(c*BLOCK+2,r*BLOCK+2,BLOCK-4,BLOCK-4)}}
+if(!gameOver&&current){for(var r=0;r<current.shape.length;r++)for(var c=0;c<current.shape[r].length;c++){if(current.shape[r][c]){ctx.fillStyle=current.color;ctx.fillRect((current.x+c)*BLOCK+2,(current.y+r)*BLOCK+2,BLOCK-4,BLOCK-4)}}}}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1);if(e.key==='ArrowDown')drop();if(e.key==='ArrowUp')rotatePiece();e.preventDefault()});
+resetGame();
+</script>
+</body>
+</html>
