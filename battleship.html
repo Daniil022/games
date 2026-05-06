@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Морской бой — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 24px 20px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 14px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        h1 { font-size: 24px; color: #f0f6fc; margin-bottom: 12px; }
+        .turn-indicator {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .turn-p1 { background: #1f6feb; color: #fff; }
+        .turn-p2 { background: #f85149; color: #fff; }
+        .boards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .board-wrapper {
+            text-align: center;
+        }
+        .board-label {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            width: 280px;
+            height: 280px;
+        }
+        .cell {
+            aspect-ratio: 1;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.1s;
+        }
+        .cell.ship { background: #58a6ff; }
+        .cell.hit { background: #f85149; }
+        .cell.miss { background: #8b949e; }
+        .cell:hover { border-color: #f0f6fc; }
+        .btn {
+            margin-top: 14px;
+            padding: 10px 20px;
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #484f58;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .message {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #d29922;
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🎯 Морской бой</h1>
+        <div class="turn-indicator turn-p1" id="turnIndicator">Ход: 🔵 Игрок 1</div>
+        <p class="message" id="message"></p>
+        
+        <div class="boards">
+            <div class="board-wrapper">
+                <div class="board-label">🔵 Игрок 1</div>
+                <div class="board" id="board1"></div>
+            </div>
+            <div class="board-wrapper">
+                <div class="board-label" style="color:#f85149;">🔴 Игрок 2</div>
+                <div class="board" id="board2"></div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+    </div>
+
+    <script>
+        var gridSize = 8;
+        var ships1 = []; // Массив клеток с кораблями игрока 1
+        var ships2 = [];
+        var hits1 = [];  // Куда стрелял игрок 2 по полю 1
+        var hits2 = [];  // Куда стрелял игрок 1 по полю 2
+        var currentPlayer = 1; // 1 или 2
+        var phase = 'setup'; // 'setup' или 'play'
+        var setupShips = [3, 2, 2, 1]; // Размеры кораблей
+        var currentShipIndex = 0;
+        var currentShipSize = 3;
+        var placingPlayer = 1;
+        var placedCells = [];
+        
+        function resetGame() {
+            ships1 = [];
+            ships2 = [];
+            hits1 = [];
+            hits2 = [];
+            currentPlayer = 1;
+            phase = 'setup';
+            placingPlayer = 1;
+            currentShipIndex = 0;
+            currentShipSize = setupShips[0];
+            placedCells = [];
+            document.getElementById('turnIndicator').textContent = '🔵 Игрок 1: размести корабль (3 клетки)';
+            document.getElementById('turnIndicator').className = 'turn-indicator turn-p1';
+            document.getElementById('message').textContent = 'Нажми на 3 клетки подряд по горизонтали или вертикали';
+            renderBoards();
+        }
+        
+        function renderBoards() {
+            renderBoard('board1', ships1, hits1, 1);
+            renderBoard('board2', ships2, hits2, 2);
+        }
+        
+        function renderBoard(id, ships, hits, playerNum) {
+            var board = document.getElementById(id);
+            board.innerHTML = '';
+            for (var row = 0; row < gridSize; row++) {
+                for (var col = 0; col < gridSize; col++) {
+                    var cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    var isShip = ships.some(function(s) { return s.row === row && s.col === col; });
+                    var isHit = hits.some(function(h) { return h.row === row && h.col === col; });
+                    
+                    if (isHit && isShip) cell.classList.add('hit');
+                    else if (isHit) cell.classList.add('miss');
+                    else if (isShip && phase === 'setup' && playerNum === placingPlayer) cell.classList.add('ship');
+                    
+                    cell.addEventListener('click', function() {
+                        var r = parseInt(this.dataset.row);
+                        var c = parseInt(this.dataset.col);
+                        if (phase === 'setup') placeShip(r, c, playerNum);
+                        else if (phase === 'play') shoot(r, c, playerNum);
+                    });
+                    
+                    board.appendChild(cell);
+                }
+            }
+        }
+        
+        function placeShip(row, col, playerNum) {
+            if (playerNum !== placingPlayer) return;
+            var ships = playerNum === 1 ? ships1 : ships2;
+            
+            if (placedCells.length === 0) {
+                placedCells = [{row: row, col: col}];
+            } else {
+                // Проверка: все клетки должны быть на одной линии
+                var sameRow = placedCells.every(function(p) { return p.row === row; });
+                var sameCol = placedCells.every(function(p) { return p.col === col; });
+                var isAdjacent = false;
+                for (var i = 0; i < placedCells.length; i++) {
+                    if (Math.abs(placedCells[i].row - row) + Math.abs(placedCells[i].col - col) === 1) {
+                        isAdjacent = true;
+                        break;
+                    }
+                }
+                
+                if ((sameRow || sameCol) && isAdjacent) {
+                    placedCells.push({row: row, col: col});
+                } else {
+                    document.getElementById('message').textContent = 'Клетки должны быть на одной линии и рядом!';
+                    return;
+                }
+            }
+            
+            if (placedCells.length === currentShipSize) {
+                // Сохраняем корабль
+                for (var i = 0; i < placedCells.length; i++) {
+                    ships.push(placedCells[i]);
+                }
+                placedCells = [];
+                currentShipIndex++;
+                if (currentShipIndex < setupShips.length) {
+                    currentShipSize = setupShips[currentShipIndex];
+                    document.getElementById('message').textContent = 'Размести корабль из ' + currentShipSize + ' клеток';
+                } else {
+                    // Переход к следующему игроку или к игре
+                    if (placingPlayer === 1) {
+                        placingPlayer = 2;
+                        currentShipIndex = 0;
+                        currentShipSize = setupShips[0];
+                        document.getElementById('turnIndicator').textContent = '🔴 Игрок 2: размести корабль (3 клетки)';
+                        document.getElementById('turnIndicator').className = 'turn-indicator turn-p2';
+                        document.getElementById('message').textContent = 'Нажми на 3 клетки подряд';
+                    } else {
+                        phase = 'play';
+                        document.getElementById('turnIndicator').textContent = 'Ход: 🔵 Игрок 1';
+                        document.getElementById('turnIndicator').className = 'turn-indicator turn-p1';
+                        document.getElementById('message').textContent = 'Стреляй по полю соперника!';
+                    }
+                }
+            }
+            renderBoards();
+        }
+        
+        function shoot(row, col, playerNum) {
+            if (playerNum !== currentPlayer) {
+                document.getElementById('message').textContent = 'Сейчас ход Игрока ' + currentPlayer + '!';
+                return;
+            }
+            
+            var targetHits = currentPlayer === 1 ? hits2 : hits1;
+            var targetShips = currentPlayer === 1 ? ships2 : ships1;
+            
+            // Проверка: уже стрелял?
+            if (targetHits.some(function(h) { return h.row === row && h.col === col; })) {
+                document.getElementById('message').textContent = 'Сюда уже стреляли!';
+                return;
+            }
+            
+            targetHits.push({row: row, col: col});
+            
+            var hit = targetShips.some(function(s) { return s.row === row && s.col === col; });
+            var msg = hit ? '💥 Попадание!' : '💦 Мимо!';
+            
+            // Проверка победы
+            var allSunk = targetShips.every(function(s) {
+                return targetHits.some(function(h) { return h.row === s.row && h.col === s.col; });
+            });
+            
+            if (allSunk) {
+                msg = '🏆 Игрок ' + currentPlayer + ' победил!';
+                phase = 'gameover';
+                document.getElementById('message').textContent = msg;
+                document.getElementById('turnIndicator').textContent = 'Победил Игрок ' + currentPlayer + '!';
+            } else {
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
+                document.getElementById('turnIndicator').textContent = 'Ход: ' + (currentPlayer === 1 ? '🔵 Игрок 1' : '🔴 Игрок 2');
+                document.getElementById('turnIndicator').className = currentPlayer === 1 ? 'turn-indicator turn-p1' : 'turn-indicator turn-p2';
+                document.getElementById('message').textContent = msg;
+            }
+            renderBoards();
+        }
+        
+        resetGame();
+    </script>
+</body>
+</html>
