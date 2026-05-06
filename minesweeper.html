@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💣 Сапёр — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:30px 20px;max-width:420px;width:100%;text-align:center}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:26px;color:#f0f6fc;margin-bottom:8px}
+.info{font-size:16px;font-weight:700;margin:8px 0}
+.board{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:320px;height:320px;margin:10px auto}
+.cell{aspect-ratio:1;background:#21262d;border:1px solid #30363d;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;transition:background .1s}
+.cell.revealed{background:#161b22}
+.cell.mine{background:#f85149}
+.cell.flagged{background:#d29922}
+.btn{margin:8px;padding:10px 20px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>💣 Сапёр</h1>
+<p class="info">💣 <span id="minesCount">10</span> | 🚩 <span id="flagsCount">0</span></p>
+<div class="board" id="board"></div>
+<button class="btn" onclick="newGame()">🔄 Новая игра</button>
+</div>
+<script>
+var ROWS=9,COLS=9,MINES=10,board=[],revealed=[],flagged=[],gameOver=false;
+function newGame(){board=Array(ROWS).fill().map(function(){return Array(COLS).fill(0)});revealed=Array(ROWS).fill().map(function(){return Array(COLS).fill(false)});flagged=Array(ROWS).fill().map(function(){return Array(COLS).fill(false)});gameOver=false;
+var placed=0;while(placed<MINES){var r=Math.floor(Math.random()*ROWS),c=Math.floor(Math.random()*COLS);if(board[r][c]!=='M'){board[r][c]='M';placed++}}
+for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){if(board[r][c]==='M')continue;var count=0;for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc]==='M')count++}board[r][c]=count}
+render()}
+function render(){var boardEl=document.getElementById('board');boardEl.innerHTML='';
+for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){var cell=document.createElement('div');cell.className='cell';
+if(revealed[r][c]){cell.classList.add('revealed');if(board[r][c]==='M')cell.classList.add('mine'),cell.textContent='💣';else if(board[r][c]>0)cell.textContent=board[r][c],cell.style.color=['#58a6ff','#7ee787','#f85149','#1f6feb','#d32f2f','#6e40c9','#d29922','#8b949e'][board[r][c]-1]}
+else if(flagged[r][c])cell.classList.add('flagged'),cell.textContent='🚩';
+cell.addEventListener('click',function(row,col){return function(e){reveal(row,col)}}(r,c));
+cell.addEventListener('contextmenu',function(row,col){return function(e){e.preventDefault();toggleFlag(row,col)}}(r,c));
+boardEl.appendChild(cell)}
+document.getElementById('flagsCount').textContent=flagged.reduce(function(s,row){return s+row.filter(function(f){return f}).length},0)}
+function reveal(r,c){if(gameOver||revealed[r][c]||flagged[r][c])return;revealed[r][c]=true;
+if(board[r][c]==='M'){gameOver=true;for(var i=0;i<ROWS;i++)for(var j=0;j<COLS;j++)if(board[i][j]==='M')revealed[i][j]=true;render();alert('💥 Бомба! Игра окончена.');return}
+if(board[r][c]===0)for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!revealed[nr][nc])reveal(nr,nc)}
+if(revealed.reduce(function(s,row){return s+row.filter(function(rv){return rv}).length},0)===ROWS*COLS-MINES){gameOver=true;render();alert('🏆 Победа! Все мины найдены!')}
+render()}
+function toggleFlag(r,c){if(gameOver||revealed[r][c])return;flagged[r][c]=!flagged[r][c];render()}
+newGame();
+</script>
+</body>
+</html>
