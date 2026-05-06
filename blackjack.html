@@ -2,57 +2,215 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Касатка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🃏 Блэкджек — Игровой портал</title>
     <style>
-        body { font-family: Arial; text-align: center; background: #0a3d0a; color: white; }
-        #messages { min-height: 60px; margin: 20px; font-size: 20px; }
-        button { padding: 15px 30px; font-size: 20px; margin: 10px; background: gold; border: none; border-radius: 10px; cursor: pointer; }
-        button:hover { background: orange; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 2px solid #d29922;
+            border-radius: 20px;
+            padding: 30px 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 14px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        h1 { font-size: 28px; color: #d29922; margin-bottom: 6px; }
+        .balance { font-size: 18px; font-weight: 700; color: #7ee787; margin: 8px 0; }
+        .cards-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-height: 80px;
+            margin: 8px 0;
+            align-items: center;
+        }
+        .card {
+            width: 60px;
+            height: 85px;
+            background: #fff;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 900;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+        }
+        .card.red { color: #d32f2f; }
+        .card-back {
+            background: linear-gradient(135deg, #1f6feb, #58a6ff);
+            color: #fff;
+        }
+        .score-label { font-size: 15px; font-weight: 600; color: #f0f6fc; }
+        .score-value { font-size: 22px; font-weight: 900; }
+        .btn {
+            padding: 12px 24px;
+            margin: 6px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-hit { background: #238636; color: #fff; }
+        .btn-stand { background: #f85149; color: #fff; }
+        .btn-deal { background: #d29922; color: #000; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status { font-size: 18px; font-weight: 700; min-height: 28px; margin: 8px 0; }
+        .status-win { color: #7ee787; }
+        .status-lose { color: #f85149; }
+        .status-push { color: #d29922; }
     </style>
 </head>
 <body>
-    <h1>🃏 Касатка</h1>
-    <div id="messages">Твоя ставка принята. Тяни карту!</div>
-    <div id="scores">Ты: 0 | Дилер: 0</div>
-    <button onclick="hit()">Ещё</button>
-    <button onclick="stand()">Хватит</button>
-    <button onclick="restart()">Новая игра</button>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🃏 Блэкджек (21)</h1>
+        <p class="balance">💰 Баланс: <span id="balance">1000</span></p>
+        
+        <p class="score-label">🤖 Дилер (<span id="dealerScore">?</span>)</p>
+        <div class="cards-row" id="dealerCards"></div>
+        
+        <p class="score-label">👤 Ты (<span id="playerScore">0</span>)</p>
+        <div class="cards-row" id="playerCards"></div>
+        
+        <p class="status" id="status">Ставка: 50 | Сделай ход!</p>
+        
+        <button class="btn btn-deal" id="btnDeal" onclick="deal()">🔄 Сдать</button>
+        <button class="btn btn-hit" id="btnHit" onclick="hit()" disabled>➕ Ещё</button>
+        <button class="btn btn-stand" id="btnStand" onclick="stand()" disabled>✋ Хватит</button>
+    </div>
 
     <script>
-        let playerHand = 0, dealerHand = 0, gameOver = false;
+        var suits = ['♠', '♥', '♦', '♣'];
+        var ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+        var deck = [];
+        var playerCards = [];
+        var dealerCards = [];
+        var balance = 1000;
+        var bet = 50;
+        var gameOver = false;
 
-        function randomCard() { return Math.floor(Math.random() * 10) + 2; }
+        function createDeck() {
+            deck = [];
+            for (var s = 0; s < 4; s++) {
+                for (var r = 0; r < 13; r++) {
+                    deck.push({ suit: suits[s], rank: ranks[r], value: r < 9 ? r + 2 : r < 12 ? 10 : 11, red: (s === 1 || s === 2) });
+                }
+            }
+            shuffle(deck);
+        }
 
-        function updateUI(msg) {
-            document.getElementById('messages').innerText = msg;
-            document.getElementById('scores').innerText = `Ты: ${playerHand} | Дилер: ${dealerHand}`;
+        function shuffle(a) {
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+        }
+
+        function cardValue(c) { return c.value; }
+        function handValue(hand) {
+            var sum = hand.reduce(function(s, c) { return s + c.value; }, 0);
+            var aces = hand.filter(function(c) { return c.rank === 'A'; }).length;
+            while (sum > 21 && aces > 0) { sum -= 10; aces--; }
+            return sum;
+        }
+        function cardHTML(c) {
+            return '<div class="card' + (c.red ? ' red' : '') + '"><span>' + c.suit + '</span>' + c.rank + '</div>';
+        }
+
+        function render() {
+            var dh = '';
+            for (var i = 0; i < dealerCards.length; i++) {
+                if (i === 0 && !gameOver) dh += '<div class="card card-back">?</div>';
+                else dh += cardHTML(dealerCards[i]);
+            }
+            document.getElementById('dealerCards').innerHTML = dh || '<span style="color:#8b949e;">Пусто</span>';
+            
+            var ph = '';
+            for (var i = 0; i < playerCards.length; i++) ph += cardHTML(playerCards[i]);
+            document.getElementById('playerCards').innerHTML = ph || '<span style="color:#8b949e;">Пусто</span>';
+            
+            document.getElementById('playerScore').textContent = gameOver ? handValue(playerCards) : (playerCards.length > 0 ? handValue(playerCards) : 0);
+            document.getElementById('dealerScore').textContent = gameOver ? handValue(dealerCards) : (dealerCards.length > 0 ? '?' + (dealerCards.length > 1 ? ' (+' + cardValue(dealerCards[1]) + ')' : '') : '?');
+            document.getElementById('balance').textContent = balance;
+        }
+
+        function deal() {
+            if (balance < bet) { alert('Недостаточно средств!'); return; }
+            balance -= bet;
+            createDeck();
+            playerCards = [deck.pop(), deck.pop()];
+            dealerCards = [deck.pop(), deck.pop()];
+            gameOver = false;
+            document.getElementById('status').textContent = 'Ставка: ' + bet + ' | Твой ход!';
+            document.getElementById('status').className = 'status';
+            document.getElementById('btnHit').disabled = false;
+            document.getElementById('btnStand').disabled = false;
+            document.getElementById('btnDeal').disabled = true;
+            if (handValue(playerCards) === 21) stand();
+            render();
         }
 
         function hit() {
-            if (gameOver) return;
-            playerHand += randomCard();
-            if (playerHand > 21) { updateUI('Перебор! Ты проиграл.'); gameOver = true; }
-            else if (playerHand === 21) { updateUI('Касатка! Ты выиграл!'); gameOver = true; }
-            else { updateUI('Тянешь дальше или хватит?'); }
+            playerCards.push(deck.pop());
+            var val = handValue(playerCards);
+            if (val > 21) { endGame('lose', 'Перебор! Ты проиграл.'); }
+            else if (val === 21) stand();
+            render();
         }
 
         function stand() {
-            if (gameOver) return;
-            while (dealerHand < 17) { dealerHand += randomCard(); }
-            if (dealerHand > 21 || playerHand > dealerHand) { updateUI('Ты выиграл!'); }
-            else if (playerHand < dealerHand) { updateUI('Дилер выиграл.'); }
-            else { updateUI('Ничья!'); }
+            document.getElementById('btnHit').disabled = true;
+            document.getElementById('btnStand').disabled = true;
+            while (handValue(dealerCards) < 17) dealerCards.push(deck.pop());
             gameOver = true;
+            var pv = handValue(playerCards);
+            var dv = handValue(dealerCards);
+            if (dv > 21 || pv > dv) endGame('win', 'Ты выиграл! +' + bet * 2);
+            else if (pv === dv) endGame('push', 'Ничья! Ставка возвращена.');
+            else endGame('lose', 'Дилер выиграл.');
+            render();
         }
 
-        function restart() {
-            playerHand = randomCard() + randomCard();
-            dealerHand = randomCard();
-            gameOver = false;
-            updateUI('Новая раздача. Тяни или хватит?');
+        function endGame(result, msg) {
+            gameOver = true;
+            document.getElementById('btnHit').disabled = true;
+            document.getElementById('btnStand').disabled = true;
+            document.getElementById('btnDeal').disabled = false;
+            if (result === 'win') balance += bet * 2;
+            else if (result === 'push') balance += bet;
+            document.getElementById('status').textContent = msg;
+            document.getElementById('status').className = 'status status-' + result;
+            render();
         }
 
-        restart();
+        deal();
     </script>
 </body>
 </html>
