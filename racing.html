@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏎️ Гонки — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px 20px;text-align:center;max-width:420px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.score{font-size:18px;font-weight:700;color:#7ee787;margin:8px 0}
+canvas{border:2px solid #30363d;border-radius:8px;background:#1a1a1a;display:block;margin:10px auto}
+.btn{margin:8px;padding:10px 20px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🏎️ Гонки</h1>
+<p class="score">Очки: <span id="score">0</span></p>
+<canvas id="canvas" width="300" height="400"></canvas>
+<button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var car={x:140,y:320,w:24,h:36},enemies=[],score=0,gameOver=false,loop,roadOffset=0;
+function resetGame(){car.x=140;enemies=[];score=0;gameOver=false;document.getElementById('score').textContent='0';clearInterval(loop);loop=setInterval(update,30)}
+function spawnEnemy(){var lane=30+Math.floor(Math.random()*3)*80;enemies.push({x:lane,y:-40,w:24,h:36})}
+function update(){if(gameOver)return;roadOffset=(roadOffset+3)%40;
+enemies.forEach(function(e,i){e.y+=4;if(e.y>canvas.height+40){enemies.splice(i,1);score+=10;document.getElementById('score').textContent=score}
+if(e.x<car.x+car.w&&e.x+e.w>car.x&&e.y<car.y+car.h&&e.y+e.h>car.y){gameOver=true;clearInterval(loop);alert('Авария! Очки: '+score)}});
+if(Math.random()<0.025)spawnEnemy();draw()}
+function draw(){
+ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle='#fff';for(var i=0;i<4;i++){var x=70+i*80;for(var y=-roadOffset;y<canvas.height;y+=40)ctx.fillRect(x-2,y+20,4,20)}
+ctx.fillStyle='#7ee787';ctx.fillRect(car.x,car.y,car.w,car.h);
+enemies.forEach(function(e){ctx.fillStyle='#f85149';ctx.fillRect(e.x,e.y,e.w,e.h)})
+}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')car.x=Math.max(10,car.x-20);if(e.key==='ArrowRight')car.x=Math.min(canvas.width-car.w-10,car.x+20)});
+canvas.addEventListener('touchmove',function(e){e.preventDefault();var t=e.touches[0];var rect=canvas.getBoundingClientRect();car.x=t.clientX-rect.left-car.w/2});
+resetGame();
+</script>
+</body>
+</html>
