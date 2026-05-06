@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧟 Выживание — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px 20px;text-align:center;max-width:500px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.info{display:flex;justify-content:center;gap:20px;font-weight:700;margin:8px 0}
+canvas{border:2px solid #30363d;border-radius:8px;background:#111;display:block;margin:10px auto}
+.btn{margin:8px;padding:10px 20px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🧟 Выживание</h1>
+<div class="info">
+<span>❤️ <span id="hp">100</span></span>
+<span>💀 Волна: <span id="wave">1</span></span>
+<span>⭐ <span id="score">0</span></span>
+</div>
+<canvas id="canvas" width="400" height="400"></canvas>
+<button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var player={x:200,y:200,r:12,hp:100},enemies=[],bullets=[],score=0,wave=1,loop,keys={};
+function resetGame(){player={x:200,y:200,r:12,hp:100};enemies=[];bullets=[];score=0;wave=1;updateUI();spawnWave();clearInterval(loop);loop=setInterval(update,30)}
+function spawnWave(){for(var i=0;i<wave*3;i++){var a=Math.random()*Math.PI*2,d=200+Math.random()*100;enemies.push({x:player.x+Math.cos(a)*d,y:player.y+Math.sin(a)*d,r:10,hp:20+wave*5})}}
+function update(){if(player.hp<=0){gameOver();return}
+if(enemies.length===0){wave++;spawnWave();updateUI()}
+enemies.forEach(function(e,i){var dx=player.x-e.x,dy=player.y-e.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<player.r+e.r){player.hp-=1;updateUI()}else{e.x+=dx/dist*1.5;e.y+=dy/dist*1.5}
+bullets.forEach(function(b,bi){var db=Math.sqrt((b.x-e.x)**2+(b.y-e.y)**2);if(db<e.r){e.hp-=25;bullets.splice(bi,1);if(e.hp<=0){enemies.splice(i,1);score+=100;updateUI()}}})});
+bullets.forEach(function(b,i){b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>canvas.width||b.y<0||b.y>canvas.height)bullets.splice(i,1)});
+handleKeys();draw()}
+function handleKeys(){var spd=3;if(keys.ArrowLeft||keys.a)player.x-=spd;if(keys.ArrowRight||keys.d)player.x+=spd;if(keys.ArrowUp||keys.w)player.y-=spd;if(keys.ArrowDown||keys.s)player.y+=spd;player.x=Math.max(player.r,Math.min(canvas.width-player.r,player.x));player.y=Math.max(player.r,Math.min(canvas.height-player.r,player.y))}
+function shoot(e){var rect=canvas.getBoundingClientRect();var mx=e.clientX-rect.left,my=e.clientY-rect.top;var dx=mx-player.x,dy=my-player.y,dist=Math.sqrt(dx*dx+dy*dy);bullets.push({x:player.x,y:player.y,vx:dx/dist*8,vy:dy/dist*8})}
+function gameOver(){clearInterval(loop);alert('💀 Ты погиб! Волна: '+wave+', Очки: '+score)}
+function updateUI(){document.getElementById('hp').textContent=Math.max(0,player.hp);document.getElementById('wave').textContent=wave;document.getElementById('score').textContent=score}
+function draw(){
+ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle='#7ee787';ctx.beginPath();ctx.arc(player.x,player.y,player.r,0,Math.PI*2);ctx.fill();
+enemies.forEach(function(e){ctx.fillStyle='#f85149';ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill()});
+bullets.forEach(function(b){ctx.fillStyle='#d29922';ctx.beginPath();ctx.arc(b.x,b.y,3,0,Math.PI*2);ctx.fill()})
+}
+document.addEventListener('keydown',function(e){keys[e.key]=true});document.addEventListener('keyup',function(e){keys[e.key]=false});
+canvas.addEventListener('click',shoot);canvas.addEventListener('touchstart',function(e){e.preventDefault();shoot(e.touches[0])});
+resetGame();
+</script>
+</body>
+</html>
