@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ Футбол головами — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px 20px;text-align:center;max-width:600px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.score-board{display:flex;justify-content:center;gap:30px;font-size:22px;font-weight:900;margin:8px 0}
+.p1{color:#58a6ff}.p2{color:#f85149}
+canvas{border:2px solid #30363d;border-radius:8px;background:#076324;display:block;margin:10px auto}
+.btn{margin:8px;padding:10px 20px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>⚽ Футбол головами</h1>
+<div class="score-board">
+<span class="p1">🔵 <span id="score1">0</span></span>
+<span>—</span>
+<span class="p2"><span id="score2">0</span> 🔴</span>
+</div>
+<canvas id="canvas" width="500" height="300"></canvas>
+<button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var p1={x:60,y:200,r:20},p2={x:440,y:200,r:20},ball={x:250,y:150,r:10,vx:3,vy:2},score1=0,score2=0,gameOver=false;
+function resetGame(){p1.y=200;p2.y=200;ball={x:250,y:150,r:10,vx:3*(Math.random()>0.5?1:-1),vy:2*(Math.random()>0.5?1:-1)};score1=0;score2=0;gameOver=false;updateScore();loop()}
+function update(){if(gameOver)return;
+ball.x+=ball.vx;ball.y+=ball.vy;
+if(ball.y-ball.r<0||ball.y+ball.r>canvas.height)ball.vy*=-1;
+if(ball.x-ball.r<0){score2++;updateScore();resetBall(1)}if(ball.x+ball.r>canvas.width){score1++;updateScore();resetBall(-1)}
+[].concat(p1,p2).forEach(function(p){var dx=ball.x-p.x,dy=ball.y-p.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<ball.r+p.r){var nx=dx/dist,ny=dy/dist;ball.vx=nx*5;ball.vy=ny*5;ball.x=p.x+nx*(p.r+ball.r+1);ball.y=p.y+ny*(p.r+ball.r+1)}});
+if(score1>=5||score2>=5){gameOver=true;alert((score1>=5?'🔵':'🔴')+' победил!')}
+draw();requestAnimationFrame(update)}
+function resetBall(dir){ball.x=250;ball.y=150;ball.vx=3*dir;ball.vy=(Math.random()-0.5)*4}
+function draw(){ctx.fillStyle='#076324';ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.strokeStyle='#fff';ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(canvas.width/2,0);ctx.lineTo(canvas.width/2,canvas.height);ctx.stroke();ctx.setLineDash([]);
+ctx.fillStyle='#58a6ff';ctx.beginPath();ctx.arc(p1.x,p1.y,p1.r,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#f85149';ctx.beginPath();ctx.arc(p2.x,p2.y,p2.r,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill()}
+function updateScore(){document.getElementById('score1').textContent=score1;document.getElementById('score2').textContent=score2}
+document.addEventListener('keydown',function(e){if(e.key==='w')p1.y-=15;if(e.key==='s')p1.y+=15;if(e.key==='ArrowUp')p2.y-=15;if(e.key==='ArrowDown')p2.y+=15;p1.y=Math.max(p1.r,Math.min(canvas.height-p1.r,p1.y));p2.y=Math.max(p2.r,Math.min(canvas.height-p2.r,p2.y))});
+canvas.addEventListener('touchmove',function(e){e.preventDefault();var t=e.touches[0];var rect=canvas.getBoundingClientRect();if(t.clientX<canvas.width/2)p1.y=t.clientY-rect.top;else p2.y=t.clientY-rect.top});
+function loop(){update()}
+resetGame();
+</script>
+</body>
+</html>
