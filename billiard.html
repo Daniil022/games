@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎱 Бильярд — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px;text-align:center;max-width:700px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:8px}
+.score{font-size:18px;font-weight:700;margin-bottom:8px}
+canvas{border:2px solid #8b5e3c;border-radius:8px;background:#076324;display:block;margin:0 auto;cursor:crosshair}
+.controls{font-size:13px;color:#8b949e;margin-top:8px}
+.btn{margin:8px;padding:10px 20px;background:#30363d;color:#c9d1d9;border:1px solid #484f58;border-radius:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🎱 Бильярд</h1>
+<p class="score">🎯 Шаров забито: <span id="pocketed">0</span>/15</p>
+<canvas id="canvas" width="600" height="350"></canvas>
+<p class="controls">🖱️ Нажми и тащи от белого шара — отпусти для удара</p>
+<button class="btn" onclick="resetGame()">🔄 Новый стол</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var pockets=[{x:20,y:20,r:18},{x:canvas.width/2,y:12,r:18},{x:canvas.width-20,y:20,r:18},{x:20,y:canvas.height-20,r:18},{x:canvas.width/2,y:canvas.height-12,r:18},{x:canvas.width-20,y:canvas.height-20,r:18}];
+var balls=[],cueBall,isDragging=false,dragStart={x:0,y:0},pocketed=0;
+function resetGame(){
+balls=[];cueBall={x:canvas.width*0.25,y:canvas.height/2,vx:0,vy:0,r:9,color:'#fff'};
+var colors=['#f85149','#f0883e','#d29922','#238636','#1f6feb','#6e40c9','#000','#f85149','#d29922','#1f6feb','#6e40c9','#f0883e','#238636','#000','#f85149'];
+for(var i=0;i<15;i++){balls.push({x:canvas.width*0.6+Math.random()*20,y:canvas.height/2+Math.random()*80-40,vx:0,vy:0,r:8,color:colors[i],pocketed:false})}
+pocketed=0;document.getElementById('pocketed').textContent='0';draw()}
+function draw(){
+ctx.fillStyle='#076324';ctx.fillRect(0,0,canvas.width,canvas.height);
+pockets.forEach(function(p){ctx.fillStyle='#000';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});
+balls.forEach(function(b){if(!b.pocketed){ctx.fillStyle=b.color;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill()}});
+ctx.fillStyle=cueBall.color;ctx.beginPath();ctx.arc(cueBall.x,cueBall.y,cueBall.r,0,Math.PI*2);ctx.fill();
+if(isDragging){ctx.strokeStyle='#fff';ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(cueBall.x,cueBall.y);ctx.lineTo(dragStart.x,dragStart.y);ctx.stroke();ctx.setLineDash([])}
+}
+function update(){
+cueBall.x+=cueBall.vx;cueBall.y+=cueBall.vy;cueBall.vx*=0.99;cueBall.vy*=0.99;
+if(Math.abs(cueBall.vx)<0.05){cueBall.vx=0}if(Math.abs(cueBall.vy)<0.05){cueBall.vy=0}
+if(cueBall.x-cueBall.r<0||cueBall.x+cueBall.r>canvas.width)cueBall.vx*=-1;
+if(cueBall.y-cueBall.r<0||cueBall.y+cueBall.r>canvas.height)cueBall.vy*=-1;
+balls.forEach(function(b){
+if(b.pocketed)return;
+b.x+=b.vx;b.y+=b.vy;b.vx*=0.99;b.vy*=0.99;
+if(Math.abs(b.vx)<0.05)b.vx=0;if(Math.abs(b.vy)<0.05)b.vy=0;
+if(b.x-b.r<0||b.x+b.r>canvas.width)b.vx*=-1;
+if(b.y-b.r<0||b.y+b.r>canvas.height)b.vy*=-1;
+var dx=cueBall.x-b.x,dy=cueBall.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<cueBall.r+b.r){
+var angle=Math.atan2(dy,dx),sin=Math.sin(angle),cos=Math.cos(angle);
+var vx1=cueBall.vx*cos+cueBall.vy*sin,vy1=cueBall.vx*sin-cueBall.vy*cos;
+var vx2=b.vx*cos+b.vy*sin,vy2=b.vx*sin-b.vy*cos;
+var tmp=vx1;vx1=vx2;vx2=tmp;
+cueBall.vx=vx1*cos+vy1*sin;cueBall.vy=vx1*sin-vy1*cos;
+b.vx=vx2*cos+vy2*sin;b.vy=vx2*sin-vy2*cos;
+var overlap=(cueBall.r+b.r-dist)/2;
+cueBall.x+=Math.cos(angle)*overlap;cueBall.y+=Math.sin(angle)*overlap;
+b.x-=Math.cos(angle)*overlap;b.y-=Math.sin(angle)*overlap;
+}
+pockets.forEach(function(p){
+var db=Math.sqrt((b.x-p.x)*(b.x-p.x)+(b.y-p.y)*(b.y-p.y));
+if(db<p.r&&!b.pocketed){b.pocketed=true;pocketed++;document.getElementById('pocketed').textContent=pocketed}
+var dc=Math.sqrt((cueBall.x-p.x)*(cueBall.x-p.x)+(cueBall.y-p.y)*(cueBall.y-p.y));
+if(dc<p.r){cueBall.x=canvas.width*0.25;cueBall.y=canvas.height/2;cueBall.vx=0;cueBall.vy=0}
+});
+});
+draw();requestAnimationFrame(update)}
+canvas.addEventListener('mousedown',function(e){var rect=canvas.getBoundingClientRect();var mx=e.clientX-rect.left,my=e.clientY-rect.top;if(Math.sqrt((mx-cueBall.x)**2+(my-cueBall.y)**2)<cueBall.r+10){isDragging=true;dragStart.x=mx;dragStart.y=my}});
+canvas.addEventListener('mousemove',function(e){if(isDragging){var rect=canvas.getBoundingClientRect();dragStart.x=e.clientX-rect.left;dragStart.y=e.clientY-rect.top;draw()}});
+canvas.addEventListener('mouseup',function(e){if(isDragging){var dx=cueBall.x-dragStart.x,dy=cueBall.y-dragStart.y;cueBall.vx=dx*0.15;cueBall.vy=dy*0.15;isDragging=false;draw()}});
+canvas.addEventListener('touchstart',function(e){e.preventDefault();var t=e.touches[0];var rect=canvas.getBoundingClientRect();var mx=t.clientX-rect.left,my=t.clientY-rect.top;if(Math.sqrt((mx-cueBall.x)**2+(my-cueBall.y)**2)<cueBall.r+10){isDragging=true;dragStart.x=mx;dragStart.y=my}});
+canvas.addEventListener('touchmove',function(e){e.preventDefault();if(isDragging){var t=e.touches[0];var rect=canvas.getBoundingClientRect();dragStart.x=t.clientX-rect.left;dragStart.y=t.clientY-rect.top;draw()}});
+canvas.addEventListener('touchend',function(e){if(isDragging){var dx=cueBall.x-dragStart.x,dy=cueBall.y-dragStart.y;cueBall.vx=dx*0.15;cueBall.vy=dy*0.15;isDragging=false;draw()}});
+resetGame();update();
+</script>
+</body>
+</html>
