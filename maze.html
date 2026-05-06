@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕳️ Лабиринт — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px 20px;text-align:center;max-width:440px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.timer{font-size:16px;font-weight:700;color:#d29922;margin:8px 0}
+canvas{border:2px solid #30363d;border-radius:8px;background:#0d1117;display:block;margin:10px auto}
+.btn{margin:8px;padding:10px 20px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🕳️ Лабиринт</h1>
+<p class="timer">⏱️ Время: <span id="timer">0</span>с</p>
+<canvas id="canvas" width="320" height="320"></canvas>
+<button class="btn" onclick="generateMaze()">🔄 Новый лабиринт</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var SIZE=15,CELL=20,OFFSET=10,maze=[],player={x:0,y:0},exit={x:SIZE-1,y:SIZE-1},timer=0,interval;
+function generateMaze(){maze=Array(SIZE).fill().map(function(){return Array(SIZE).fill(1)});
+function carve(x,y){var dirs=[[0,-1],[1,0],[0,1],[-1,0]];shuffle(dirs);maze[y][x]=0;
+dirs.forEach(function(d){var nx=x+d[0]*2,ny=y+d[1]*2;if(nx>=0&&nx<SIZE&&ny>=0&&ny<SIZE&&maze[ny][nx]===1){maze[y+d[1]][x+d[0]]=0;carve(nx,ny)}})}
+carve(0,0);player={x:0,y:0};exit={x:SIZE-1,y:SIZE-1};timer=0;clearInterval(interval);interval=setInterval(function(){timer++;document.getElementById('timer').textContent=timer},1000);draw()}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}}
+function draw(){ctx.fillStyle='#0d1117';ctx.fillRect(0,0,canvas.width,canvas.height);
+for(var y=0;y<SIZE;y++)for(var x=0;x<SIZE;x++){ctx.fillStyle=maze[y][x]===1?'#30363d':'#161b22';ctx.fillRect(OFFSET+x*CELL,OFFSET+y*CELL,CELL-1,CELL-1)}
+ctx.fillStyle='#d29922';ctx.fillRect(OFFSET+exit.x*CELL+2,OFFSET+exit.y*CELL+2,CELL-5,CELL-5);
+ctx.fillStyle='#7ee787';ctx.beginPath();ctx.arc(OFFSET+player.x*CELL+CELL/2,OFFSET+player.y*CELL+CELL/2,CELL/3,0,Math.PI*2);ctx.fill()}
+function movePlayer(dx,dy){var nx=player.x+dx,ny=player.y+dy;if(nx>=0&&nx<SIZE&&ny>=0&&ny<SIZE&&maze[ny][nx]===0){player.x=nx;player.y=ny;draw();if(player.x===exit.x&&player.y===exit.y){clearInterval(interval);setTimeout(function(){alert('🏆 Победа за '+timer+' секунд!');generateMaze()},200)}}}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowUp')movePlayer(0,-1);if(e.key==='ArrowDown')movePlayer(0,1);if(e.key==='ArrowLeft')movePlayer(-1,0);if(e.key==='ArrowRight')movePlayer(1,0)});
+var touchStart={x:0,y:0};
+canvas.addEventListener('touchstart',function(e){touchStart.x=e.touches[0].clientX;touchStart.y=e.touches[0].clientY});
+canvas.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;if(Math.abs(dx)>Math.abs(dy))movePlayer(dx>0?1:-1,0);else movePlayer(0,dy>0?1:-1)});
+generateMaze();
+</script>
+</body>
+</html>
