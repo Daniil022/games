@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Судоку — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 20px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        h1 { font-size: 26px; color: #f0f6fc; margin-bottom: 6px; }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 1px;
+            width: 320px;
+            height: 320px;
+            margin: 14px auto;
+            border: 2px solid #f0f6fc;
+            background: #30363d;
+        }
+        .cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            background: #161b22;
+            cursor: pointer;
+            transition: background 0.1s;
+            user-select: none;
+        }
+        .cell:hover { background: #21262d; }
+        .cell.given { color: #58a6ff; }
+        .cell.user { color: #7ee787; }
+        .cell.selected { background: #1a2332; box-shadow: inset 0 0 0 2px #f0883e; }
+        .cell.conflict { color: #f85149; }
+        .num-pad {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .num-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #21262d;
+            color: #c9d1d9;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .num-btn:hover { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+        .num-btn:active { transform: scale(0.93); }
+        .btn {
+            margin: 6px 4px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #484f58;
+            background: #30363d;
+            color: #c9d1d9;
+            transition: all 0.2s;
+        }
+        .btn-new { background: #f0883e; color: #fff; border: none; }
+        .message { font-size: 16px; font-weight: 600; min-height: 24px; color: #7ee787; margin-top: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🧠 Судоку</h1>
+        <div class="board" id="board"></div>
+        <div class="num-pad" id="numPad"></div>
+        <button class="btn btn-new" onclick="newGame()">🔄 Новое судоку</button>
+        <button class="btn" onclick="checkSolution()">✅ Проверить</button>
+        <p class="message" id="message"></p>
+    </div>
+
+    <script>
+        var grid = [];
+        var solution = [];
+        var selectedRow = -1;
+        var selectedCol = -1;
+        var difficulty = 35; // Количество открытых клеток
+
+        function newGame() {
+            // Генерация решённого судоку
+            var base = [
+                [5,3,4,6,7,8,9,1,2],
+                [6,7,2,1,9,5,3,4,8],
+                [1,9,8,3,4,2,5,6,7],
+                [8,5,9,7,6,1,4,2,3],
+                [4,2,6,8,5,3,7,9,1],
+                [7,1,3,9,2,4,8,5,6],
+                [9,6,1,5,3,7,2,8,4],
+                [2,8,7,4,1,9,6,3,5],
+                [3,4,5,2,8,6,1,7,9]
+            ];
+            solution = base.map(function(r) { return r.slice(); });
+            
+            // Перемешиваем строки и столбцы в пределах блоков
+            for (var i = 0; i < 3; i++) {
+                shuffleRows(i * 3, i * 3 + 2);
+                shuffleCols(i * 3, i * 3 + 2);
+            }
+            
+            grid = solution.map(function(r) { return r.slice(); });
+            
+            // Убираем ячейки
+            var cells = [];
+            for (var r = 0; r < 9; r++) for (var c = 0; c < 9; c++) cells.push({r: r, c: c});
+            shuffle(cells);
+            for (var i = 0; i < 81 - difficulty; i++) {
+                grid[cells[i].r][cells[i].c] = 0;
+            }
+            selectedRow = -1;
+            selectedCol = -1;
+            document.getElementById('message').textContent = '';
+            render();
+        }
+
+        function shuffleRows(r1, r2) {
+            for (var i = r2; i > r1; i--) {
+                var j = r1 + Math.floor(Math.random() * (i - r1 + 1));
+                var tmp = solution[i]; solution[i] = solution[j]; solution[j] = tmp;
+            }
+        }
+
+        function shuffleCols(c1, c2) {
+            for (var i = c2; i > c1; i--) {
+                var j = c1 + Math.floor(Math.random() * (i - c1 + 1));
+                for (var r = 0; r < 9; r++) {
+                    var tmp = solution[r][i]; solution[r][i] = solution[r][j]; solution[r][j] = tmp;
+                }
+            }
+        }
+
+        function shuffle(arr) {
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+            }
+        }
+
+        function render() {
+            var boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+            for (var r = 0; r < 9; r++) {
+                for (var c = 0; c < 9; c++) {
+                    var cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (grid[r][c] !== 0) cell.classList.add('given');
+                    if (r === selectedRow && c === selectedCol) cell.classList.add('selected');
+                    if (grid[r][c] !== 0) cell.textContent = grid[r][c];
+                    cell.addEventListener('click', function(row, col) {
+                        return function() { selectCell(row, col); };
+                    }(r, c));
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function selectCell(row, col) {
+            selectedRow = row;
+            selectedCol = col;
+            render();
+        }
+
+        function enterNumber(num) {
+            if (selectedRow === -1 || selectedCol === -1) return;
+            if (grid[selectedRow][selectedCol] !== 0) return; // Заданная клетка
+            grid[selectedRow][selectedCol] = (grid[selectedRow][selectedCol] === num) ? 0 : num;
+            document.getElementById('message').textContent = '';
+            render();
+        }
+
+        function checkSolution() {
+            for (var r = 0; r < 9; r++) {
+                for (var c = 0; c < 9; c++) {
+                    if (grid[r][c] === 0 || grid[r][c] !== solution[r][c]) {
+                        document.getElementById('message').textContent = '❌ Есть ошибки!';
+                        document.getElementById('message').style.color = '#f85149';
+                        return;
+                    }
+                }
+            }
+            document.getElementById('message').textContent = '✅ Верно! Ты решил судоку!';
+            document.getElementById('message').style.color = '#7ee787';
+        }
+
+        // Цифровая клавиатура
+        document.addEventListener('keydown', function(e) {
+            if (e.key >= '1' && e.key <= '9') enterNumber(parseInt(e.key));
+            if (e.key === 'Backspace' || e.key === 'Delete') enterNumber(0);
+            if (e.key === 'ArrowUp' && selectedRow > 0) { selectedRow--; render(); }
+            if (e.key === 'ArrowDown' && selectedRow < 8) { selectedRow++; render(); }
+            if (e.key === 'ArrowLeft' && selectedCol > 0) { selectedCol--; render(); }
+            if (e.key === 'ArrowRight' && selectedCol < 8) { selectedCol++; render(); }
+        });
+
+        // Тач-клавиатура
+        var pad = document.getElementById('numPad');
+        for (var i = 1; i <= 9; i++) {
+            var btn = document.createElement('button');
+            btn.className = 'num-btn';
+            btn.textContent = i;
+            btn.addEventListener('click', function(num) { return function() { enterNumber(num); }; }(i));
+            pad.appendChild(btn);
+        }
+        var clearBtn = document.createElement('button');
+        clearBtn.className = 'num-btn';
+        clearBtn.textContent = '✕';
+        clearBtn.addEventListener('click', function() { enterNumber(0); });
+        pad.appendChild(clearBtn);
+
+        newGame();
+    </script>
+</body>
+</html>
