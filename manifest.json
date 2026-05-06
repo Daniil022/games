@@ -1,0 +1,16 @@
+{
+  "name": "Игровой портал Fario",
+  "short_name": "Fario Games",
+  "start_url": "/games/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#f0883e",
+  "description": "16 игр в одном портале",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>",
+      "sizes": "100x100",
+      "type": "image/svg+xml"
+    }
+  ]
+}
