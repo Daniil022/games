@@ -64,4 +64,97 @@
 </head>
 <body>
     <div class="container">
-       
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🏓 Пинг-понг</h1>
+        <p class="score"><span class="score-p1">🔵 Игрок 1: <span id="score1">0</span></span> | <span class="score-p2">🔴 Игрок 2: <span id="score2">0</span></span></p>
+        <canvas id="canvas" width="600" height="350"></canvas>
+        <p class="controls-info">Игрок 1: W/S | Игрок 2: ↑/↓ | Пробел — пауза</p>
+        <button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+    </div>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var pw = 10, ph = 60;
+        var p1 = { x: 20, y: canvas.height/2 - ph/2, score: 0 };
+        var p2 = { x: canvas.width - 30, y: canvas.height/2 - ph/2, score: 0 };
+        var ball = { x: canvas.width/2, y: canvas.height/2, vx: 4, vy: 3, r: 8 };
+        var paused = false;
+        var gameLoop;
+
+        function draw() {
+            ctx.fillStyle = '#0d1117';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#30363d';
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#58a6ff';
+            ctx.fillRect(p1.x, p1.y, pw, ph);
+            ctx.fillStyle = '#f85149';
+            ctx.fillRect(p2.x, p2.y, pw, ph);
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function update() {
+            if (paused) return;
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+            if (ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) ball.vy *= -1;
+            if (ball.x - ball.r < p1.x + pw && ball.y > p1.y && ball.y < p1.y + ph) ball.vx *= -1.05;
+            if (ball.x + ball.r > p2.x && ball.y > p2.y && ball.y < p2.y + ph) ball.vx *= -1.05;
+            if (ball.x < 0) { p2.score++; updateScore(); resetBall(); }
+            if (ball.x > canvas.width) { p1.score++; updateScore(); resetBall(); }
+            draw();
+        }
+
+        function resetBall() {
+            ball.x = canvas.width/2;
+            ball.y = canvas.height/2;
+            ball.vx = (Math.random() > 0.5 ? 4 : -4);
+            ball.vy = (Math.random() - 0.5) * 6;
+        }
+
+        function updateScore() {
+            document.getElementById('score1').textContent = p1.score;
+            document.getElementById('score2').textContent = p2.score;
+        }
+
+        var keys = {};
+        document.addEventListener('keydown', function(e) { keys[e.key] = true; e.preventDefault(); });
+        document.addEventListener('keyup', function(e) { keys[e.key] = false; });
+        function handleKeys() {
+            if (keys['w'] && p1.y > 0) p1.y -= 6;
+            if (keys['s'] && p1.y < canvas.height - ph) p1.y += 6;
+            if (keys['ArrowUp'] && p2.y > 0) p2.y -= 6;
+            if (keys['ArrowDown'] && p2.y < canvas.height - ph) p2.y += 6;
+            if (keys[' ']) { paused = !paused; keys[' '] = false; }
+        }
+
+        function resetGame() {
+            p1.score = 0; p2.score = 0;
+            updateScore();
+            p1.y = canvas.height/2 - ph/2;
+            p2.y = canvas.height/2 - ph/2;
+            resetBall();
+            paused = false;
+        }
+
+        function loop() {
+            handleKeys();
+            update();
+            requestAnimationFrame(loop);
+        }
+
+        resetGame();
+        loop();
+    </script>
+</body>
+</html>
