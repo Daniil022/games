@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🃏 Покер — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #d29922;border-radius:20px;padding:30px 24px;max-width:600px;width:100%;text-align:center}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:14px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:28px;color:#d29922;margin-bottom:6px}
+.balance{font-size:18px;font-weight:700;color:#7ee787;margin:8px 0}
+.paytable{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;font-size:12px;color:#8b949e;margin:10px 0}
+.cards{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px 0}
+.card{width:75px;height:105px;background:#fff;border-radius:10px;color:#000;font-weight:900;font-size:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s;box-shadow:0 3px 10px rgba(0,0,0,0.5)}
+.card.held{transform:translateY(-12px);box-shadow:0 8px 20px #d29922}
+.card.red{color:#d32f2f}
+.btn{padding:12px 24px;margin:6px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-deal{background:#d29922;color:#000}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.status{font-size:20px;font-weight:700;min-height:32px;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🃏 Видеопокер</h1>
+<p class="balance">💰 Баланс: <span id="balance">1000</span></p>
+<div class="paytable">
+<span>Пара валетов+</span><span>×2</span><span>Две пары</span><span>×3</span>
+<span>Тройка</span><span>×5</span><span>Стрит</span><span>×10</span>
+<span>Флеш</span><span>×15</span><span>Фулл-хаус</span><span>×25</span>
+<span>Каре</span><span>×50</span><span>Стрит-флеш</span><span>×100</span>
+</div>
+<div class="cards" id="cards"></div>
+<p class="status" id="status">Нажми Deal!</p>
+<button class="btn btn-deal" id="btnDeal" onclick="deal()">🔄 Deal (50)</button>
+</div>
+<script>
+var suits=['♠','♥','♦','♣'];
+var ranks=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+var deck=[],hand=[],held=[],balance=1000,gameOver=false;
+function createDeck(){deck=[];for(var s=0;s<4;s++)for(var r=0;r<13;r++)deck.push({suit:suits[s],rank:ranks[r],value:r,red:s===1||s===2});shuffle(deck)}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}}
+function cardHTML(c,i){var cls='card'+(c.red?' red':'')+(held[i]?' held':'');return'<div class="'+cls+'" onclick="toggleHold('+i+')"><span>'+c.suit+'</span>'+c.rank+'</div>'}
+function render(){var h='';for(var i=0;i<hand.length;i++)h+=cardHTML(hand[i],i);document.getElementById('cards').innerHTML=h;document.getElementById('balance').textContent=balance;}
+function toggleHold(i){if(gameOver)return;held[i]=!held[i];render()}
+function deal(){
+if(balance<50){alert('Недостаточно средств!');return}
+if(!gameOver)balance-=50;
+createDeck();hand=deck.splice(0,5);held=[false,false,false,false,false];gameOver=false;
+document.getElementById('status').textContent='Выбери карты и нажми Deal';document.getElementById('status').style.color='#c9d1d9';
+render();if(!gameOver)balance-=50;gameOver=true;
+setTimeout(function(){
+for(var i=0;i<5;i++)if(!held[i])hand[i]=deck.shift();
+var r=getResult();var win=calculateWin(r);
+balance+=win;
+var msg=win>0?'Выигрыш: +'+win:r!=='Ничего'?'Комбинация: '+r:'Ничего, попробуй ещё';
+document.getElementById('status').textContent=msg;document.getElementById('status').style.color=win>0?'#7ee787':'#f85149';
+gameOver=false;render();
+},500);render()}
+function getResult(){
+var vals=hand.map(function(c){return c.value}).sort(function(a,b){return a-b});
+var suitsArr=hand.map(function(c){return c.suit});
+var flush=suitsArr.every(function(s){return s===suitsArr[0]});
+var straight=false;
+if(vals[4]-vals[0]===4&&new Set(vals).size===5)straight=true;
+if(vals[0]===0&&vals[1]===9&&vals[2]===10&&vals[3]===11&&vals[4]===12)straight=true;
+var counts={};vals.forEach(function(v){counts[v]=(counts[v]||0)+1});
+var countVals=Object.values(counts).sort(function(a,b){return b-a});
+if(straight&&flush&&vals[4]===12)return'Роял-флеш';
+if(straight&&flush)return'Стрит-флеш';
+if(countVals[0]===4)return'Каре';
+if(countVals[0]===3&&countVals[1]===2)return'Фулл-хаус';
+if(flush)return'Флеш';
+if(straight)return'Стрит';
+if(countVals[0]===3)return'Тройка';
+if(countVals[0]===2&&countVals[1]===2)return'Две пары';
+if(countVals[0]===2){var pairVal=parseInt(Object.entries(counts).find(function(e){return e[1]===2})[0]);if(pairVal>=9)return'Пара валетов+'}
+return'Ничего'}
+function calculateWin(r){
+var pay={['Пара валетов+']:100,['Две пары']:150,['Тройка']:250,['Стрит']:500,['Флеш']:750,['Фулл-хаус']:1250,['Каре']:2500,['Стрит-флеш']:5000,['Роял-флеш']:10000};
+return pay[r]||0}
+deal();balance+=50;
+</script>
+</body>
+</html>
