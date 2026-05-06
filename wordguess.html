@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Угадай слово — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        h1 { font-size: 26px; margin-bottom: 6px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+        
+        .word-display {
+            font-size: 36px;
+            letter-spacing: 8px;
+            font-weight: 900;
+            color: #f0f6fc;
+            margin: 20px 0;
+            min-height: 50px;
+        }
+        .ai-hint {
+            background: #21262d;
+            border: 1px solid #1f6feb;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 15px;
+            color: #58a6ff;
+            line-height: 1.5;
+        }
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .letter-input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: #f0f6fc;
+            font-size: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            max-width: 60px;
+        }
+        .btn {
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-guess { background: #1f6feb; color: #fff; }
+        .btn-new { background: #30363d; color: #c9d1d9; border: 1px solid #484f58; }
+        .wrong-letters { color: #f85149; font-size: 16px; min-height: 24px; margin: 8px 0; }
+        .attempts { color: #8b949e; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🧠 Угадай слово</h1>
+        <p class="subtitle">ИИ пытается угадать твоё слово!</p>
+        
+        <div class="ai-hint" id="aiHint">🤖 Я буду угадывать буквы. Введи первую букву!</div>
+        <div class="word-display" id="wordDisplay">_ _ _ _ _</div>
+        <div class="wrong-letters" id="wrongLetters"></div>
+        <p class="attempts" id="attemptsText">Осталось попыток: 8</p>
+        
+        <div class="input-group">
+            <input type="text" class="letter-input" id="letterInput" maxlength="1" placeholder="А">
+        </div>
+        <button class="btn btn-guess" onclick="makeGuess()">🤖 Угадать</button>
+        <button class="btn btn-new" onclick="newGame()" style="margin-top:10px;">🔄 Новая игра</button>
+    </div>
+
+    <script>
+        var secretWord = '';
+        var displayWord = [];
+        var wrongGuesses = [];
+        var attemptsLeft = 8;
+        var aiWords = ['КОТ', 'ДОМ', 'ЛЕС', 'МЯЧ', 'СОН', 'РОТ', 'КИТ', 'ЁЖ', 'СОК', 'ЛУК',
+                       'СТОЛ', 'КРАН', 'МОСТ', 'ЛИСТ', 'ДОЖДЬ', 'ЗВУК', 'ТОРТ', 'КЛЮЧ',
+                       'МОЛОКО', 'СОБАКА', 'КОШКА', 'ОКНО', 'ДВЕРЬ', 'КНИГА', 'РУЧКА',
+                       'ШКОЛА', 'ГОРОД', 'ПЛАНЕТА', 'ЗВЕЗДА', 'КОМЕТА'];
+        
+        function newGame() {
+            secretWord = aiWords[Math.floor(Math.random() * aiWords.length)];
+            displayWord = Array(secretWord.length).fill('_');
+            wrongGuesses = [];
+            attemptsLeft = 8;
+            updateDisplay();
+            document.getElementById('aiHint').textContent = '🤖 Я ИИ-бот. Попробую угадать твоё слово по буквам!';
+            document.getElementById('letterInput').value = '';
+        }
+        
+        function updateDisplay() {
+            document.getElementById('wordDisplay').textContent = displayWord.join(' ');
+            document.getElementById('wrongLetters').textContent = 'Ошибки: ' + wrongGuesses.join(', ');
+            document.getElementById('attemptsText').textContent = 'Осталось попыток: ' + attemptsLeft;
+        }
+        
+        function makeGuess() {
+            var input = document.getElementById('letterInput').value.toUpperCase().trim();
+            if (!input || input.length !== 1 || !/[А-ЯЁ]/.test(input)) {
+                alert('Введи одну русскую букву!');
+                return;
+            }
+            
+            // AI логика: проверяем букву
+            var found = false;
+            for (var i = 0; i < secretWord.length; i++) {
+                if (secretWord[i] === input) {
+                    displayWord[i] = input;
+                    found = true;
+                }
+            }
+            
+            if (!found) {
+                if (wrongGuesses.indexOf(input) === -1) {
+                    wrongGuesses.push(input);
+                    attemptsLeft--;
+                }
+            }
+            
+            updateDisplay();
+            
+            // AI сообщение
+            var hint = '';
+            if (found) {
+                hint = '✅ Я угадал букву «' + input + '»!';
+            } else {
+                hint = '❌ Буквы «' + input + '» нет в слове.';
+                // AI пытается дать подсказку
+                if (attemptsLeft <= 3) {
+                    hint += ' Похоже, слово из ' + secretWord.length + ' букв...';
+                }
+            }
+            
+            // Проверка победы/поражения
+            if (displayWord.indexOf('_') === -1) {
+                hint = '🏆 Я угадал слово: «' + secretWord + '»! Победа!';
+                disableInput();
+            } else if (attemptsLeft <= 0) {
+                hint = '😞 Я проиграл. Загаданное слово: «' + secretWord + '».';
+                disableInput();
+            }
+            
+            document.getElementById('aiHint').textContent = '🤖 ' + hint;
+            document.getElementById('letterInput').value = '';
+        }
+        
+        function disableInput() {
+            document.getElementById('letterInput').disabled = true;
+            document.querySelector('.btn-guess').disabled = true;
+        }
+        
+        newGame();
+    </script>
+</body>
+</html>
