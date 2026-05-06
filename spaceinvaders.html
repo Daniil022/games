@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Space Invaders — Игровой портал</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px 20px;text-align:center;max-width:500px;width:100%}
+.back-btn{display:inline-block;color:#8b949e;text-decoration:none;font-size:14px;margin-bottom:12px;padding:8px 16px;border:1px solid #30363d;border-radius:8px}
+h1{font-size:24px;color:#f0f6fc;margin-bottom:6px}
+.score{font-size:18px;font-weight:700;color:#7ee787;margin:8px 0}
+canvas{border:2px solid #30363d;border-radius:8px;background:#000;display:block;margin:10px auto}
+.btn{margin:8px;padding:10px 20px;background:#f0883e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-btn">← Назад к играм</a>
+<h1>🚀 Space Invaders</h1>
+<p class="score">Счёт: <span id="score">0</span> | Жизни: <span id="lives">3</span></p>
+<canvas id="canvas" width="400" height="400"></canvas>
+<button class="btn" onclick="resetGame()">🔄 Новая игра</button>
+</div>
+<script>
+var canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+var player={x:180,y:360,w:40,h:15},bullets=[],enemies=[],enemyBullets=[],score=0,lives=3,gameOver=false,enemyDir=2,loop;
+function resetGame(){player.x=180;bullets=[];enemyBullets=[];enemies=[];score=0;lives=3;gameOver=false;enemyDir=2;
+for(var r=0;r<3;r++)for(var c=0;c<8;c++)enemies.push({x:30+c*45,y:30+r*40,w:30,h:20,alive:true});
+document.getElementById('score').textContent='0';document.getElementById('lives').textContent='3';clearInterval(loop);loop=setInterval(update,30)}
+function update(){if(gameOver)return;
+enemies.forEach(function(e){if(e.alive&&(e.x+e.w>canvas.width-10||e.x<10)){enemyDir*=-1;enemies.forEach(function(e2){e2.y+=20})}});
+enemies.forEach(function(e){if(e.alive){e.x+=enemyDir;if(e.y+e.h>player.y){gameOver=true;alert('Пришельцы захватили Землю! Счёт: '+score);clearInterval(loop)}}});
+bullets.forEach(function(b,i){b.y-=8;if(b.y<0)bullets.splice(i,1)});
+enemyBullets.forEach(function(b,i){b.y+=5;if(b.y>canvas.height)enemyBullets.splice(i,1);
+if(b.x>player.x&&b.x<player.x+player.w&&b.y>player.y&&b.y<player.y+player.h){lives--;enemyBullets.splice(i,1);document.getElementById('lives').textContent=lives;if(lives<=0){gameOver=true;alert('Игра окончена! Счёт: '+score);clearInterval(loop)}}});
+bullets.forEach(function(b,bi){enemies.forEach(function(e,ei){if(e.alive&&b.x>e.x&&b.x<e.x+e.w&&b.y>e.y&&b.y<e.y+e.h){e.alive=false;bullets.splice(bi,1);score+=100;document.getElementById('score').textContent=score}})});
+if(Math.random()<0.01){var alive=enemies.filter(function(e){return e.alive});if(alive.length>0){var shooter=alive[Math.floor(Math.random()*alive.length)];enemyBullets.push({x:shooter.x+shooter.w/2,y:shooter.y+shooter.h})}}
+if(enemies.every(function(e){return!e.alive})){gameOver=true;alert('🏆 Победа! Счёт: '+score);clearInterval(loop)}draw()}
+function draw(){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle='#7ee787';ctx.fillRect(player.x,player.y,player.w,player.h);
+bullets.forEach(function(b){ctx.fillStyle='#fff';ctx.fillRect(b.x-2,b.y-8,4,12)});
+enemyBullets.forEach(function(b){ctx.fillStyle='#f85149';ctx.fillRect(b.x-2,b.y-4,4,8)});
+enemies.forEach(function(e){if(e.alive){ctx.fillStyle='#58a6ff';ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillStyle='#fff';ctx.fillRect(e.x+5,e.y+5,8,4)}})}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')player.x-=15;if(e.key==='ArrowRight')player.x+=15;if(e.key===' '){e.preventDefault();bullets.push({x:player.x+player.w/2,y:player.y})}player.x=Math.max(0,Math.min(canvas.width-player.w,player.x))});
+canvas.addEventListener('touchmove',function(e){e.preventDefault();var t=e.touches[0];var rect=canvas.getBoundingClientRect();player.x=t.clientX-rect.left-player.w/2});
+canvas.addEventListener('click',function(){bullets.push({x:player.x+player.w/2,y:player.y})});
+resetGame();
+</script>
+</body>
+</html>
