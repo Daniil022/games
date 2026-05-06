@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Дартс — Игровой портал</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 24px 20px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        h1 { font-size: 26px; color: #f0f6fc; margin-bottom: 6px; }
+        .score-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0;
+            font-weight: 700;
+        }
+        .score-panel span { font-size: 20px; }
+        .score-panel .total { color: #d29922; font-size: 28px; }
+        .darts-left { color: #8b949e; font-size: 14px; margin-bottom: 8px; }
+        canvas {
+            border: 2px solid #30363d;
+            border-radius: 50%;
+            display: block;
+            margin: 8px auto;
+            cursor: crosshair;
+        }
+        .btn {
+            margin: 6px 4px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-new { background: #f0883e; color: #fff; }
+        .btn-undo { background: #30363d; color: #c9d1d9; border: 1px solid #484f58; }
+        .throws { display: flex; justify-content: center; gap: 10px; margin: 8px 0; }
+        .throw-badge {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: #21262d;
+            border: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .throw-badge.active { border-color: #f0883e; color: #f0883e; }
+        .result-message { font-size: 18px; font-weight: 700; min-height: 28px; color: #7ee787; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Назад к играм</a>
+        <h1>🎯 Дартс (501)</h1>
+        <div class="score-panel">
+            <span>Цель:</span>
+            <span class="total" id="totalScore">501</span>
+        </div>
+        <p class="darts-left">Бросков в раунде: <span id="dartsLeft">3</span></p>
+        <canvas id="canvas" width="320" height="320"></canvas>
+        <div class="throws" id="throwsDisplay">
+            <div class="throw-badge">-</div>
+            <div class="throw-badge">-</div>
+            <div class="throw-badge">-</div>
+        </div>
+        <p class="result-message" id="resultMessage"></p>
+        <button class="btn btn-new" onclick="newGame()">🔄 Новая игра</button>
+        <button class="btn btn-undo" onclick="undoThrow()">↩ Отменить бросок</button>
+    </div>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var cx = canvas.width / 2;
+        var cy = canvas.height / 2;
+        var radius = 150;
+        
+        var totalScore = 501;
+        var roundThrows = [];
+        var dartCount = 0;
+        var gameOver = false;
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Сектора
+            var sectors = 20;
+            for (var i = 0; i < sectors; i++) {
+                var startAngle = (i / sectors) * Math.PI * 2 - Math.PI / 2 - Math.PI / sectors;
+                var endAngle = ((i + 1) / sectors) * Math.PI * 2 - Math.PI / 2 - Math.PI / sectors;
+                
+                ctx.fillStyle = i % 2 === 0 ? '#1a1a1a' : '#2a2a2a';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            // Кольца
+            var rings = [
+                { r: radius * 0.93, color: '#f85149', label: 'Double' },
+                { r: radius * 0.73, color: '#f0883e', label: 'Triple' },
+                { r: radius * 0.53, color: '#30363d', label: '' },
+                { r: radius * 0.33, color: '#238636', label: 'Bullseye' },
+                { r: radius * 0.13, color: '#f85149', label: 'Bull' }
+            ];
+            
+            rings.forEach(function(ring) {
+                ctx.strokeStyle = ring.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, ring.r, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+            
+            // Центр
+            ctx.fillStyle = '#f85149';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#238636';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Дротики
+            roundThrows.forEach(function(dart, i) {
+                ctx.fillStyle = i === 0 ? '#7ee787' : i === 1 ? '#58a6ff' : '#d29922';
+                ctx.beginPath();
+                ctx.arc(dart.x, dart.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+        }
+
+        function getScore(x, y) {
+            var dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+            if (dist > radius) return 0; // Мимо
+            
+            if (dist < 10) return 50; // Bullseye
+            if (dist < 20) return 25; // Bull
+            
+            var angle = Math.atan2(y - cy, x - cx) + Math.PI / 2 + Math.PI / 20;
+            if (angle < 0) angle += Math.PI * 2;
+            var sector = Math.floor(angle / (Math.PI * 2 / 20)) + 1;
+            if (sector > 20) sector = 1;
+            
+            var baseScore = sector;
+            
+            if (dist > radius * 0.85) return baseScore * 2; // Double
+            if (dist > radius * 0.65 && dist < radius * 0.8) return baseScore * 3; // Triple
+            
+            return baseScore;
+        }
+
+        function throwDart(e) {
+            if (gameOver || dartCount >= 3) return;
+            
+            var rect = canvas.getBoundingClientRect();
+            var x = (e.clientX || e.touches[0].clientX) - rect.left;
+            var y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            x = x / rect.width * canvas.width;
+            y = y / rect.height * canvas.height;
+            
+            var score = getScore(x, y);
+            if (score === 0) {
+                document.getElementById('resultMessage').textContent = 'Мимо!';
+                document.getElementById('resultMessage').style.color = '#f85149';
+            }
+            
+            roundThrows.push({ x: x, y: y, score: score });
+            dartCount++;
+            
+            updateDisplay();
+            drawBoard();
+            
+            if (dartCount === 3) setTimeout(nextRound, 600);
+        }
+
+        function updateDisplay() {
+            document.getElementById('dartsLeft').textContent = 3 - dartCount;
+            var total = totalScore;
+            roundThrows.forEach(function(t) { total -= t.score; });
+            document.getElementById('totalScore').textContent = Math.max(0, total);
+            
+            var badges = document.querySelectorAll('.throw-badge');
+            badges.forEach(function(b, i) {
+                b.classList.remove('active');
+                if (i < roundThrows.length) {
+                    b.textContent = roundThrows[i].score;
+                    b.classList.add('active');
+                } else {
+                    b.textContent = '-';
+                }
+            });
+        }
+
+        function nextRound() {
+            var roundTotal = roundThrows.reduce(function(s, t) { return s + t.score; }, 0);
+            totalScore -= roundTotal;
+            
+            if (totalScore <= 0) {
+                if (totalScore === 0 && roundThrows[roundThrows.length-1].score >= 2) {
+                    document.getElementById('resultMessage').textContent = '🏆 Победа! Ты закрыл 501!';
+                    document.getElementById('resultMessage').style.color = '#7ee787';
+                } else {
+                    document.getElementById('resultMessage').textContent = 'Перебор! Очки не засчитаны.';
+                    document.getElementById('resultMessage').style.color = '#f85149';
+                    totalScore += roundTotal;
+                }
+                gameOver = totalScore <= 0;
+            }
+            
+            roundThrows = [];
+            dartCount = 0;
+            document.getElementById('totalScore').textContent = Math.max(0, totalScore);
+            updateDisplay();
+            drawBoard();
+        }
+
+        function undoThrow() {
+            if (dartCount === 0) return;
+            roundThrows.pop();
+            dartCount--;
+            updateDisplay();
+            drawBoard();
+            document.getElementById('resultMessage').textContent = '';
+        }
+
+        function newGame() {
+            totalScore = 501;
+            roundThrows = [];
+            dartCount = 0;
+            gameOver = false;
+            document.getElementById('totalScore').textContent = '501';
+            document.getElementById('resultMessage').textContent = '';
+            document.getElementById('resultMessage').style.color = '#7ee787';
+            updateDisplay();
+            drawBoard();
+        }
+
+        canvas.addEventListener('click', throwDart);
+        canvas.addEventListener('touchstart', function(e) { e.preventDefault(); throwDart(e); });
+
+        newGame();
+    </script>
+</body>
+</html>
